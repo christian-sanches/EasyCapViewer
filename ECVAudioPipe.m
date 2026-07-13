@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 // Other Sources
 #import "ECVDebug.h"
 
-@interface ECVAudioPipe(Private)
+@interface ECVAudioPipe ()
 
 - (BOOL)_fillConversionBufferList:(AudioBufferList *)conversionBufferList;
 
@@ -42,7 +42,7 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 
 #pragma mark -ECVAudioPipe
 
-- (id)initWithInputDescription:(AudioStreamBasicDescription)inputDesc outputDescription:(AudioStreamBasicDescription)outputDesc upconvertFromMono:(BOOL)flag
+- (nullable instancetype)initWithInputDescription:(AudioStreamBasicDescription)inputDesc outputDescription:(AudioStreamBasicDescription)outputDesc upconvertFromMono:(BOOL)flag
 {
 	if((self = [super init])) {
 		if(kAudioFormatLinearPCM != inputDesc.mFormatID) {

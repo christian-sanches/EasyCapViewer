@@ -29,6 +29,17 @@ NSString *const ECVCaptureDeviceVolumeDidChangeNotification = @"ECVCaptureDevice
 static NSString *const ECVVolumeKey = @"ECVVolume";
 static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 
+@interface ECVAudioTarget () {
+	__weak ECVCaptureDocument *_captureDocument;
+	ECVAudioOutput *_audioOutput;
+	AudioStreamBasicDescription _inputDescription;
+	BOOL _muted;
+	CGFloat _volume;
+	BOOL _upconvertsFromMono;
+	ECVAudioPipe *_audioPipe;
+}
+@end
+
 @implementation ECVAudioTarget
 
 - (ECVCaptureDocument *)captureDocument
@@ -103,14 +114,14 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 
 #pragma mark -NSObject
 
-- (id)init
+- (instancetype)init
 {
 	if((self = [super init])) {
 		NSUserDefaults *const d = [NSUserDefaults standardUserDefaults];
-		[d registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithDouble:1.0f], ECVVolumeKey,
-			[NSNumber numberWithBool:NO], ECVUpconvertsFromMonoKey,
-			nil]];
+		[d registerDefaults:@{
+			ECVVolumeKey: @(1.0f),
+			ECVUpconvertsFromMonoKey: @(NO),
+		}];
 		_inputDescription = ECVStandardAudioStreamBasicDescription;
 		_muted = NO;
 		_volume = [[NSUserDefaults standardUserDefaults] doubleForKey:ECVVolumeKey];

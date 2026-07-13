@@ -21,37 +21,30 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import <CoreAudio/CoreAudio.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 extern NSString *const ECVAudioHardwareDevicesDidChangeNotification;
 
 @class ECVAudioStream;
 @protocol ECVAudioDeviceDelegate;
 
 @interface ECVAudioDevice : NSObject
-{
-	@private
-	IBOutlet NSObject<ECVAudioDeviceDelegate> *delegate;
-	AudioDeviceID _deviceID;
-	NSString *_name;
-	AudioDeviceIOProcID _procID;
-}
 
-+ (NSArray *)allDevices;
-+ (id)defaultDevice;
-+ (id)deviceWithUID:(NSString *const)UID;
-+ (id)deviceWithIODevice:(io_service_t const)device;
+@property (nonatomic, weak, nullable) IBOutlet NSObject<ECVAudioDeviceDelegate> *delegate;
+@property (nonatomic, readonly) AudioDeviceID deviceID;
+@property (nonatomic, copy, nullable) NSString *name;
 
-- (id)initWithDeviceID:(AudioDeviceID const)deviceID;
++ (NSArray<ECVAudioDevice *> *)allDevices;
++ (instancetype)defaultDevice;
++ (instancetype)deviceWithUID:(NSString *)UID;
++ (nullable instancetype)deviceWithIODevice:(io_service_t)device;
 
-- (NSObject<ECVAudioDeviceDelegate> *)delegate;
-- (void)setDelegate:(NSObject<ECVAudioDeviceDelegate> *const)obj;
-- (AudioDeviceID)deviceID;
+- (nullable instancetype)initWithDeviceID:(AudioDeviceID)deviceID;
+
 - (BOOL)isInput;
 - (NSString *)UID;
-
-- (NSString *)name;
-- (void)setName:(NSString *const)str;
-- (NSArray *)streams;
-- (ECVAudioStream *)stream;
+- (NSArray<ECVAudioStream *> *)streams;
+- (nullable ECVAudioStream *)stream;
 
 - (BOOL)start;
 - (void)stop;
@@ -72,20 +65,18 @@ extern NSString *const ECVAudioHardwareDevicesDidChangeNotification;
 @protocol ECVAudioDeviceDelegate <NSObject>
 
 @optional
-- (void)audioInput:(ECVAudioInput *const)sender didReceiveBufferList:(AudioBufferList const *const)bufferList atTime:(AudioTimeStamp const *const)t;
-- (void)audioOutput:(ECVAudioOutput *const)sender didRequestBufferList:(inout AudioBufferList *const)bufferList forTime:(AudioTimeStamp const *const)t;
+- (void)audioInput:(ECVAudioInput *)sender didReceiveBufferList:(AudioBufferList const *)bufferList atTime:(AudioTimeStamp const *)t;
+- (void)audioOutput:(ECVAudioOutput *)sender didRequestBufferList:(inout AudioBufferList *)bufferList forTime:(AudioTimeStamp const *)t;
 
 @end
 
 @interface ECVAudioStream : NSObject
-{
-	@private
-	AudioStreamID _streamID;
-}
 
-- (id)initWithStreamID:(AudioStreamID const)streamID;
-- (AudioStreamID)streamID;
+- (instancetype)initWithStreamID:(AudioStreamID)streamID;
+@property (nonatomic, readonly) AudioStreamID streamID;
 
 - (AudioStreamBasicDescription)basicDescription;
 
 @end
+
+NS_ASSUME_NONNULL_END

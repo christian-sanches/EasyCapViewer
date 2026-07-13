@@ -25,26 +25,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 @class ECVAudioPipe;
 @class ECVCaptureDocument;
 
+NS_ASSUME_NONNULL_BEGIN
+
 extern NSString *const ECVCaptureDeviceVolumeDidChangeNotification;
 
 @interface ECVAudioTarget : NSObject <ECVAVTarget, ECVAudioDeviceDelegate>
-{
-	@private
-	ECVCaptureDocument *_captureDocument;
-	ECVAudioOutput *_audioOutput;
-	AudioStreamBasicDescription _inputDescription;
-	BOOL _muted;
-	CGFloat _volume;
-	BOOL _upconvertsFromMono;
 
-	ECVAudioPipe *_audioPipe;
-}
+- (nullable ECVCaptureDocument *)captureDocument;
+- (void)setCaptureDocument:(nullable ECVCaptureDocument *const)doc;
 
-- (ECVCaptureDocument *)captureDocument;
-- (void)setCaptureDocument:(ECVCaptureDocument *const)doc;
-
-- (ECVAudioOutput *)audioOutput;
-- (void)setAudioOutput:(ECVAudioOutput *const)output;
+- (nullable ECVAudioOutput *)audioOutput;
+- (void)setAudioOutput:(nullable ECVAudioOutput *const)output;
 - (void)setInputBasicDescription:(AudioStreamBasicDescription const)desc;
 - (BOOL)isMuted;
 - (void)setMuted:(BOOL)flag;
@@ -65,3 +56,5 @@ extern NSString *const ECVCaptureDeviceVolumeDidChangeNotification;
 - (ECVAudioInput *)builtInAudioInput;
 
 @end
+
+NS_ASSUME_NONNULL_END

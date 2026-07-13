@@ -37,6 +37,8 @@ static AudioStreamBasicDescription const ECVStandardAudioStreamBasicDescription 
 	.mReserved = 0,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface ECVAudioPipe : NSObject
 {
 	@private
@@ -51,7 +53,7 @@ static AudioStreamBasicDescription const ECVStandardAudioStreamBasicDescription 
 	NSMutableArray *_usedBuffers;
 }
 
-- (id)initWithInputDescription:(AudioStreamBasicDescription)inputDesc outputDescription:(AudioStreamBasicDescription)outputDesc upconvertFromMono:(BOOL)flag;
+- (nullable instancetype)initWithInputDescription:(AudioStreamBasicDescription)inputDesc outputDescription:(AudioStreamBasicDescription)outputDesc upconvertFromMono:(BOOL)flag;
 @property(readonly) AudioStreamBasicDescription inputStreamDescription;
 @property(readonly) AudioStreamBasicDescription outputStreamDescription;
 @property(readonly) BOOL upconvertsFromMono;
@@ -63,4 +65,7 @@ static AudioStreamBasicDescription const ECVStandardAudioStreamBasicDescription 
 - (void)requestOutputBufferList:(inout AudioBufferList *)outputBufferList;
 
 @end
+
+NS_ASSUME_NONNULL_END
+
 #endif
