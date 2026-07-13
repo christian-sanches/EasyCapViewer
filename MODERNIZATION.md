@@ -13,7 +13,7 @@
 - [x] Phase 3 — Remove Dead 32-bit Code (QuickTime Component, QTKit)
 - [x] Phase 4 — OpenGL → Metal (Video Rendering)
 - [x] Phase 5 — QuickTime/ICM → AVFoundation (Movie Recording)
-- [ ] Phase 6 — USB Drivers Modernization
+- [x] Phase 6 — USB Drivers Modernization
 - [ ] Phase 7 — Audio Pipeline Modernization
 - [ ] Phase 8 — UI & HUD Modernization
 - [ ] Phase 9 — Project Folder Restructuring
@@ -23,12 +23,12 @@
 
 ## Overview
 
-EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–5, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, and **movie recording has been rewritten from QuickTime/ICM to AVFoundation**. The remaining work is USB drivers, audio pipeline, UI, and project restructuring.
+EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–6, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, and **USB drivers have been modernized** with upgraded interface versions and improved error handling. The remaining work is audio pipeline, UI, and project restructuring.
 
 ### What works today on Apple Silicon
 | API | Status | Notes |
 |-----|--------|-------|
-| IOKit | ✅ Still works | USB device enumeration and isochronous transfers |
+| IOKit | ✅ Still works | USB device enumeration and isochronous transfers (upgraded to IOUSBInterfaceInterface) |
 | CoreAudio / AudioToolbox | ✅ Still works | Audio device I/O, streams, hardware |
 | CoreVideo (CVPixelBuffer) | ✅ Still works | Pixel buffer management |
 | Accelerate | ✅ Still works | vDSP/vImage for deinterlacing |
@@ -68,8 +68,8 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 |------|------|-------|
 | `ECVController.h/m` | App controller (NSDocumentController) | IOKit enumeration OK; ARC migrated; deprecation fixes |
 | `ECVCaptureDocument.h/m` | Document model (NSDocument) | ARC migrated; recording stub pending Phase 5 |
-| `ECVCaptureDevice.h/m` | Abstract capture device | ARC migrated; deprecation fixes |
-| `ECVUSBTransferList.h/m` | Isochronous USB ring buffer | IOKit OK; ARC migrated |
+| `ECVCaptureDevice.h/m` | Abstract capture device | ARC migrated; deprecation fixes; USB interface upgraded to IOUSBInterfaceInterface |
+| `ECVUSBTransferList.h/m` | Isochronous USB ring buffer | IOKit OK; ARC migrated; USB interface upgraded to IOUSBInterfaceInterface |
 | `ECVVideoSource.h/m` | Video source abstraction | OK |
 | `ECVVideoFormat.h/m` | Video format (resolution, framerate) | OK |
 | `ECVPixelFormat.h` | Pixel format constants | OpenGL imports removed; Metal helpers added |
@@ -168,7 +168,7 @@ Each phase has its own detailed document:
 |------|--------|------------|--------|
 | Metal rendering complexity | High | Start with simple texture blit; iterate | ✅ Resolved (Phase 4) |
 | AVFoundation recording latency | Medium | Use async writing with buffer queues | ✅ Resolved (Phase 5) |
-| USB isochronous transfer changes on Apple Silicon | High | Test early; IOKit USB should work but verify | Pending |
+| USB isochronous transfer changes on Apple Silicon | High | Upgraded to IOUSBInterfaceInterface; added error handling for power management | ✅ Resolved (Phase 6) |
 | Missing hardware for testing | High | Acquire EasyCap devices for each chipset | Pending |
 | Xcode project format incompatibility | Low | Create new project, migrate sources | ✅ Resolved (Phase 1) |
 | Carbon API removal | Low | Only used for minor helpers; replace with Cocoa | ✅ Resolved (Phase 3) |
@@ -184,9 +184,9 @@ Each phase has its own detailed document:
 | Phase 3 — Remove 32-bit Code | 1–2 hours | ✅ Done |
 | Phase 4 — OpenGL → Metal | 2–3 days | ✅ Done |
 | Phase 5 — QuickTime → AVFoundation | 2–3 days | ✅ Done |
-| Phase 6 — USB Drivers | 1 day (mostly testing) | Pending |
+| Phase 6 — USB Drivers | 1 day (mostly testing) | ✅ Done |
 | Phase 7 — Audio Pipeline | 0.5 day | Pending |
 | Phase 8 — UI Modernization | 1 day | Pending |
 | Phase 9 — Restructuring | 1 day | Pending |
 | Phase 10 — Testing | 2–3 days | Pending |
-| **Remaining** | **~5–7 days** | |
+| **Remaining** | **~4–6 days** | |

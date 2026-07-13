@@ -53,7 +53,7 @@ static NSString *const ECVVideoSourceKey = @"ECVVideoSource";
 static NSString *const ECVVideoFormatKey = @"ECVVideoFormat";
 
 typedef struct {
-	IOUSBLowLatencyIsocFrame *list;
+	IOUSBLowLatencyIsocFrame *list; // Note: IOUSBLowLatencyIsocFrame is part of the deprecated Low-Latency Isochronous API family
 	UInt8 *data;
 } ECVTransfer;
 
@@ -158,7 +158,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 
 #pragma mark -
 
-+ (IOUSBDeviceInterface320 **)USBDeviceWithService:(io_service_t const)service
++ (IOUSBDeviceInterface **)USBDeviceWithService:(io_service_t const)service
 {
 	mach_timespec_t delay = {
 		.tv_sec = 1,
@@ -175,14 +175,14 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 		return NULL;
 	}
 
-	IOUSBDeviceInterface320 **device = NULL;
-	(*devicePlugInInterface)->QueryInterface(devicePlugInInterface, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID320), (LPVOID)&device);
+	IOUSBDeviceInterface **device = NULL;
+	(*devicePlugInInterface)->QueryInterface(devicePlugInInterface, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID), (LPVOID)&device);
 
 	(*devicePlugInInterface)->Release(devicePlugInInterface);
 
 	return device;
 }
-+ (IOUSBInterfaceInterface300 **)USBInterfaceWithDevice:(IOUSBDeviceInterface320 **const)device
++ (IOUSBInterfaceInterface **)USBInterfaceWithDevice:(IOUSBDeviceInterface **const)device
 {
 	IOUSBFindInterfaceRequest interfaceRequest = {
 		kIOUSBFindInterfaceDontCare,
@@ -202,8 +202,8 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 		return NULL;
 	}
 
-	IOUSBInterfaceInterface300 **interface = NULL;
-	(*interfacePlugInInterface)->QueryInterface(interfacePlugInInterface, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID300), (LPVOID)&interface);
+	IOUSBInterfaceInterface **interface = NULL;
+	(*interfacePlugInInterface)->QueryInterface(interfacePlugInInterface, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID), (LPVOID)&interface);
 
 	(*interfacePlugInInterface)->Release(interfacePlugInInterface);
 	IOObjectRelease(service);
@@ -313,6 +313,10 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 
 - (void)read
 {
+	// Note: This method uses the deprecated Low-Latency Isochronous USB API for real-time video capture.
+	// These APIs (LowLatencyReadIsochPipeAsync, LowLatencyCreateBuffer, LowLatencyDestroyBuffer)
+	// still work on Apple Silicon but may be removed in future macOS versions.
+	// They provide the best performance for real-time video capture due to zero-copy buffer management.
 	UInt8 pipe = 0;
 	UInt8 direction = kUSBIn;
 	UInt8 transferType = kUSBIsoc;
@@ -354,7 +358,9 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 	switch(error) {
 		case kIOReturnSuccess: return YES;
 		case kIOReturnNoDevice:
-		case kIOReturnNotResponding: return NO;
+		case kIOReturnNotResponding: 
+			ECVLog(ECVWarning, @"USB device not responding (may be suspended). Error: 0x%x", error);
+			return NO;
 	}
 	return NO;
 }
@@ -373,6 +379,10 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 		case kIOUSBPipeStalled:
 			(void)ECVIOReturn((*_USBInterface)->ClearPipeStall(_USBInterface, 0));
 			return YES;
+		case kIOReturnNoDevice:
+		case kIOReturnNotResponding:
+			ECVLog(ECVWarning, @"USB device not responding during control request. Error: 0x%x", error);
+			return NO;
 		default:
 			(void)ECVIOReturn(error);
 			return NO;
@@ -460,6 +470,9 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 }
 - (BOOL)_readTransfer:(inout ECVUSBTransfer *)transfer numberOfMicroframes:(NSUInteger)numberOfMicroframes pipeRef:(UInt8)pipe frameNumber:(inout UInt64 *)frameNumber microsecondsInFrame:(UInt64)microsecondsInFrame millisecondInterval:(UInt8)millisecondInterval
 {
+	// Note: This method uses LowLatencyReadIsochPipeAsync which is part of the deprecated
+	// Low-Latency Isochronous USB API family. This API still works on Apple Silicon but
+	// may be removed in future macOS versions.
     
 	while(kCFRunLoopRunHandledSource == CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, true)); // Clean up the event loop. Prevents the kernel from filling up its buffer and logging error messages. It'd be nice to turn this off entirely, since we don't use it.
 	if(!*frameNumber) *frameNumber = [self _currentFrameNumber] + 10;
@@ -472,6 +485,10 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 			NSUInteger i;
 			for(i = 0; i < numberOfMicroframes; ++i) transfer->frames[i].frStatus = kIOReturnInvalid;
 			return YES;
+		case kIOReturnNoDevice:
+		case kIOReturnNotResponding:
+			ECVLog(ECVError, @"USB device not responding during isochronous read. Error may indicate device suspended or disconnected.");
+			return NO;
 	}
 	return NO;
 }
@@ -488,6 +505,9 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 }
 - (void)_parseFrame:(inout volatile IOUSBLowLatencyIsocFrame *)frame bytes:(UInt8 const *)bytes previousFrame:(IOUSBLowLatencyIsocFrame *)previous millisecondInterval:(UInt8)millisecondInterval
 {
+	// Note: This method uses IOUSBLowLatencyIsocFrame which is part of the deprecated Low-Latency Isochronous API family.
+	// These APIs still work on Apple Silicon but may be removed in future macOS versions.
+	// For now, they provide the best performance for real-time video capture.
 	if(previous && kUSBLowLatencyIsochTransferKey == frame->frStatus) {
 		static mach_timebase_info_data_t timebaseInfo;
 		if(!timebaseInfo.denom) mach_timebase_info(&timebaseInfo);

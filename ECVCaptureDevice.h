@@ -61,8 +61,8 @@ extern NSString *const ECVHueKey;
 	ECVVideoSource *_videoSource;
 	ECVVideoFormat *_videoFormat;
 
-	IOUSBDeviceInterface320 **_USBDevice;
-	IOUSBInterfaceInterface300 **_USBInterface;
+	IOUSBDeviceInterface **_USBDevice;
+	IOUSBInterfaceInterface **_USBInterface;
 	NSLock *_readThreadLock;
 	NSLock *_readLock;
 	BOOL _read;
@@ -77,8 +77,8 @@ extern NSString *const ECVHueKey;
 + (NSDictionary *)matchingDictionary;
 + (NSArray *)devicesWithIterator:(io_iterator_t const)iterator;
 
-+ (IOUSBDeviceInterface320 **)USBDeviceWithService:(io_service_t const)service;
-+ (IOUSBInterfaceInterface300 **)USBInterfaceWithDevice:(IOUSBDeviceInterface320 **const)device;
++ (IOUSBDeviceInterface **)USBDeviceWithService:(io_service_t const)service;
++ (IOUSBInterfaceInterface **)USBInterfaceWithDevice:(IOUSBDeviceInterface **const)device;
 
 - (id)initWithService:(io_service_t const)service;
 - (BOOL)isValid;

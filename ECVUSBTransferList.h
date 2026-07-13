@@ -29,14 +29,14 @@ typedef struct {
 @interface ECVUSBTransferList : NSObject
 {
 	@private
-	IOUSBInterfaceInterface300 **_interface;
+	IOUSBInterfaceInterface **_interface;
 	NSUInteger _numberOfTransfers;
 	NSUInteger _microframesPerTransfer;
 	NSUInteger _frameRequestSize;
 	ECVUSBTransfer *_transfers;
 }
 
-- (id)initWithInterface:(IOUSBInterfaceInterface300 **)interface numberOfTransfers:(NSUInteger)numberOfTransfers microframesPerTransfer:(NSUInteger)microframesPerTransfer frameRequestSize:(NSUInteger)frameRequestSize;
+- (id)initWithInterface:(IOUSBInterfaceInterface **)interface numberOfTransfers:(NSUInteger)numberOfTransfers microframesPerTransfer:(NSUInteger)microframesPerTransfer frameRequestSize:(NSUInteger)frameRequestSize;
 - (NSUInteger)numberOfTransfers;
 - (NSUInteger)microframesPerTransfer;
 - (NSUInteger)frameRequestSize;

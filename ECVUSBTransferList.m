@@ -28,7 +28,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #pragma mark -ECVUSBTransferList
 
-- (id)initWithInterface:(IOUSBInterfaceInterface300 **)interface numberOfTransfers:(NSUInteger)numberOfTransfers microframesPerTransfer:(NSUInteger)microframesPerTransfer frameRequestSize:(NSUInteger)frameRequestSize
+// Note: This class uses the deprecated Low-Latency Isochronous USB API family:
+// - IOUSBLowLatencyIsocFrame
+// - LowLatencyCreateBuffer / LowLatencyDestroyBuffer
+// - LowLatencyReadIsochPipeAsync (in ECVCaptureDevice)
+//
+// These APIs still work on Apple Silicon but may be removed in future macOS versions.
+// They provide the best performance for real-time video capture due to zero-copy buffer management.
+// If these APIs are removed, we'll need to migrate to standard isochronous transfers with
+// IOUSBInterfaceInterface's ReadIsochPipeAsync method.
+
+- (id)initWithInterface:(IOUSBInterfaceInterface **)interface numberOfTransfers:(NSUInteger)numberOfTransfers microframesPerTransfer:(NSUInteger)microframesPerTransfer frameRequestSize:(NSUInteger)frameRequestSize
 {
 	if((self = [super init])) {
 		_interface = interface;
