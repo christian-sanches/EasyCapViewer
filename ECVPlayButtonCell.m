@@ -22,9 +22,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVPlayButtonCell.h"
 
 // Other Sources
-#import "ECVAppKitAdditions.h"
 #import "ECVDebug.h"
-#import "ECVOpenGLAdditions.h"
 
 #define ECVPlayButtonSize 75
 
@@ -36,26 +34,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 {
 	NSBitmapImageRep *const rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL pixelsWide:ECVPlayButtonSize pixelsHigh:ECVPlayButtonSize bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bytesPerRow:ECVPlayButtonSize * 4 bitsPerPixel:0];
 	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:rep]];
-
+	
 	[[NSColor clearColor] set];
 	NSRect const b = NSMakeRect(0.0f, 0.0f, ECVPlayButtonSize, ECVPlayButtonSize);
 	NSRectFill(b);
 	[[NSColor colorWithCalibratedWhite:0.5f alpha:0.67f] set];
 	[[NSBezierPath bezierPathWithOvalInRect:NSInsetRect(b, 0.5f, 0.5f)] fill];
-
+	
 	NSShadow *const s = [[NSShadow alloc] init];
 	[s setShadowBlurRadius:4.0f];
 	[s setShadowOffset:NSMakeSize(0.0f, -2.0f)];
 	[s set];
 	[[NSColor whiteColor] set];
-
+	
 	NSBezierPath *const iconPath = [NSBezierPath bezierPath];
 	[iconPath moveToPoint:NSMakePoint(round(NSMinX(b) + NSWidth(b) * 0.75f), round(NSMidY(b)))];
 	[iconPath lineToPoint:NSMakePoint(round(NSMinX(b) + NSWidth(b) * 0.33f), round(NSMinY(b) + NSHeight(b) * 0.7f))];
 	[iconPath lineToPoint:NSMakePoint(round(NSMinX(b) + NSWidth(b) * 0.33f), round(NSMinY(b) + NSHeight(b) * 0.3f))];
 	[iconPath closePath];
 	[iconPath fill];
-
+	
 	NSImage *const image = [[NSImage alloc] initWithSize:NSMakeSize(ECVPlayButtonSize, ECVPlayButtonSize)];
 	[image addRepresentation:rep];
 	return image;
@@ -63,10 +61,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #pragma mark -ECVPlayButtonView
 
-- (id)initWithOpenGLContext:(NSOpenGLContext *)context
+- (id)init
 {
-	if((self = [super init])) {
-		_context = context;
+	if ((self = [super init])) {
+		_cachedImage = [[self class] playButtonImage];
 	}
 	return self;
 }
@@ -75,11 +73,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)setImage:(NSImage *)image
 {
-	CGLContextObj const contextObj = ECVLockContext(_context);
-	ECVGLError(glDeleteTextures(1, &_textureName));
-	NSBitmapImageRep *const rep = (NSBitmapImageRep *)[NSBitmapImageRep imageRepWithData:[image TIFFRepresentation]];;
-	if(rep) _textureName = [rep ECV_textureName];
-	ECVUnlockContext(contextObj);
+	_cachedImage = image;
 	[super setImage:image];
 }
 
@@ -87,20 +81,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)dealloc
 {
-	ECVGLError(glDeleteTextures(1, &_textureName));
+	// No OpenGL cleanup needed
 }
 
 #pragma mark -<ECVVideoViewCell>
 
 - (void)drawWithFrame:(NSRect)r inVideoView:(ECVVideoView *)v playing:(BOOL)flag
 {
-	if(flag) return;
-	ECVGLError(glEnable(GL_TEXTURE_RECTANGLE_EXT));
-	ECVGLError(glBindTexture(GL_TEXTURE_RECTANGLE_EXT, _textureName));
-	GLfloat const c = [self isHighlighted] ? 0.67f : 1.0f;
-	glColor4f(c, c, c, 1.0f);
-	ECVGLDrawTextureInRect(NSMakeRect(round(NSMidX(r) - ECVPlayButtonSize / 2.0f), round(NSMinY(r) + (NSHeight(r) - ECVPlayButtonSize) * 0.67f), ECVPlayButtonSize, ECVPlayButtonSize));
-	ECVGLError(glDisable(GL_TEXTURE_RECTANGLE_EXT));
+	if (flag) return;
+	
+	NSImage *image = [self image];
+	if (!image) image = _cachedImage;
+	if (!image) return;
+	
+	NSRect drawRect = NSMakeRect(round(NSMidX(r) - ECVPlayButtonSize / 2.0f), round(NSMinY(r) + (NSHeight(r) - ECVPlayButtonSize) * 0.67f), ECVPlayButtonSize, ECVPlayButtonSize);
+	
+	// Draw with dimming if highlighted
+	if ([self isHighlighted]) {
+		[[NSColor colorWithCalibratedWhite:0.67f alpha:1.0f] set];
+		NSRectFill(drawRect);
+	}
+	
+	[image drawInRect:drawRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0f];
 }
 
 @end

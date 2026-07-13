@@ -242,7 +242,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 			(void)ECVIOReturn(IORegistryEntryCreateCFProperties(_service, &cfDict, kCFAllocatorDefault, kNilOptions));
 			properties = (__bridge_transfer NSMutableDictionary *)cfDict;
 		}
-		_productName = [[properties objectForKey:[NSString stringWithUTF8String:kUSBProductString]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] copy];
+		_productName = [[[properties objectForKey:[NSString stringWithUTF8String:kUSBProductString]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] copy];
 		if(![_productName length]) _productName = NSLocalizedString(@"Capture Device", nil);
 
 		NSString *const mainSuiteName = [[[NSBundle bundleForClass:[self class]] infoDictionary] objectForKey:@"ECVMainSuiteName"];
@@ -278,7 +278,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 		_valid = YES;
 
 		Class const controller = NSClassFromString(@"ECVController"); // FIXME: Kind of a hack.
-		if(controller) (void)ECVIOReturn(IOServiceAddInterestNotification([[controller sharedController] notificationPort], service, kIOGeneralInterest, (IOServiceInterestCallback)ECVDeviceRemoved, self, &_deviceRemovedNotification));
+		if(controller) (void)ECVIOReturn(IOServiceAddInterestNotification([[controller sharedController] notificationPort], service, kIOGeneralInterest, (IOServiceInterestCallback)ECVDeviceRemoved, (__bridge void *)self, &_deviceRemovedNotification));
 	}
 	return self;
 }
@@ -302,7 +302,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 {
 	if(mode == _deinterlacingMode) return;
 	[_captureDocument setPaused:YES];
-	_deinterlacingMode = [mode copy];
+	_deinterlacingMode = mode;
 	[self _updateVideoStorage];
 	[_captureDocument setPaused:NO];
 	[[NSUserDefaults standardUserDefaults] setInteger:[mode deinterlacingModeType] forKey:ECVDeinterlacingModeKey];
@@ -393,7 +393,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 {
 	[_captureDocument setPaused:YES];
 	_videoStorage = nil;
-	if([self videoFormat]) _videoStorage = [[ECVVideoStorage preferredVideoStorageClass] alloc] initWithVideoFormat:[self videoFormat] deinterlacingMode:[self deinterlacingMode] pixelFormat:[self pixelFormat]];
+	if([self videoFormat]) _videoStorage = [[[ECVVideoStorage preferredVideoStorageClass] alloc] initWithVideoFormat:[self videoFormat] deinterlacingMode:[self deinterlacingMode] pixelFormat:[self pixelFormat]];
 	[_captureDocument setPaused:NO];
 }
 
@@ -489,9 +489,12 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 - (void)_parseFrame:(inout volatile IOUSBLowLatencyIsocFrame *)frame bytes:(UInt8 const *)bytes previousFrame:(IOUSBLowLatencyIsocFrame *)previous millisecondInterval:(UInt8)millisecondInterval
 {
 	if(previous && kUSBLowLatencyIsochTransferKey == frame->frStatus) {
-		UInt64 const previousTime = UnsignedWideToUInt64(AbsoluteToNanoseconds(previous->frTimeStamp));
-		Nanoseconds const nextUpdateTime = UInt64ToUnsignedWide(previousTime + millisecondInterval * ECVNanosecondsPerMillisecond);
-		mach_wait_until(UnsignedWideToUInt64(NanosecondsToAbsolute(nextUpdateTime)));
+		static mach_timebase_info_data_t timebaseInfo;
+		if(!timebaseInfo.denom) mach_timebase_info(&timebaseInfo);
+		UInt64 const previousAbsolute = ((UInt64)previous->frTimeStamp.hi << 32) | previous->frTimeStamp.lo;
+		UInt64 const previousNanos = previousAbsolute * timebaseInfo.numer / timebaseInfo.denom;
+		UInt64 const nextUpdateNanos = previousNanos + (UInt64)millisecondInterval * ECVNanosecondsPerMillisecond;
+		mach_wait_until(nextUpdateNanos * timebaseInfo.denom / timebaseInfo.numer);
 	}
 	while(kUSBLowLatencyIsochTransferKey == frame->frStatus) usleep(100); // In case we haven't slept long enough already.
 	[self writeBytes:bytes length:frame->frActCount toStorage:_videoStorage];

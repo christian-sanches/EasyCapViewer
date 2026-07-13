@@ -19,6 +19,34 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-extern void ECVGLDrawTextureInRectWithBounds(NSRect frame, NSRect bounds);
-extern void ECVGLDrawTextureInRect(NSRect frame);
-extern void ECVGLDrawBorder(NSRect inner, NSRect outer);
+
+#import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
+
+@class ECVVideoFrame;
+@class ECVDependentVideoStorage;
+
+@protocol ECVMetalRendererDelegate <NSObject>
+@optional
+- (void)metalRendererDidDrawFrame:(id)renderer;
+@end
+
+@interface ECVMetalRenderer : NSObject <MTKViewDelegate>
+
+@property (nonatomic, readonly, weak) MTKView *view;
+@property (nonatomic, weak) id<ECVMetalRendererDelegate> delegate;
+@property (nonatomic) NSSize aspectRatio;
+@property (nonatomic) NSRect cropRect;
+@property (nonatomic) MTLPixelFormat pixelFormat;
+@property (nonatomic) BOOL showDroppedFrames;
+@property (nonatomic, readonly) BOOL isPlaying;
+@property (nonatomic, strong) ECVDependentVideoStorage *videoStorage;
+
+- (instancetype)initWithView:(MTKView *)view;
+
+- (void)startRendering;
+- (void)stopRendering;
+
+- (void)pushFrame:(ECVVideoFrame *)frame;
+
+@end

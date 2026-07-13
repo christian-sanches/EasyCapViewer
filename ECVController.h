@@ -21,6 +21,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 @class ECVCaptureDocument;
 #import "ECVCaptureDevice.h"
+#import <IOKit/pwr_mgt/IOPMLib.h>
 
 @interface ECVController : NSDocumentController
 {
@@ -28,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	IONotificationPortRef _notificationPort;
 	NSMutableArray *_notifications;
 	NSUInteger _playCount;
-	NSTimer *_userActivityTimer;
+	IOPMAssertionID _sleepAssertion;
 }
 
 + (id)sharedController;

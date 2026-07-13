@@ -20,9 +20,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVAppKitAdditions.h"
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-	#import <OpenGL/gl.h>
-#endif
 
 // Other Sources
 #import "ECVDebug.h"
@@ -57,7 +54,7 @@ static void ECVGradientCallback(CGFloat colors[2][ECVNumberOfColorSpaceComponent
 	CGFunctionRef const function = CGFunctionCreate(colors, 1, domain, ECVNumberOfColorSpaceComponents, range, &callbacks);
 	CGShadingRef const shading = CGShadingCreateAxial([colorSpace CGColorSpace], NSPointToCGPoint(startPoint), NSPointToCGPoint(endPoint), function, true, true);
 	CGFunctionRelease(function);
-	CGContextDrawShading([[NSGraphicsContext currentContext] graphicsPort], shading);
+	CGContextDrawShading([[NSGraphicsContext currentContext] CGContext], shading);
 	CGShadingRelease(shading);
 	[NSGraphicsContext restoreGraphicsState];
 }
@@ -73,25 +70,6 @@ static void ECVGradientCallback(CGFloat colors[2][ECVNumberOfColorSpaceComponent
 	}
 	NSRect const b = [self bounds];
 	[self ECV_fillWithGradientFromColor:startColor atPoint:NSMakePoint(NSMinX(b), NSMinY(b)) toColor:endColor atPoint:NSMakePoint(NSMinX(b), NSMaxY(b))];
-}
-
-@end
-
-@implementation NSBitmapImageRep(ECVAppKitAdditions)
-
-- (GLuint)ECV_textureName
-{
-	NSParameterAssert([self hasAlpha]);
-	NSParameterAssert([self bitsPerSample] == CHAR_BIT);
-	NSParameterAssert([self samplesPerPixel] == 4);
-	NSParameterAssert([self bytesPerRow] == [self pixelsWide] * [self samplesPerPixel]);
-	GLuint textureName = 0;
-	ECVGLError(glGenTextures(1, &textureName));
-	ECVGLError(glEnable(GL_TEXTURE_RECTANGLE_EXT));
-	ECVGLError(glBindTexture(GL_TEXTURE_RECTANGLE_EXT, textureName));
-	ECVGLError(glTexImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, GL_RGBA, (GLint)[self pixelsWide], (GLint)[self pixelsHigh], 0, GL_RGBA, GL_UNSIGNED_BYTE, [self bitmapData]));
-	ECVGLError(glDisable(GL_TEXTURE_RECTANGLE_EXT));
-	return textureName;
 }
 
 @end

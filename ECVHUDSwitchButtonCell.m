@@ -51,12 +51,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	NSBezierPath *const markShape = [NSBezierPath bezierPath];
 	[markShape setLineWidth:2.0f];
 	switch([self state]) {
-		case NSOnState:
+		case NSControlStateValueOn:
 			[markShape moveToPoint:NSMakePoint(NSMidX(r) - 3.0f, NSMidY(r) - 3.0f)];
 			[markShape lineToPoint:NSMakePoint(NSMidX(r) + 0.0f, NSMidY(r) + 2.0f)];
 			[markShape lineToPoint:NSMakePoint(NSMidX(r) + 6.0f, NSMidY(r) - 8.0f)];
 			break;
-		case NSMixedState:
+		case NSControlStateValueMixed:
 			[markShape moveToPoint:NSMakePoint(NSMinX(r) + ECVMarginHorz + 2.0f, NSMidY(r))];
 			[markShape lineToPoint:NSMakePoint(NSMaxX(r) - ECVMarginHorz + 2.0f, NSMidY(r))];
 			break;

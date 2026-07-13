@@ -57,7 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (instancetype)init
 {
 	if((self = [super init])) {
-		_videoCodec = '@jpeg';
+		_videoCodec = 'jpeg';
 		_videoQuality = 0.5f;
 		_stretchOutput = YES;
 		_cropRect = ECVUncroppedRect;

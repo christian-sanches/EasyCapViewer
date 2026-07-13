@@ -21,6 +21,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVController.h"
 #import <IOKit/usb/IOUSBLib.h>
+#import <IOKit/pwr_mgt/IOPMLib.h>
 
 // Models
 #import "ECVCaptureDocument.h"
@@ -37,7 +38,7 @@ static NSArray *ECVUSBDevices(void) // TODO: Put this somewhere better.
 {
 	NSMutableArray *const devices = [NSMutableArray array];
 	io_iterator_t iterator = IO_OBJECT_NULL;
-	if(kIOReturnSuccess != ECVIOReturn(IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(kIOUSBDeviceClassName), &iterator))) return devices;
+	if(kIOReturnSuccess != ECVIOReturn(IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching(kIOUSBDeviceClassName), &iterator))) return devices;
 	io_service_t service = IO_OBJECT_NULL;
 	while((service = IOIteratorNext(iterator))) {
 		NSMutableDictionary *properties = nil;
@@ -102,13 +103,13 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 {
 	if(flag) {
 		if(_playCount < NSUIntegerMax) _playCount++;
-		if(1 == _playCount) _userActivityTimer = [NSTimer scheduledTimerWithTimeInterval:30.0f target:self selector:@selector(_userActivity) userInfo:nil repeats:YES];
+		if(1 == _playCount) IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleSystemSleep, kIOPMAssertionLevelOn, CFSTR("EasyCapViewer video capture"), &_sleepAssertion);
 	} else {
 		NSParameterAssert(_playCount);
 		_playCount--;
 		if(!_playCount) {
-			[_userActivityTimer invalidate];
-			_userActivityTimer = nil;
+			IOPMAssertionRelease(_sleepAssertion);
+			_sleepAssertion = 0;
 		}
 	}
 }
@@ -151,18 +152,13 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 
 #pragma mark -ECVController(Private)
 
-- (void)_userActivity
-{
-	UpdateSystemActivity(UsrActivity);
-}
-
 #pragma mark -NSObject
 
 - (id)init
 {
 	if((self = [super init])) {
 		if(!ECVSharedController) ECVSharedController = self;
-		_notificationPort = IONotificationPortCreate(kIOMasterPortDefault);
+		_notificationPort = IONotificationPortCreate(kIOMainPortDefault);
 		_notifications = [[NSMutableArray alloc] init];
 		CFRunLoopAddSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(_notificationPort), kCFRunLoopDefaultMode);
 	}
@@ -174,7 +170,6 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 	for(NSNumber *const notif in _notifications) IOObjectRelease([notif unsignedIntValue]);
 
 	IONotificationPortDestroy(_notificationPort);
-	[_userActivityTimer invalidate];
 }
 
 #pragma mark -NSObject(NSNibAwaking)

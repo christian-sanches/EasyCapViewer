@@ -94,7 +94,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 }
 - (IBAction)changeUpconvertsFromMono:(id)sender
 {
-	[[_captureDocument audioTarget] setUpconvertsFromMono:NSOnState == [sender state]];
+	[[_captureDocument audioTarget] setUpconvertsFromMono:NSControlStateValueOn == [sender state]];
 }
 - (IBAction)changeVolume:(id)sender
 {

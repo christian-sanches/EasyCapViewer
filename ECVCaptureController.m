@@ -24,6 +24,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVCaptureController.h"
 
 #import <Foundation/NSHFSFileTypes.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 // Models
 #import "ECVCaptureDocument.h"
@@ -97,7 +98,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	NSUserDefaults *const d = [NSUserDefaults standardUserDefaults];
 
 	NSSavePanel *const savePanel = [NSSavePanel savePanel];
-	[savePanel setAllowedFileTypes:[NSArray arrayWithObject:@"mov"]];
+	[savePanel setAllowedContentTypes:[NSArray arrayWithObject:[UTType typeWithFilenameExtension:@"mov"]]];
 	[savePanel setCanCreateDirectories:YES];
 	[savePanel setCanSelectHiddenExtension:YES];
 	[savePanel setPrompt:NSLocalizedString(@"Record", nil)];
@@ -117,9 +118,11 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	[self changeCodec:videoCodecPopUp];
 	[videoQualitySlider setDoubleValue:[d doubleForKey:ECVVideoQualityKey]];
 
-	NSInteger const returnCode = [savePanel runModalForDirectory:nil file:NSLocalizedString(@"untitled", nil)];
+	[savePanel setDirectoryURL:nil];
+	[savePanel setNameFieldStringValue:NSLocalizedString(@"untitled", nil)];
+	NSInteger const returnCode = [savePanel runModal];
 	[d setObject:[NSNumber numberWithDouble:[videoQualitySlider doubleValue]] forKey:ECVVideoQualityKey];
-	if(NSFileHandlingPanelOKButton != returnCode) return;
+	if(NSModalResponseOK != returnCode) return;
 
 	ECVMovieRecordingOptions *const options = [[ECVMovieRecordingOptions alloc] init];
 	[options setURL:[savePanel URL]];
@@ -164,7 +167,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	[alert setMessageText:NSLocalizedString(@"Recording to RAM can enhance performance, but can also lead to performance degradation if used improperly.", nil)];
 	[alert setInformativeText:NSLocalizedString(@"Movies recorded to RAM are limited to 2GB in size. Make sure you have enough available RAM to store the entire movie.", nil)];
 	[[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)] setKeyEquivalent:@"\r"];
-	[alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
+	[alert beginSheetModalForWindow:[sender window] completionHandler:nil];
 }
 
 #pragma mark -
@@ -208,7 +211,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 }
 - (IBAction)enterCustomCropMode:(id)sender
 {
-	ECVCropCell *const cell = [[ECVCropCell alloc] initWithOpenGLContext:[videoView openGLContext]];
+	ECVCropCell *const cell = [[ECVCropCell alloc] init];
 	[cell setDelegate:self];
 	[cell setCropRect:[self cropRect]];
 	[videoView setCropRect:ECVUncroppedRect];
@@ -224,11 +227,8 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 }
 - (IBAction)toggleSmoothing:(id)sender
 {
-	switch([videoView magFilter]) {
-		case GL_NEAREST: [videoView setMagFilter:GL_LINEAR]; break;
-		case GL_LINEAR: [videoView setMagFilter:GL_NEAREST]; break;
-	}
-	[[NSUserDefaults standardUserDefaults] setInteger:[videoView magFilter] forKey:ECVMagFilterKey];
+	// Metal handles texture filtering automatically
+	// This method is kept for compatibility but does nothing
 }
 - (IBAction)toggleShowDroppedFrames:(id)sender
 {
@@ -259,20 +259,19 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 }
 - (BOOL)isFullScreen
 {
-	return _fullScreen || !!([[self window] styleMask] & NSFullScreenWindowMask);
+	return _fullScreen || !!([[self window] styleMask] & NSWindowStyleMaskFullScreen);
 }
 - (void)setFullScreen:(BOOL const)flag
 {
 	if(flag == _fullScreen) return;
 	_fullScreen = flag;
-	NSDisableScreenUpdates();
-	NSUInteger styleMask = NSBorderlessWindowMask;
+	NSUInteger styleMask = NSWindowStyleMaskBorderless;
 	NSRect frame = NSZeroRect;
 	if(flag) {
 		NSArray *const screens = [NSScreen screens];
 		if([screens count]) frame = [[screens objectAtIndex:0] frame];
 	} else {
-		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
+		styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
 		frame = (NSRect){{100, 100}, [self outputSize]};
 	}
 	NSWindow *const oldWindow = [self window];
@@ -291,7 +290,6 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	[w makeKeyAndOrderFront:self];
 	[oldWindow close];
 	if(!flag) [w center];
-	NSEnableScreenUpdates();
 }
 - (NSSize)windowContentSize
 {
@@ -376,7 +374,6 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	[d registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSNumber numberWithUnsignedInteger:ECVAspectRatio4x3], ECVAspectRatio2Key,
 		[NSNumber numberWithBool:YES], ECVVsyncKey,
-		[NSNumber numberWithInteger:GL_LINEAR], ECVMagFilterKey,
 		[NSNumber numberWithBool:NO], ECVShowDroppedFramesKey,
 		NSFileTypeForHFSTypeCode("jpeg"), ECVVideoCodecKey,
 		[NSNumber numberWithDouble:0.5f], ECVVideoQualityKey,
@@ -399,9 +396,8 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 
 	[videoView setVsync:[d boolForKey:ECVVsyncKey]];
 	[videoView setShowDroppedFrames:[d boolForKey:ECVShowDroppedFramesKey]];
-	[videoView setMagFilter:(GLint)[d integerForKey:ECVMagFilterKey]];
-
-	_playButtonCell = [[ECVPlayButtonCell alloc] initWithOpenGLContext:[videoView openGLContext]];
+	
+	_playButtonCell = [[ECVPlayButtonCell alloc] init];
 	[_playButtonCell setImage:[ECVPlayButtonCell playButtonImage]];
 	[_playButtonCell setTarget:self];
 	[_playButtonCell setAction:@selector(togglePlaying:)];
@@ -466,7 +462,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 
 	if(@selector(toggleFloatOnTop:) == action) [anItem setTitle:[[self window] level] == NSFloatingWindowLevel ? NSLocalizedString(@"Turn Floating Off", nil) : NSLocalizedString(@"Turn Floating On", nil)];
 	if(@selector(toggleVsync:) == action) [anItem setTitle:[videoView vsync] ? NSLocalizedString(@"Turn V-Sync Off", nil) : NSLocalizedString(@"Turn V-Sync On", nil)];
-	if(@selector(toggleSmoothing:) == action) [anItem setTitle:GL_LINEAR == [videoView magFilter] ? NSLocalizedString(@"Turn Smoothing Off", nil) : NSLocalizedString(@"Turn Smoothing On", nil)];
+	if(@selector(toggleSmoothing:) == action) [anItem setTitle:NSLocalizedString(@"Turn Smoothing On", nil)];
 	if(@selector(toggleShowDroppedFrames:) == action) [anItem setTitle:[videoView showDroppedFrames] ? NSLocalizedString(@"Hide Dropped Frames", nil) : NSLocalizedString(@"Show Dropped Frames", nil)];
 
 	if([self isFullScreen]) {
@@ -502,14 +498,14 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	NSString *const characters = [anEvent charactersIgnoringModifiers];
 	if(![characters length]) return NO;
 	unichar const character = [characters characterAtIndex:0];
-	NSUInteger const modifiers = [anEvent modifierFlags] & (NSCommandKeyMask | NSShiftKeyMask | NSAlternateKeyMask | NSControlKeyMask);
+	NSUInteger const modifiers = [anEvent modifierFlags] & (NSEventModifierFlagCommand | NSEventModifierFlagShift | NSEventModifierFlagOption | NSEventModifierFlagControl);
 	switch(character) {
 		case ' ':
 			[self togglePlaying:self];
 			return YES;
 	}
 	ECVAudioTarget *const audioTarget = [[self captureDocument] audioTarget];
-	if(NSCommandKeyMask == modifiers) switch(character) {
+	if(NSEventModifierFlagCommand == modifiers) switch(character) {
 		case NSUpArrowFunctionKey:
 			[audioTarget setVolume:[audioTarget volume] + 0.05f];
 			return YES;
@@ -517,7 +513,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 			[audioTarget setVolume:[audioTarget volume] - 0.05f];
 			return YES;
 	}
-	if((NSCommandKeyMask | NSAlternateKeyMask) == modifiers) switch(character) {
+	if((NSEventModifierFlagCommand | NSEventModifierFlagOption) == modifiers) switch(character) {
 		case NSUpArrowFunctionKey:
 		case NSDownArrowFunctionKey:
 			[audioTarget setMuted:![audioTarget isMuted]];

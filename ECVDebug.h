@@ -35,7 +35,6 @@ void ECVLog(ECVErrorLevel level, NSString *format, ...) NS_FORMAT_FUNCTION(2, 3)
 extern NSString *ECVOSStatusToString(OSStatus error);
 extern NSString *ECVIOKitErrorToString(IOReturn error);
 extern NSString *ECVCVReturnToString(CVReturn error);
-extern NSString *ECVOpenGLErrorToString(GLenum error);
 extern NSString *ECVErrnoToString(int error);
 
 extern NSString *ECVAudioFormatIDToString(UInt32 const formatID);
@@ -60,12 +59,6 @@ extern NSString *ECVAudioStreamBasicDescriptionToString(AudioStreamBasicDescript
 	CVReturn const __e = (x);\
 	if(kCVReturnSuccess == __e) break;\
 	ECVLog(ECVError, @"%s:%d %s: %@", __PRETTY_FUNCTION__, __LINE__, #x, ECVCVReturnToString(__e));\
-} while(NO)
-
-#define ECVGLError(x) do {\
-	(x);\
-	GLenum __e;\
-	while((__e = glGetError()) != GL_NO_ERROR) ECVLog(ECVError, @"%s:%d %s: %@", __PRETTY_FUNCTION__, __LINE__, #x, ECVOpenGLErrorToString(__e));\
 } while(NO)
 
 #define ECVErrno(x) do {\

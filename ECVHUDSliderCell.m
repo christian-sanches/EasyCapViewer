@@ -52,7 +52,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	[s setShadowBlurRadius:2.0f];
 	[s set];
 
-	CGContextRef const context = [[NSGraphicsContext currentContext] graphicsPort];
+	CGContextRef const context = [[NSGraphicsContext currentContext] CGContext];
 	CGContextBeginTransparencyLayerWithRect(context, NSRectToCGRect(knobRect), NULL);
 	BOOL const e = [self isEnabled];
 	NSBezierPath *const p = [NSBezierPath bezierPathWithOvalInRect:NSInsetRect(knobRect, 2.5f, 2.5f)];

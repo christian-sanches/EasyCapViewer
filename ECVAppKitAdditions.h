@@ -26,26 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 @end
 
-@interface NSBitmapImageRep(ECVAppKitAdditions)
-
-- (GLuint)ECV_textureName;
-
-@end
-
 @interface NSWindowController(ECVAppKitAdditions)
 
 - (IBAction)ECV_toggleWindow:(id)sender;
 
 @end
-
-static CGLContextObj ECVLockContext(NSOpenGLContext *context)
-{
-	CGLContextObj const contextObj = [context CGLContextObj];
-	[context makeCurrentContext];
-	CGLLockContext(contextObj);
-	return contextObj;
-}
-NS_INLINE void ECVUnlockContext(CGLContextObj contextObj)
-{
-	CGLUnlockContext(contextObj);
-}

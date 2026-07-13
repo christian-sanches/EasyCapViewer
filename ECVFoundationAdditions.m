@@ -21,12 +21,18 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVFoundationAdditions.h"
 #import <objc/runtime.h>
+#import <mach/mach_time.h>
 
 @implementation NSDate(ECVFoundationAdditions)
 
 + (NSTimeInterval)ECV_timeIntervalSinceReferenceDate
 {
-	return (NSTimeInterval)UnsignedWideToUInt64(AbsoluteToNanoseconds(UpTime())) * 1e-9f;
+	static mach_timebase_info_data_t timebase = {0, 0};
+	if (timebase.denom == 0) {
+		mach_timebase_info(&timebase);
+	}
+	uint64_t nanos = mach_absolute_time() * timebase.numer / timebase.denom;
+	return (NSTimeInterval)nanos * 1e-9;
 }
 
 @end

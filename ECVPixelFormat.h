@@ -21,8 +21,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVDebug.h"
 
-#import <OpenGL/gl.h>
-
 /* Equivalent formats (preferred constant listed first):
 - k2vuyPixelFormat, kCVPixelFormatType_422YpCbCr8, k422YpCbCr8CodecType
 	- kUYVY422PixelFormat seems to be the same but Core Video doesn't like it.
@@ -35,7 +33,7 @@ static size_t ECVPixelFormatBytesPerPixel(OSType const t)
 		case k2vuyPixelFormat: return 2;
 		case kYVYU422PixelFormat: return 2;
 	}
-	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", (__bridge_transfer NSString *)UTCreateStringForOSType(t), (unsigned long)t);
+	NSLog(@"Unknown pixel format '%d'", (int)t);
 	return 0;
 }
 
@@ -45,31 +43,17 @@ static uint64_t ECVPixelFormatBlackPattern(OSType const t)
 		case k2vuyPixelFormat: return CFSwapInt64HostToBig(0x8010801080108010ULL);
 		case kYVYU422PixelFormat: return CFSwapInt64HostToBig(0x1080108010801080ULL);
 	}
-	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", (__bridge_transfer NSString *)UTCreateStringForOSType(t), (unsigned long)t);
+	NSLog(@"Unknown pixel format '%d'", (int)t);
 	return 0;
 }
 
-static GLenum ECVPixelFormatToGLFormat(OSType const t)
+// Metal pixel format helpers
+static BOOL ECVPixelFormatIsUYVY(OSType const t)
 {
-	switch(t) {
-		case k2vuyPixelFormat: return GL_YCBCR_422_APPLE;
-		case kYVYU422PixelFormat: return GL_YCBCR_422_APPLE;
-	}
-	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", (__bridge_transfer NSString *)UTCreateStringForOSType(t), (unsigned long)t);
-	return 0;
+	return t == k2vuyPixelFormat;
 }
 
-static GLenum ECVPixelFormatToGLType(OSType const t)
+static BOOL ECVPixelFormatIsYVYU(OSType const t)
 {
-	switch(t) {
-#if __LITTLE_ENDIAN__
-		case k2vuyPixelFormat: return GL_UNSIGNED_SHORT_8_8_APPLE;
-		case kYVYU422PixelFormat: return GL_UNSIGNED_SHORT_8_8_REV_APPLE;
-#else
-		case k2vuyPixelFormat: return GL_UNSIGNED_SHORT_8_8_REV_APPLE;
-		case kYVYU422PixelFormat: return GL_UNSIGNED_SHORT_8_8_APPLE;
-#endif
-	}
-	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", (__bridge_transfer NSString *)UTCreateStringForOSType(t), (unsigned long)t);
-	return 0;
+	return t == kYVYU422PixelFormat;
 }

@@ -60,7 +60,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioHardwarePropertyDevices,
 		.mScope = kAudioObjectPropertyScopeGlobal,
-		.mElement = kAudioObjectPropertyElementMaster,
+		.mElement = kAudioObjectPropertyElementMain,
 	};
 	ECVOSStatus(AudioObjectAddPropertyListener(kAudioObjectSystemObject, &addr, (AudioObjectPropertyListenerProc)ECVAudioObjectPropertyListenerProc, (__bridge void *)self));
 }
@@ -79,7 +79,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioHardwarePropertyDevices,
 		.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-		.mElement = kAudioObjectPropertyElementMaster,
+		.mElement = kAudioObjectPropertyElementMain,
 	};
 	ECVOSStatus(AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &addr, 0, NULL, &size));
 	if(!size) return devices;
@@ -101,7 +101,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = [self isInput] ? kAudioHardwarePropertyDefaultInputDevice : kAudioHardwarePropertyDefaultOutputDevice,
 		.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-		.mElement = kAudioObjectPropertyElementMaster,
+		.mElement = kAudioObjectPropertyElementMain,
 	};
 	ECVOSStatus(AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr, 0, NULL, &deviceIDSize, &deviceID));
 	return [[self alloc] initWithDeviceID:deviceID];
@@ -120,7 +120,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioHardwarePropertyDeviceForUID,
 		.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-		.mElement = kAudioObjectPropertyElementMaster,
+		.mElement = kAudioObjectPropertyElementMain,
 	};
 	ECVOSStatus(AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr, 0, NULL, &translationSize, &deviceUIDTranslation));
 	return [[self alloc] initWithDeviceID:deviceID];
@@ -153,7 +153,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 		AudioObjectPropertyAddress const sampleRateAddr = {
 			.mSelector = kAudioDevicePropertyNominalSampleRate,
 			.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-			.mElement = kAudioObjectPropertyElementMaster,
+			.mElement = kAudioObjectPropertyElementMain,
 		};
 		ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &sampleRateAddr, 0, NULL, &rateSize, &rate));
 
@@ -162,7 +162,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 		AudioObjectPropertyAddress const bufferFrameSizeRangeAddr = {
 			.mSelector = kAudioDevicePropertyBufferFrameSizeRange,
 			.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-			.mElement = kAudioObjectPropertyElementMaster,
+			.mElement = kAudioObjectPropertyElementMain,
 		};
 		ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &bufferFrameSizeRangeAddr, 0, NULL, &rangeSize, &rateRange));
 
@@ -170,7 +170,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 		AudioObjectPropertyAddress const bufferFrameSizeAddr = {
 			.mSelector = kAudioDevicePropertyBufferFrameSize,
 			.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-			.mElement = kAudioObjectPropertyElementMaster,
+			.mElement = kAudioObjectPropertyElementMain,
 		};
 		ECVOSStatus(AudioObjectSetPropertyData([self deviceID], &bufferFrameSizeAddr, 0, NULL, sizeof(size), &size));
 
@@ -206,7 +206,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioDevicePropertyDeviceUID,
 		.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-		.mElement = kAudioObjectPropertyElementMaster,
+		.mElement = kAudioObjectPropertyElementMain,
 	};
 	ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &addr, 0, NULL, &UIDSize, &uid));
 	return (__bridge_transfer NSString *)uid;
@@ -222,7 +222,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioDevicePropertyDeviceNameCFString,
 		.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-		.mElement = kAudioObjectPropertyElementMaster,
+		.mElement = kAudioObjectPropertyElementMain,
 	};
 	ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &addr, 0, NULL, &nameSize, &name));
 	return (__bridge_transfer NSString *)name;
@@ -238,7 +238,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioDevicePropertyStreams,
 		.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
-		.mElement = kAudioObjectPropertyElementMaster,
+		.mElement = kAudioObjectPropertyElementMain,
 	};
 	ECVOSStatus(AudioObjectGetPropertyDataSize([self deviceID], &addr, 0, NULL, &streamIDsSize));
 	AudioStreamID *const streamIDs = malloc(streamIDsSize);
@@ -358,7 +358,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioStreamPropertyVirtualFormat,
 		.mScope = kAudioObjectPropertyScopeGlobal,
-		.mElement = kAudioObjectPropertyElementMaster,
+		.mElement = kAudioObjectPropertyElementMain,
 	};
 	ECVOSStatus(AudioObjectGetPropertyData([self streamID], &addr, 0, NULL, &descriptionSize, &description));
 	return description;

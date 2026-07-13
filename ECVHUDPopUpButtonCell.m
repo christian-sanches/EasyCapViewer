@@ -60,7 +60,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	[s setShadowBlurRadius:2.0f];
 	[s set];
 
-	CGContextRef const context = [[NSGraphicsContext currentContext] graphicsPort];
+	CGContextRef const context = [[NSGraphicsContext currentContext] CGContext];
 	CGContextBeginTransparencyLayerWithRect(context, NSRectToCGRect(r), nil);
 
 	BOOL const e = [self isEnabled];

@@ -75,7 +75,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)sendEvent:(NSEvent *)anEvent
 {
-	if([anEvent type] == NSMouseMoved) [self _hideCursorAfterDelay];
+	if([anEvent type] == NSEventTypeMouseMoved) [self _hideCursorAfterDelay];
 	[super sendEvent:anEvent];
 }
 

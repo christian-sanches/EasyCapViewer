@@ -28,9 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import <mach/mach_port.h>
 #import <Foundation/NSDebug.h>
 #import <string.h>
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-	#import <OpenGL/gl.h>
-#endif
 
 // Controllers
 #import "ECVErrorLogController.h"
@@ -108,7 +105,7 @@ NSString *ECVOSStatusToString(OSStatus error)
 		ERROR_CASE(kAudioDevicePermissionsError)
 #endif
 	}
-	return [NSString stringWithFormat:@"Unknown error %ld (%@)", (long)error, (__bridge_transfer NSString *)UTCreateStringForOSType((OSType)error)];
+	return [NSString stringWithFormat:@"Unknown error %ld (0x%08x)", (long)error, (unsigned int)error];
 }
 NSString *ECVIOKitErrorToString(IOReturn error)
 {
@@ -242,19 +239,6 @@ NSString *ECVCVReturnToString(CVReturn error)
 		ERROR_CASE(kCVReturnInvalidPoolAttributes)
 	}
 	return [NSString stringWithFormat:@"Unknown CVReturn %d", error];
-}
-NSString *ECVOpenGLErrorToString(GLenum error)
-{
-	switch(error) {
-		ERROR_CASE(GL_NO_ERROR)
-		ERROR_CASE(GL_INVALID_ENUM)
-		ERROR_CASE(GL_INVALID_VALUE)
-		ERROR_CASE(GL_INVALID_OPERATION)
-		ERROR_CASE(GL_STACK_OVERFLOW)
-		ERROR_CASE(GL_STACK_UNDERFLOW)
-		ERROR_CASE(GL_OUT_OF_MEMORY)
-	}
-	return [NSString stringWithFormat:@"Unknown OpenGL error 0x%03x", error];
 }
 NSString *ECVErrnoToString(int error)
 {

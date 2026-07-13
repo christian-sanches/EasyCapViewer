@@ -22,9 +22,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVCropCell.h"
 
 // Other Sources
-#import "ECVAppKitAdditions.h"
 #import "ECVDebug.h"
-#import "ECVOpenGLAdditions.h"
 
 #define ECVHandleSize 10
 #define ECVMinimumCropSize 0.05f
@@ -51,30 +49,26 @@ static ECVRectEdgeMask const ECVHandlePositions[] = {
 
 #pragma mark -ECVCropCell
 
-- (id)initWithOpenGLContext:(NSOpenGLContext *)context
+- (id)init
 {
-	if((self = [super init])) {
+	if ((self = [super init])) {
 		_cropRect = ECVUncroppedRect;
-
+		
 		_handleRep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL pixelsWide:ECVHandleSize pixelsHigh:ECVHandleSize bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bytesPerRow:ECVHandleSize * 4 bitsPerPixel:0];
 		NSGraphicsContext *const graphicsContext = [NSGraphicsContext graphicsContextWithBitmapImageRep:_handleRep];
 		[NSGraphicsContext setCurrentContext:graphicsContext];
-
+		
 		NSRect const r = NSInsetRect(NSMakeRect(0.0f, 0.0f, ECVHandleSize, ECVHandleSize), 1.0f, 1.0f);
 		NSBezierPath *const p = [NSBezierPath bezierPathWithOvalInRect:r];
 		[p setLineWidth:2.0f];
-		[p ECV_fillWithGradientFromColor:[NSColor colorWithCalibratedWhite:0.7f alpha:1.0f] atPoint:ECVRectPoint(r, ECVMinXMaxYCorner) toColor:[NSColor colorWithCalibratedWhite:0.2f alpha:1.0f] atPoint:ECVRectPoint(r, ECVMinXMinYCorner)];
 		[[NSColor whiteColor] set];
 		[p stroke];
-
+		
 		[graphicsContext flushGraphics];
-
-		CGLContextObj const contextObj = ECVLockContext(context);
-		_handleTextureName = [_handleRep ECV_textureName];
-		ECVUnlockContext(contextObj);
 	}
 	return self;
 }
+
 @synthesize delegate;
 - (NSRect)cropRect
 {
@@ -145,14 +139,14 @@ static ECVRectEdgeMask const ECVHandlePositions[] = {
 
 	[[aView window] disableCursorRects];
 	NSEvent *latestEvent = nil;
-	while((latestEvent = [[aView window] nextEventMatchingMask:NSLeftMouseUpMask | NSLeftMouseDraggedMask untilDate:[NSDate distantFuture] inMode:NSEventTrackingRunLoopMode dequeue:YES]) && [latestEvent type] != NSLeftMouseUp) {
+	while((latestEvent = [[aView window] nextEventMatchingMask:NSEventMaskLeftMouseUp | NSEventMaskLeftMouseDragged untilDate:[NSDate distantFuture] inMode:NSEventTrackingRunLoopMode dequeue:YES]) && [latestEvent type] != NSEventTypeLeftMouseUp) {
 		NSPoint const latestLocation = [aView convertPoint:[latestEvent locationInWindow] fromView:nil];
 		NSRect const maskRect = [self maskRectWithCropRect:_cropRect frame:aRect];
 		NSRect const r = ECVRectByScalingEdgeToPoint(maskRect, handle, NSMakePoint(latestLocation.x + handleOffset.width, latestLocation.y + handleOffset.height), NSMakeSize(ECVHandleSize * 2.0f, ECVHandleSize * 2.0f), aRect);
 		_tempCropRect = ECVScaledRect(NSOffsetRect(r, -NSMinX(aRect), -NSMinY(aRect)), NSMakeSize(1.0f / NSWidth(aRect), 1.0f / NSHeight(aRect)));
 		[aView setNeedsDisplay:YES];
 	}
-	[[aView window] discardEventsMatchingMask:NSAnyEventMask beforeEvent:latestEvent];
+	[[aView window] discardEventsMatchingMask:NSEventMaskAny beforeEvent:latestEvent];
 	[[aView window] invalidateCursorRectsForView:aView];
 	[[aView window] enableCursorRects];
 	_cropRect = _tempCropRect;
@@ -169,7 +163,7 @@ static ECVRectEdgeMask const ECVHandlePositions[] = {
 
 - (void)dealloc
 {
-	ECVGLError(glDeleteTextures(1, &_handleTextureName));
+	// No OpenGL cleanup needed
 }
 
 #pragma mark -<ECVVideoViewCell>
@@ -177,17 +171,28 @@ static ECVRectEdgeMask const ECVHandlePositions[] = {
 - (void)drawWithFrame:(NSRect)aRect inVideoView:(ECVVideoView *)view playing:(BOOL)flag
 {
 	NSRect const maskRect = [self maskRectWithCropRect:_tempCropRect frame:aRect];
-
-	glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
-	ECVGLDrawBorder(maskRect, aRect);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	ECVGLDrawBorder(maskRect, NSInsetRect(maskRect, -1.0f, -1.0f));
-
-	ECVGLError(glEnable(GL_TEXTURE_RECTANGLE_EXT));
-	ECVGLError(glBindTexture(GL_TEXTURE_RECTANGLE_EXT, _handleTextureName));
+	
+	// Draw semi-transparent black border
+	[[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f] set];
+	NSRect innerRect = NSInsetRect(maskRect, 1.0f, 1.0f);
+	NSBezierPath *borderPath = [NSBezierPath bezierPath];
+	[borderPath appendBezierPathWithRect:aRect];
+	[borderPath appendBezierPathWithRect:innerRect];
+	[borderPath setWindingRule:NSWindingRuleEvenOdd];
+	[borderPath fill];
+	
+	// Draw white border line
+	[[NSColor whiteColor] set];
+	NSBezierPath *whiteBorder = [NSBezierPath bezierPathWithRect:NSInsetRect(maskRect, -1.0f, -1.0f)];
+	[whiteBorder setLineWidth:1.0f];
+	[whiteBorder stroke];
+	
+	// Draw handles
 	NSUInteger i = 0;
-	for(; i < numberof(ECVHandlePositions); i++) ECVGLDrawTextureInRect([self frameForHandlePosition:ECVHandlePositions[i] maskRect:maskRect inFrame:aRect]);
-	ECVGLError(glDisable(GL_TEXTURE_RECTANGLE_EXT));
+	for (; i < numberof(ECVHandlePositions); i++) {
+		NSRect handleRect = [self frameForHandlePosition:ECVHandlePositions[i] maskRect:maskRect inFrame:aRect];
+		[_handleRep drawInRect:handleRect];
+	}
 }
 
 @end

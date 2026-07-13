@@ -25,12 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 @interface ECVPlayButtonCell : NSButtonCell <ECVVideoViewCell>
 {
 	@private
-	NSOpenGLContext *_context;
-	GLuint _textureName;
+	NSImage *_cachedImage;
 }
 
 + (NSImage *)playButtonImage;
 
-- (id)initWithOpenGLContext:(NSOpenGLContext *)context;
+- (id)init;
 
 @end

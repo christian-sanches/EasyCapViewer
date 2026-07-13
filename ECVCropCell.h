@@ -34,10 +34,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	NSRect _cropRect;
 	NSRect _tempCropRect;
 	NSBitmapImageRep *_handleRep;
-	GLuint _handleTextureName;
 }
 
-- (id)initWithOpenGLContext:(NSOpenGLContext *)context;
+- (id)init;
 @property(weak) NSObject<ECVCropCellDelegate> *delegate;
 @property(nonatomic, assign) NSRect cropRect;
 

@@ -23,6 +23,10 @@
 /* Begin PBXBuildFile section */
 		AA0000021E11A00000000001 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000001 /* Metal.framework */; };
 		AA0000021E11A00000000002 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000002 /* MetalKit.framework */; };
+		AA0000021E11A00000000003 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000003 /* CoreMedia.framework */; };
+		AA0000021E11A00000000004 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000004 /* UniformTypeIdentifiers.framework */; };
+		AA0000061E11A00000000004 /* ECVMetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0000041E11A00000000002 /* ECVMetalRenderer.m */; };
+		AA0000071E11A00000000005 /* ECVMetalShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = AA0000051E11A00000000003 /* ECVMetalShaders.metal */; };
 
 		0E053FF60FDF1FFD003688BB /* MPLWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E053FF40FDF1FFD003688BB /* MPLWindow.m */; };
 		0E0C489D10B91DC2008731F2 /* ECVMovieRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0C489C10B91DC2008731F2 /* ECVMovieRecorder.m */; };
@@ -44,7 +48,6 @@
 		0E7FFC4510899D4B000C8217 /* ECVDividerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7FFC4410899D4B000C8217 /* ECVDividerView.m */; };
 		0E7FFD1B1089CEE0000C8217 /* ECVPlayButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7FFD1A1089CEE0000C8217 /* ECVPlayButtonCell.m */; };
 		0E7FFD1E1089D60A000C8217 /* ECVCropCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7FFD1D1089D60A000C8217 /* ECVCropCell.m */; };
-		0E7FFD211089D651000C8217 /* ECVOpenGLAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7FFD201089D651000C8217 /* ECVOpenGLAdditions.m */; };
 		0E89833F10C2D740006BA9C6 /* ECVReadWriteLock.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E89833E10C2D740006BA9C6 /* ECVReadWriteLock.m */; };
 		0E8CE0CC107BCE12004F05A7 /* ECVHUDPopUpButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8CE0CB107BCE12004F05A7 /* ECVHUDPopUpButtonCell.m */; };
 		0E8CE155107BE51C004F05A7 /* ECVAppKitAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8CE154107BE51C004F05A7 /* ECVAppKitAdditions.m */; };
@@ -148,6 +151,8 @@
 		0E053FF50FDF1FFD003688BB /* MPLWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPLWindow.h; sourceTree = "<group>"; };
 		AA0000011E11A00000000001 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		AA0000011E11A00000000002 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		AA0000011E11A00000000003 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		AA0000011E11A00000000004 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
 		0E0C489B10B91DC2008731F2 /* ECVMovieRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVMovieRecorder.h; sourceTree = "<group>"; };
 		0E0C489C10B91DC2008731F2 /* ECVMovieRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVMovieRecorder.m; sourceTree = "<group>"; };
 		0E16F6AC10AE92C600730A18 /* SAA711XChip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAA711XChip.h; sourceTree = "<group>"; };
@@ -177,8 +182,6 @@
 		0E7FFD1A1089CEE0000C8217 /* ECVPlayButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVPlayButtonCell.m; sourceTree = "<group>"; };
 		0E7FFD1C1089D60A000C8217 /* ECVCropCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVCropCell.h; sourceTree = "<group>"; };
 		0E7FFD1D1089D60A000C8217 /* ECVCropCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVCropCell.m; sourceTree = "<group>"; };
-		0E7FFD1F1089D651000C8217 /* ECVOpenGLAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVOpenGLAdditions.h; sourceTree = "<group>"; };
-		0E7FFD201089D651000C8217 /* ECVOpenGLAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVOpenGLAdditions.m; sourceTree = "<group>"; };
 		0E89833D10C2D740006BA9C6 /* ECVReadWriteLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVReadWriteLock.h; sourceTree = "<group>"; };
 		0E89833E10C2D740006BA9C6 /* ECVReadWriteLock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVReadWriteLock.m; sourceTree = "<group>"; };
 		0E8CE0CA107BCE12004F05A7 /* ECVHUDPopUpButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVHUDPopUpButtonCell.h; sourceTree = "<group>"; };
@@ -271,6 +274,9 @@
 		B5F09996131CE0550066FEB5 /* ECVRational.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVRational.h; sourceTree = "<group>"; };
 		B5F09997131CE0550066FEB5 /* ECVRational.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVRational.m; sourceTree = "<group>"; };
 		B5F3C19B15277374005232AA /* ECVPixelFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVPixelFormat.h; sourceTree = "<group>"; };
+		AA0000031E11A00000000001 /* ECVMetalRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVMetalRenderer.h; sourceTree = "<group>"; };
+		AA0000041E11A00000000002 /* ECVMetalRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVMetalRenderer.m; sourceTree = "<group>"; };
+		AA0000051E11A00000000003 /* ECVMetalShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = ECVMetalShaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -280,6 +286,8 @@
 			files = (
 				AA0000021E11A00000000001 /* Metal.framework in Frameworks */,
 				AA0000021E11A00000000002 /* MetalKit.framework in Frameworks */,
+				AA0000021E11A00000000003 /* CoreMedia.framework in Frameworks */,
+				AA0000021E11A00000000004 /* UniformTypeIdentifiers.framework in Frameworks */,
 				1CCD1F6B1A66C8C00000AB56 /* Accelerate.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0E78C9F30FC8FA1000E9C148 /* IOKit.framework in Frameworks */,
@@ -386,6 +394,8 @@
 			children = (
 				AA0000011E11A00000000001 /* Metal.framework */,
 				AA0000011E11A00000000002 /* MetalKit.framework */,
+				AA0000011E11A00000000003 /* CoreMedia.framework */,
+				AA0000011E11A00000000004 /* UniformTypeIdentifiers.framework */,
 				0EC7D4A31019A29800CFBDFF /* AudioToolbox.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				0EC7D341101903F200CFBDFF /* CoreAudio.framework */,
@@ -446,8 +456,9 @@
 				0E9F9B2110F6764500935C48 /* ECVFoundationAdditions.m */,
 				0E9F9B1B10F6753C00935C48 /* ECVLocalizing.h */,
 				0E9F9B1C10F6753C00935C48 /* ECVLocalizing.m */,
-				0E7FFD1F1089D651000C8217 /* ECVOpenGLAdditions.h */,
-				0E7FFD201089D651000C8217 /* ECVOpenGLAdditions.m */,
+				AA0000031E11A00000000001 /* ECVMetalRenderer.h */,
+				AA0000041E11A00000000002 /* ECVMetalRenderer.m */,
+				AA0000051E11A00000000003 /* ECVMetalShaders.metal */,
 				B5F3C19B15277374005232AA /* ECVPixelFormat.h */,
 				B5F09996131CE0550066FEB5 /* ECVRational.h */,
 				B5F09997131CE0550066FEB5 /* ECVRational.m */,
@@ -662,7 +673,8 @@
 				0E7FFC4510899D4B000C8217 /* ECVDividerView.m in Sources */,
 				0E7FFD1B1089CEE0000C8217 /* ECVPlayButtonCell.m in Sources */,
 				0E7FFD1E1089D60A000C8217 /* ECVCropCell.m in Sources */,
-				0E7FFD211089D651000C8217 /* ECVOpenGLAdditions.m in Sources */,
+				AA0000061E11A00000000004 /* ECVMetalRenderer.m in Sources */,
+				AA0000071E11A00000000005 /* ECVMetalShaders.metal in Sources */,
 				0E984D6B108C65D100CB469C /* ECVErrorLogController.m in Sources */,
 				0EC8BF901090A3F400ED9BB0 /* ECVRectEdgeMask.m in Sources */,
 				0E16F6AE10AE92C600730A18 /* SAA711XChip.m in Sources */,
@@ -812,7 +824,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = "EasyCapViewer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${ECV_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = EasyCapViewer;
 			};
@@ -844,7 +856,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = "EasyCapViewer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${ECV_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = EasyCapViewer;
 			};
