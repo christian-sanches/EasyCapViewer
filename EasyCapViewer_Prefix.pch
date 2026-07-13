@@ -21,6 +21,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
+#import <IOKit/IOKitLib.h>
+#import <CoreVideo/CoreVideo.h>
 
 NS_INLINE BOOL BTEqualObjects(id<NSObject> a, id<NSObject> b)
 {
@@ -71,20 +73,6 @@ NS_INLINE NSRect ECVScaledRect(NSRect r, NSSize s)
 {
 	return NSMakeRect(NSMinX(r) * s.width, NSMinY(r) * s.height, NSWidth(r) * s.width, NSHeight(r) * s.height);
 }
-
-#if !defined(MAC_OS_X_VERSION_10_7)
-#define MAC_OS_X_VERSION_10_7 1070
-#endif
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_7
-enum {
-	NSFullScreenWindowMask = 1 << 14,
-};
-enum {
-	NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7,
-	NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8,
-};
-#endif
 
 #endif // __OBJC__
 

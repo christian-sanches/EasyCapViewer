@@ -134,8 +134,8 @@ Delete the entire QuickTime component target from the project:
 ## 1.7 Verification
 
 After Phase 1, the project should:
-- [ ] Open in latest Xcode without errors
-- [ ] Have correct deployment target (13.0+)
-- [ ] Link only modern frameworks
-- [ ] Have the ECVComponent target removed
+- [x] Open in latest Xcode without errors
+- [x] Have correct deployment target (13.0+)
+- [x] Link only modern frameworks
+- [x] Have the ECVComponent target removed
 - [ ] Build will fail (expected — API changes come in later phases), but project structure should be valid

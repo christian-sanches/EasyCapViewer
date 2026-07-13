@@ -14,7 +14,6 @@
 			);
 			dependencies = (
 				0E982B621134665F0062A2C8 /* PBXTargetDependency */,
-				0E982B64113466620062A2C8 /* PBXTargetDependency */,
 			);
 			name = Everything;
 			productName = Everything;
@@ -22,31 +21,25 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		AA0000021E11A00000000001 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000001 /* Metal.framework */; };
+		AA0000021E11A00000000002 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000002 /* MetalKit.framework */; };
+
 		0E053FF60FDF1FFD003688BB /* MPLWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E053FF40FDF1FFD003688BB /* MPLWindow.m */; };
 		0E0C489D10B91DC2008731F2 /* ECVMovieRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0C489C10B91DC2008731F2 /* ECVMovieRecorder.m */; };
 		0E16F6AE10AE92C600730A18 /* SAA711XChip.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E16F6AD10AE92C600730A18 /* SAA711XChip.m */; };
 		0E26A999100314E6002FF95A /* ECVConfigController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E26A998100314E6002FF95A /* ECVConfigController.m */; };
 		0E2C230B10AF91C6001B40EF /* ECVVideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E2C230A10AF91C6001B40EF /* ECVVideoFrame.m */; };
 		0E2C232810AF96A6001B40EF /* ECVVideoStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E2C232710AF96A6001B40EF /* ECVVideoStorage.m */; };
-		0E3B7BF21108CC2C003A8A39 /* ECVComponent.r in Rez */ = {isa = PBXBuildFile; fileRef = 0E3B7BF11108CC2C003A8A39 /* ECVComponent.r */; };
+
 		0E3B7F8B11091253003A8A39 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B3310F679A400935C48 /* InfoPlist.strings */; };
-		0E4D75C511044A7A00FE3DDC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		0E4D75E911044A8400FE3DDC /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EE548391071019600F003AF /* QuickTime.framework */; };
-		0E4D76A311044A9100FE3DDC /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E9F5E621085D06F00375752 /* Carbon.framework */; };
-		0E4D76CC110454E100FE3DDC /* ECVComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E4D76CA110454C000FE3DDC /* ECVComponent.m */; };
-		0E4D76D711046C2500FE3DDC /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E78C9F20FC8FA1000E9C148 /* IOKit.framework */; };
-		0E4D778711046F9E00FE3DDC /* EasyCapViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E4D778611046F9E00FE3DDC /* EasyCapViewer.m */; };
-		0E4D77FF11062C6200FE3DDC /* ECVSTK1160Device.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CAAD0FC91B6500E9C148 /* ECVSTK1160Device.m */; };
-		0E4D780011062C6600FE3DDC /* stk11xx-dev-0408.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CD4F0FC9F36000E9C148 /* stk11xx-dev-0408.m */; };
-		0E4D780111062C6900FE3DDC /* SAA711XChip.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E16F6AD10AE92C600730A18 /* SAA711XChip.m */; };
-		0E4D783D1106772000FE3DDC /* ECVCaptureDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB070DC10B0992400B9575B /* ECVCaptureDevice.m */; };
+
 		0E78C93E0FC8F98100E9C148 /* ECVCaptureController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78C93D0FC8F98100E9C148 /* ECVCaptureController.m */; };
 		0E78C9F30FC8FA1000E9C148 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E78C9F20FC8FA1000E9C148 /* IOKit.framework */; };
 		0E78CA4F0FC9128000E9C148 /* ECVController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CA4E0FC9128000E9C148 /* ECVController.m */; };
 		0E78CAAE0FC91B6500E9C148 /* ECVSTK1160Device.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CAAD0FC91B6500E9C148 /* ECVSTK1160Device.m */; };
 		0E78CB980FC92D8300E9C148 /* ECVDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CB970FC92D8300E9C148 /* ECVDebug.m */; };
 		0E78CD850FC9F9E300E9C148 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E78CD840FC9F9E300E9C148 /* QuartzCore.framework */; };
-		0E78CDB50FC9F9EB00E9C148 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E78CDB40FC9F9EB00E9C148 /* OpenGL.framework */; };
+
 		0E7FFC4510899D4B000C8217 /* ECVDividerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7FFC4410899D4B000C8217 /* ECVDividerView.m */; };
 		0E7FFD1B1089CEE0000C8217 /* ECVPlayButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7FFD1A1089CEE0000C8217 /* ECVPlayButtonCell.m */; };
 		0E7FFD1E1089D60A000C8217 /* ECVCropCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7FFD1D1089D60A000C8217 /* ECVCropCell.m */; };
@@ -58,7 +51,7 @@
 		0E8CE218107BF845004F05A7 /* ECVTickMarkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8CE217107BF845004F05A7 /* ECVTickMarkView.m */; };
 		0E984D6B108C65D100CB469C /* ECVErrorLogController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E984D6A108C65D100CB469C /* ECVErrorLogController.m */; };
 		0E984E21108C7F3D00CB469C /* Log-Clear.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E984E20108C7F3D00CB469C /* Log-Clear.png */; };
-		0E9F5E631085D06F00375752 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E9F5E621085D06F00375752 /* Carbon.framework */; };
+
 		0E9F9B1D10F6753C00935C48 /* ECVLocalizing.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E9F9B1C10F6753C00935C48 /* ECVLocalizing.m */; };
 		0E9F9B2210F6764500935C48 /* ECVFoundationAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E9F9B2110F6764500935C48 /* ECVFoundationAdditions.m */; };
 		0E9F9B3710F679A400935C48 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B2910F679A400935C48 /* Credits.rtf */; };
@@ -77,8 +70,6 @@
 		0E9FAABE1107B135005C55CE /* ECVVideoStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E2C232710AF96A6001B40EF /* ECVVideoStorage.m */; };
 		0E9FAABF1107B138005C55CE /* ECVVideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E2C230A10AF91C6001B40EF /* ECVVideoFrame.m */; };
 		0E9FAAC81107B202005C55CE /* ECVReadWriteLock.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E89833E10C2D740006BA9C6 /* ECVReadWriteLock.m */; };
-		0E9FAAC91107B207005C55CE /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E0AC92310203FB300C12D88 /* QTKit.framework */; };
-		0E9FAAE81107B210005C55CE /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EE547931070F34C00F003AF /* CoreVideo.framework */; };
 		0E9FABB31107B22A005C55CE /* ECVDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CB970FC92D8300E9C148 /* ECVDebug.m */; };
 		0EAE4FB7112BD420004D93B3 /* VT1612AChip.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE4FB6112BD420004D93B3 /* VT1612AChip.m */; };
 		0EAE4FB8112BD420004D93B3 /* VT1612AChip.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE4FB6112BD420004D93B3 /* VT1612AChip.m */; };
@@ -97,9 +88,7 @@
 		0EFEE896109205C300312653 /* Cursor-Resize-45.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 0EFEE894109205C300312653 /* Cursor-Resize-45.tiff */; };
 		0EFEE897109205C300312653 /* Cursor-Resize-135.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 0EFEE895109205C300312653 /* Cursor-Resize-135.tiff */; };
 		1CCD1F6B1A66C8C00000AB56 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CCD1F6A1A66C8C00000AB56 /* Accelerate.framework */; };
-		6B53E9941E11A690007E779E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B53E9931E11A690007E779E /* AVFoundation.framework */; };
-		6B53E9961E11A6B7007E779E /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B53E9951E11A6B7007E779E /* AVKit.framework */; };
-		6B53E9981E11A78E007E779E /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B53E9971E11A78E007E779E /* CoreMedia.framework */; };
+
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B50600661327948000B2F202 /* ECVIndependentVideoStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B50600651327948000B2F202 /* ECVIndependentVideoStorage.m */; };
 		B5060071132794E400B2F202 /* ECVPixelBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = B5060070132794E400B2F202 /* ECVPixelBuffer.m */; };
@@ -139,13 +128,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = EasyCapViewer;
 		};
-		0E982B63113466620062A2C8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0E4D75BF11044A5900FE3DDC;
-			remoteInfo = ECVComponent;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -163,7 +145,8 @@
 /* Begin PBXFileReference section */
 		0E053FF40FDF1FFD003688BB /* MPLWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPLWindow.m; sourceTree = "<group>"; };
 		0E053FF50FDF1FFD003688BB /* MPLWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPLWindow.h; sourceTree = "<group>"; };
-		0E0AC92310203FB300C12D88 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		AA0000011E11A00000000001 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		AA0000011E11A00000000002 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		0E0C489B10B91DC2008731F2 /* ECVMovieRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVMovieRecorder.h; sourceTree = "<group>"; };
 		0E0C489C10B91DC2008731F2 /* ECVMovieRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVMovieRecorder.m; sourceTree = "<group>"; };
 		0E16F6AC10AE92C600730A18 /* SAA711XChip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAA711XChip.h; sourceTree = "<group>"; };
@@ -174,12 +157,7 @@
 		0E2C230A10AF91C6001B40EF /* ECVVideoFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVVideoFrame.m; sourceTree = "<group>"; };
 		0E2C232610AF96A6001B40EF /* ECVVideoStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVVideoStorage.h; sourceTree = "<group>"; };
 		0E2C232710AF96A6001B40EF /* ECVVideoStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVVideoStorage.m; sourceTree = "<group>"; };
-		0E3B7BF11108CC2C003A8A39 /* ECVComponent.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = ECVComponent.r; sourceTree = "<group>"; };
-		0E3B7CB21108E8F0003A8A39 /* ECVComponentDispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVComponentDispatch.h; sourceTree = "<group>"; };
-		0E4D75C011044A5900FE3DDC /* ECVComponent.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ECVComponent.component; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E4D75C111044A5900FE3DDC /* ECVComponent-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ECVComponent-Info.plist"; sourceTree = "<group>"; };
 		0E4D76AF11044B1000FE3DDC /* EasyCapViewer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "EasyCapViewer-Info.plist"; sourceTree = "<group>"; };
-		0E4D76CA110454C000FE3DDC /* ECVComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVComponent.m; sourceTree = "<group>"; };
 		0E4D778611046F9E00FE3DDC /* EasyCapViewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EasyCapViewer.m; sourceTree = "<group>"; };
 		0E78C93C0FC8F98100E9C148 /* ECVCaptureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVCaptureController.h; sourceTree = "<group>"; };
 		0E78C93D0FC8F98100E9C148 /* ECVCaptureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVCaptureController.m; sourceTree = "<group>"; };
@@ -192,7 +170,6 @@
 		0E78CB970FC92D8300E9C148 /* ECVDebug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVDebug.m; sourceTree = "<group>"; };
 		0E78CD4F0FC9F36000E9C148 /* stk11xx-dev-0408.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "stk11xx-dev-0408.m"; sourceTree = "<group>"; };
 		0E78CD840FC9F9E300E9C148 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		0E78CDB40FC9F9EB00E9C148 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		0E7FFC4310899D4B000C8217 /* ECVDividerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVDividerView.h; sourceTree = "<group>"; };
 		0E7FFC4410899D4B000C8217 /* ECVDividerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVDividerView.m; sourceTree = "<group>"; };
 		0E7FFD191089CEE0000C8217 /* ECVPlayButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVPlayButtonCell.h; sourceTree = "<group>"; };
@@ -214,7 +191,6 @@
 		0E984D69108C65D100CB469C /* ECVErrorLogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVErrorLogController.h; sourceTree = "<group>"; };
 		0E984D6A108C65D100CB469C /* ECVErrorLogController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVErrorLogController.m; sourceTree = "<group>"; };
 		0E984E20108C7F3D00CB469C /* Log-Clear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Log-Clear.png"; sourceTree = "<group>"; };
-		0E9F5E621085D06F00375752 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		0E9F9B1B10F6753C00935C48 /* ECVLocalizing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVLocalizing.h; sourceTree = "<group>"; };
 		0E9F9B1C10F6753C00935C48 /* ECVLocalizing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVLocalizing.m; sourceTree = "<group>"; };
 		0E9F9B2010F6764500935C48 /* ECVFoundationAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVFoundationAdditions.h; sourceTree = "<group>"; };
@@ -247,21 +223,16 @@
 		0EDC66961129186A00AF1803 /* ECVHUDSwitchButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVHUDSwitchButtonCell.m; sourceTree = "<group>"; };
 		0EDF451A0FCD2167006630E1 /* stk11xx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stk11xx.h; sourceTree = "<group>"; };
 		0EE547931070F34C00F003AF /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
-		0EE548391071019600F003AF /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		0EEFA5C0103BB79A0038C135 /* ECVVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVVideoView.h; sourceTree = "<group>"; };
 		0EEFA5C1103BB79A0038C135 /* ECVVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVVideoView.m; sourceTree = "<group>"; };
 		0EFEE894109205C300312653 /* Cursor-Resize-45.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "Cursor-Resize-45.tiff"; sourceTree = "<group>"; };
 		0EFEE895109205C300312653 /* Cursor-Resize-135.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "Cursor-Resize-135.tiff"; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
-		1CCD1F671A66C72B0000AB56 /* vecLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vecLib.framework; path = ../../../../System/Library/Frameworks/vecLib.framework; sourceTree = "<group>"; };
 		1CCD1F6A1A66C8C00000AB56 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* EasyCapViewer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EasyCapViewer_Prefix.pch; sourceTree = "<group>"; };
-		6B53E9931E11A690007E779E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		6B53E9951E11A6B7007E779E /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
-		6B53E9971E11A78E007E779E /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8D1107320486CEB800E47090 /* EasyCapViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EasyCapViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5028DC816594E5C00CB8CAB /* ECVICM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVICM.h; sourceTree = "<group>"; };
 		B50600641327948000B2F202 /* ECVIndependentVideoStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVIndependentVideoStorage.h; sourceTree = "<group>"; };
@@ -302,35 +273,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0E4D75BE11044A5900FE3DDC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0E4D76A311044A9100FE3DDC /* Carbon.framework in Frameworks */,
-				0E4D75C511044A7A00FE3DDC /* Cocoa.framework in Frameworks */,
-				0E9FAAE81107B210005C55CE /* CoreVideo.framework in Frameworks */,
-				0E4D76D711046C2500FE3DDC /* IOKit.framework in Frameworks */,
-				0E9FAAC91107B207005C55CE /* QTKit.framework in Frameworks */,
-				0E4D75E911044A8400FE3DDC /* QuickTime.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8D11072E0486CEB800E47090 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B53E9981E11A78E007E779E /* CoreMedia.framework in Frameworks */,
-				6B53E9961E11A6B7007E779E /* AVKit.framework in Frameworks */,
-				6B53E9941E11A690007E779E /* AVFoundation.framework in Frameworks */,
+				AA0000021E11A00000000001 /* Metal.framework in Frameworks */,
+				AA0000021E11A00000000002 /* MetalKit.framework in Frameworks */,
 				1CCD1F6B1A66C8C00000AB56 /* Accelerate.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0E78C9F30FC8FA1000E9C148 /* IOKit.framework in Frameworks */,
 				0E78CD850FC9F9E300E9C148 /* QuartzCore.framework in Frameworks */,
-				0E78CDB50FC9F9EB00E9C148 /* OpenGL.framework in Frameworks */,
 				0EC7D342101903F200CFBDFF /* CoreAudio.framework in Frameworks */,
 				0EC7D4A41019A29800CFBDFF /* AudioToolbox.framework in Frameworks */,
 				0EE547941070F34C00F003AF /* CoreVideo.framework in Frameworks */,
-				0E9F5E631085D06F00375752 /* Carbon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,16 +383,14 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000011E11A00000000001 /* Metal.framework */,
+				AA0000011E11A00000000002 /* MetalKit.framework */,
 				0EC7D4A31019A29800CFBDFF /* AudioToolbox.framework */,
-				0E9F5E621085D06F00375752 /* Carbon.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				0EC7D341101903F200CFBDFF /* CoreAudio.framework */,
 				0EE547931070F34C00F003AF /* CoreVideo.framework */,
 				0E78C9F20FC8FA1000E9C148 /* IOKit.framework */,
 				0E78CD840FC9F9E300E9C148 /* QuartzCore.framework */,
-				0E78CDB40FC9F9EB00E9C148 /* OpenGL.framework */,
-				0E0AC92310203FB300C12D88 /* QTKit.framework */,
-				0EE548391071019600F003AF /* QuickTime.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -456,7 +409,6 @@
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* EasyCapViewer.app */,
-				0E4D75C011044A5900FE3DDC /* ECVComponent.component */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -511,7 +463,6 @@
 			isa = PBXGroup;
 			children = (
 				0E4D76AF11044B1000FE3DDC /* EasyCapViewer-Info.plist */,
-				0E4D75C111044A5900FE3DDC /* ECVComponent-Info.plist */,
 				0E9FAA851107A5A7005C55CE /* ECVDevices.plist */,
 				0E9F9B4110F679B800935C48 /* ECVMenu.xib */,
 				0E9F9B3E10F679B800935C48 /* ECVCapture.xib */,
@@ -535,11 +486,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6B53E9971E11A78E007E779E /* CoreMedia.framework */,
-				6B53E9951E11A6B7007E779E /* AVKit.framework */,
-				6B53E9931E11A690007E779E /* AVFoundation.framework */,
 				1CCD1F6A1A66C8C00000AB56 /* Accelerate.framework */,
-				1CCD1F671A66C72B0000AB56 /* vecLib.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -603,35 +550,13 @@
 		B5C268C61652D84D0015D032 /* Component */ = {
 			isa = PBXGroup;
 			children = (
-				0E4D76CA110454C000FE3DDC /* ECVComponent.m */,
-				0E3B7CB21108E8F0003A8A39 /* ECVComponentDispatch.h */,
-				0E3B7BF11108CC2C003A8A39 /* ECVComponent.r */,
 			);
 			name = Component;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
-/* Begin PBXNativeTarget section */
-		0E4D75BF11044A5900FE3DDC /* ECVComponent */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0E4D75C411044A5A00FE3DDC /* Build configuration list for PBXNativeTarget "ECVComponent" */;
-			buildPhases = (
-				0E4D75BC11044A5900FE3DDC /* Resources */,
-				0E4D75BD11044A5900FE3DDC /* Sources */,
-				0E4D75BE11044A5900FE3DDC /* Frameworks */,
-				0E4D76A511044ACA00FE3DDC /* Rez */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = ECVComponent;
-			productName = ECVComponent;
-			productReference = 0E4D75C011044A5900FE3DDC /* ECVComponent.component */;
-			productType = "com.apple.product-type.bundle";
-		};
-		8D1107260486CEB800E47090 /* EasyCapViewer */ = {
+/* Begin PBXNativeTarget section */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "EasyCapViewer" */;
 			buildPhases = (
@@ -684,23 +609,11 @@
 			targets = (
 				0E982B5E1134665B0062A2C8 /* Everything */,
 				8D1107260486CEB800E47090 /* EasyCapViewer */,
-				0E4D75BF11044A5900FE3DDC /* ECVComponent */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		0E4D75BC11044A5900FE3DDC /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0E9FAA871107A662005C55CE /* ECVDevices.plist in Resources */,
-				0E3B7F8B11091253003A8A39 /* InfoPlist.strings in Resources */,
-				0ECDB5D5111C693100D5899C /* Localizable.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8D1107290486CEB800E47090 /* Resources */ = {
+/* Begin PBXResourcesBuildPhase section */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -725,48 +638,7 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXRezBuildPhase section */
-		0E4D76A511044ACA00FE3DDC /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0E3B7BF21108CC2C003A8A39 /* ECVComponent.r in Rez */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXRezBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		0E4D75BD11044A5900FE3DDC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0E4D76CC110454E100FE3DDC /* ECVComponent.m in Sources */,
-				0E4D77FF11062C6200FE3DDC /* ECVSTK1160Device.m in Sources */,
-				0E4D780011062C6600FE3DDC /* stk11xx-dev-0408.m in Sources */,
-				0E4D780111062C6900FE3DDC /* SAA711XChip.m in Sources */,
-				0E4D783D1106772000FE3DDC /* ECVCaptureDevice.m in Sources */,
-				0E9FAABE1107B135005C55CE /* ECVVideoStorage.m in Sources */,
-				0E9FAABF1107B138005C55CE /* ECVVideoFrame.m in Sources */,
-				0E9FAAC81107B202005C55CE /* ECVReadWriteLock.m in Sources */,
-				0E9FABB31107B22A005C55CE /* ECVDebug.m in Sources */,
-				0EDC66981129186A00AF1803 /* ECVHUDSwitchButtonCell.m in Sources */,
-				0EAE4FB7112BD420004D93B3 /* VT1612AChip.m in Sources */,
-				B5281144130D7BB400FBE537 /* ECVFoundationAdditions.m in Sources */,
-				B5F09995131CE00A0066FEB5 /* ECVFrameRateConverter.m in Sources */,
-				B5F09999131CE0550066FEB5 /* ECVRational.m in Sources */,
-				B5C5BF3C1323AE0300B1E2FE /* ECVDeinterlacingMode.m in Sources */,
-				B50600661327948000B2F202 /* ECVIndependentVideoStorage.m in Sources */,
-				B5060071132794E400B2F202 /* ECVPixelBuffer.m in Sources */,
-				B5BC261B166F78EC0036490F /* ECVVideoFormat.m in Sources */,
-				B5BC2807167E75CF0036490F /* ECVUSBTransferList.m in Sources */,
-				B5BC29D3167F68970036490F /* ECVVideoSource.m in Sources */,
-				B5BC2A11167F6FAB0036490F /* ECVEM2860Device.m in Sources */,
-				B5B4F5D9169E506200B14376 /* ECVSomagicDevice_Unloaded.m in Sources */,
-				B5A89D1417513C8400995E10 /* ECVFushicaiDevice.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8D11072C0486CEB800E47090 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -827,11 +699,6 @@
 			isa = PBXTargetDependency;
 			target = 8D1107260486CEB800E47090 /* EasyCapViewer */;
 			targetProxy = 0E982B611134665F0062A2C8 /* PBXContainerItemProxy */;
-		};
-		0E982B64113466620062A2C8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0E4D75BF11044A5900FE3DDC /* ECVComponent */;
-			targetProxy = 0E982B63113466620062A2C8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -895,46 +762,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		0E4D75C211044A5A00FE3DDC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_PREFIX_HEADER = EasyCapViewer_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
-					"$(inherited)",
-					ECV_NO_CONTROLLERS,
-					ECV_LOG_TO_DESKTOP,
-				);
-				GCC_WARN_UNUSED_FUNCTION = NO;
-				GCC_WARN_UNUSED_VALUE = NO;
-				GCC_WARN_UNUSED_VARIABLE = NO;
-				INFOPLIST_FILE = "ECVComponent-Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "${ECV_BUNDLE_IDENTIFIER}.Component";
-				PRODUCT_NAME = ECVComponent;
-				WRAPPER_EXTENSION = component;
-			};
-			name = Debug;
-		};
-		0E4D75C311044A5A00FE3DDC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_PREFIX_HEADER = EasyCapViewer_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
-					"$(inherited)",
-					ECV_NO_CONTROLLERS,
-					ECV_LOG_TO_CONSOLE,
-				);
-				GCC_WARN_UNUSED_FUNCTION = NO;
-				GCC_WARN_UNUSED_VALUE = NO;
-				GCC_WARN_UNUSED_VARIABLE = NO;
-				INFOPLIST_FILE = "ECVComponent-Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "${ECV_BUNDLE_IDENTIFIER}.Component";
-				PRODUCT_NAME = ECVComponent;
-				WRAPPER_EXTENSION = component;
-			};
-			name = Release;
-		};
 		0E982B5F1134665B0062A2C8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -960,15 +787,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_INT_CONVERSION = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = EasyCapViewer_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
@@ -983,6 +810,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = "EasyCapViewer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${ECV_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = EasyCapViewer;
 			};
@@ -992,12 +820,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_INT_CONVERSION = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_MODEL_TUNING = G5;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = EasyCapViewer_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
@@ -1012,6 +842,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = "EasyCapViewer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${ECV_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = EasyCapViewer;
 			};
@@ -1096,15 +927,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0E4D75C411044A5A00FE3DDC /* Build configuration list for PBXNativeTarget "ECVComponent" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0E4D75C211044A5A00FE3DDC /* Debug */,
-				0E4D75C311044A5A00FE3DDC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		0E982B7F113466900062A2C8 /* Build configuration list for PBXAggregateTarget "Everything" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

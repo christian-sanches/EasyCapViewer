@@ -16,8 +16,11 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
+	<key>LSApplicationArchitectures</key>
+	<array>
+		<string>arm64</string>
+		<string>x86_64</string>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>0.6.3a</string>
 	<key>ECVInfoByVideoCodec</key>
@@ -48,7 +51,9 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.5.8</string>
+	<string>13.0</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 	<key>NSMainNibFile</key>
 	<string>ECVMenu</string>
 	<key>NSPrincipalClass</key>

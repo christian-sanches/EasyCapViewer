@@ -1,14 +1,14 @@
 # EasyCapViewer — Modernization Plan
 
-**Target:** Native Apple Silicon macOS 11.0+ (Big Sur and later)  
+**Target:** Native Apple Silicon macOS 13.0+ (Ventura and later)  
 **Language:** Objective-C with ARC, potential Swift interop  
-**Status:** Planning  
+**Status:** In Progress  
 
 ---
 
 ## Progress Tracker
 
-- [ ] Phase 1 — Project Setup & Build System
+- [x] Phase 1 — Project Setup & Build System
 - [ ] Phase 2 — ARC Migration (Manual → Automatic Reference Counting)
 - [ ] Phase 3 — Remove Dead 32-bit Code (QuickTime Component, QTKit)
 - [ ] Phase 4 — OpenGL → Metal (Video Rendering)
