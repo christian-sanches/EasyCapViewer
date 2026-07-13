@@ -92,13 +92,6 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 
 - (IBAction)startRecording:(id)sender
 {
-#if __LP64__
-	NSAlert *const alert = [[NSAlert alloc] init];
-	[alert setMessageText:NSLocalizedString(@"Recording is not supported in 64-bit mode.", nil)];
-	[alert setInformativeText:NSLocalizedString(@"Relaunch EasyCapViewer in 32-bit mode to record.", nil)];
-	[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
-	[alert runModal];
-#else
 	if(_movieRecorder) return;
 
 	NSUserDefaults *const d = [NSUserDefaults standardUserDefaults];
@@ -148,18 +141,15 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 		}
 		[[self window] setDocumentEdited:YES];
 	} else [[NSAlert alertWithError:error] runModal];
-#endif
 }
 - (IBAction)stopRecording:(id)sender
 {
-#if !__LP64__
 	if(!_movieRecorder) return;
 	[_movieRecorder stopRecording];
 	@synchronized(self) {
 		_movieRecorder = nil;
 	}
 	[[self window] setDocumentEdited:NO];
-#endif
 }
 - (IBAction)changeCodec:(id)sender
 {
@@ -362,11 +352,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 
 - (void)_hideMenuBar
 {
-#if __LP64__
 	[NSApp setPresentationOptions:NSApplicationPresentationAutoHideMenuBar | NSApplicationPresentationAutoHideDock];
-#else
-	SetSystemUIMode(kUIModeAllSuppressed, kNilOptions);
-#endif
 }
 - (void)_updateCropRect
 {
@@ -550,11 +536,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 - (void)windowDidResignMain:(NSNotification *)aNotif
 {
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_hideMenuBar) object:nil];
-#if __LP64__
 	[NSApp setPresentationOptions:NSApplicationPresentationDefault];
-#else
-	SetSystemUIMode(kUIModeNormal, kNilOptions);
-#endif
 }
 - (void)windowWillClose:(NSNotification *)aNotif
 {

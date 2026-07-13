@@ -49,7 +49,6 @@ extern NSString *ECVAudioStreamBasicDescriptionToString(AudioStreamBasicDescript
 } while(NO)
 
 #define ECVOSErr(x) ECVOSStatus((OSStatus)(x))
-#define ECVComponentResult(x) ECVOSStatus((OSStatus)(x))
 
 #define ECVIOReturn(x) ({\
 	IOReturn const __e = (x);\

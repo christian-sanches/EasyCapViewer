@@ -19,9 +19,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-#if !__LP64__
 #import <CoreVideo/CoreVideo.h>
-#import <QTKit/QTKit.h>
 
 // Models
 @class ECVVideoStorage;
@@ -71,25 +69,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 @end
 
 @interface ECVMovieRecorder : NSObject
-{
-	@private
-	NSConditionLock *_compressLock;
-	NSMutableArray *_compressQueue;
-	NSConditionLock *_recordLock;
-	NSMutableArray *_recordQueue;
-	ECVAudioPipe *_audioPipe;
-	BOOL _stop;
 
-	ICMEncodedFrameRef _encodedFrame;
-}
+- (instancetype)initWithOptions:(ECVMovieRecordingOptions *)options error:(NSError **)outError;
 
-- (id)initWithOptions:(ECVMovieRecordingOptions *const)options error:(out NSError **const)outError;
-
-- (void)addVideoFrame:(ECVVideoFrame *const)frame;
-- (void)addAudioBufferList:(AudioBufferList const *const)bufferList;
+- (void)addVideoFrame:(ECVVideoFrame *)frame;
+- (void)addAudioBufferList:(AudioBufferList const *)bufferList;
 
 - (void)stopRecording;
 
 @end
-
-#endif

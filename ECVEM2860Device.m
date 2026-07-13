@@ -82,7 +82,7 @@ static void ECVPixelFormatHack(uint16_t *const bytes, size_t const len) {
 }
 - (OSType)pixelFormat
 {
-	return k2vuyPixelFormat; // Native format is kYVYU422PixelFormat, but we convert because QuickTime can't handle it (surprisingly).
+	return k2vuyPixelFormat; // Native format is kYVYU422PixelFormat, but we convert to UYVY.
 }
 
 #pragma mark -
