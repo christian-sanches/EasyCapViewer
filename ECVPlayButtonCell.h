@@ -22,6 +22,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 // Views
 #import "ECVVideoView.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface ECVPlayButtonCell : NSButtonCell <ECVVideoViewCell>
 {
 	@private
@@ -33,3 +35,5 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (id)init;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -159,13 +159,6 @@ static ECVRectEdgeMask const ECVHandlePositions[] = {
 	for(; i < numberof(ECVHandlePositions); i++) [controlView addCursorRect:[self frameForHandlePosition:ECVHandlePositions[i] maskRect:maskRect inFrame:cellFrame] cursor:[self cursorForHandlePosition:ECVHandlePositions[i]]];
 }
 
-#pragma mark -NSObject
-
-- (void)dealloc
-{
-	// No OpenGL cleanup needed
-}
-
 #pragma mark -<ECVVideoViewCell>
 
 - (void)drawWithFrame:(NSRect)aRect inVideoView:(ECVVideoView *)view playing:(BOOL)flag

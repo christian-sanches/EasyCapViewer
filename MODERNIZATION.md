@@ -15,7 +15,7 @@
 - [x] Phase 5 — QuickTime/ICM → AVFoundation (Movie Recording)
 - [x] Phase 6 — USB Drivers Modernization
 - [x] Phase 7 — Audio Pipeline Modernization
-- [ ] Phase 8 — UI & HUD Modernization
+- [x] Phase 8 — UI & HUD Modernization
 - [ ] Phase 9 — Project Folder Restructuring
 - [ ] Phase 10 — Testing, Signing & Distribution
 
@@ -23,7 +23,7 @@
 
 ## Overview
 
-EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–7, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, **USB drivers have been modernized** with upgraded interface versions and improved error handling, and the **audio pipeline has been modernized** with modern Objective-C patterns (properties, weak delegates, nullability). The remaining work is UI modernization, project restructuring, and testing.
+EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–8, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, **USB drivers have been modernized** with upgraded interface versions and improved error handling, the **audio pipeline has been modernized** with modern Objective-C patterns (properties, weak delegates, nullability), and the **UI layer has been modernized** with nullability annotations, modern Objective-C literals, and removal of legacy OpenGL references. The remaining work is project restructuring and testing.
 
 ### What works today on Apple Silicon
 | API | Status | Notes |
@@ -107,20 +107,23 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 | `ECVAudioTarget.h/m` | Audio target abstraction | ✅ Modernized: weak captureDocument, literals, nullability |
 | `ECVAVTarget.h` | AV target protocol | OK as-is |
 
-### UI Components — Deprecations Fixed
+### UI Components — Modernized (Phase 8)
 | File | Role | Notes |
 |------|------|-------|
-| `ECVCaptureController.h/m` | Capture UI controller | Updated: removed `magFilter` usage, init calls updated for Metal renderer |
+| `ECVCaptureController.h/m` | Capture UI controller | Updated: removed `magFilter` usage, init calls updated for Metal renderer, modern ObjC literals, removed version-guarded `NSWindowDelegate` |
 | `ECVConfigController.h/m` | Settings window | Deprecation fixes applied |
 | `ECVErrorLogController.h/m` | Error log window | OK |
 | `MPLWindow.h/m` | Custom NSWindow | Deprecation fixes applied |
-| `ECVHUDButtonCell.h/m` | HUD button cell | OK |
-| `ECVHUDSliderCell.h/m` | HUD slider cell | Deprecation fixes applied |
-| `ECVHUDPopUpButtonCell.h/m` | HUD popup cell | Deprecation fixes applied |
-| `ECVHUDSwitchButtonCell.h/m` | HUD switch cell | Deprecation fixes applied |
+| `ECVHUDButtonCell.h/m` | HUD button cell | Nullability annotations, modern dictionary literals |
+| `ECVHUDSliderCell.h/m` | HUD slider cell | Nullability annotations |
+| `ECVHUDPopUpButtonCell.h/m` | HUD popup cell | Nullability annotations, modern dictionary literals |
+| `ECVHUDSwitchButtonCell.h/m` | HUD switch cell | Nullability annotations, modern dictionary literals |
 | `ECVTickMarkView.h/m` | Tick mark view | OK |
 | `ECVDividerView.h/m` | Divider view | OK |
 | `ECVRectEdgeMask.h/m` | Edge mask constants | OK as-is |
+| `ECVCropCell.h/m` | Crop overlay | Nullability annotations, removed OpenGL dealloc remnants |
+| `ECVPlayButtonCell.h/m` | Play button overlay | Nullability annotations, removed OpenGL dealloc remnants |
+| `ECVAppKitAdditions.h/m` | Drawing helpers | Nullability annotations |
 
 ### Utilities — Deprecations Fixed
 | File | Role | Notes |
@@ -186,7 +189,7 @@ Each phase has its own detailed document:
 | Phase 5 — QuickTime → AVFoundation | 2–3 days | ✅ Done |
 | Phase 6 — USB Drivers | 1 day (mostly testing) | ✅ Done |
 | Phase 7 — Audio Pipeline | 0.5 day | ✅ Done |
-| Phase 8 — UI Modernization | 1 day | Pending |
+| Phase 8 — UI Modernization | 1 day | ✅ Done |
 | Phase 9 — Restructuring | 1 day | Pending |
 | Phase 10 — Testing | 2–3 days | Pending |
 | **Remaining** | **~3.5–5.5 days** | |
