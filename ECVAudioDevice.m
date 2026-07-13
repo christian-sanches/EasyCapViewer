@@ -38,16 +38,15 @@ static OSStatus ECVAudioObjectPropertyListenerProc(AudioObjectID const inObjectI
 }
 static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStamp const *const inNow, AudioBufferList const *const inInputData, AudioTimeStamp const *const inInputTime, AudioBufferList *const outOutputData, AudioTimeStamp const *const inOutputTime, id const device)
 {
-	NSAutoreleasePool *const pool = [[NSAutoreleasePool alloc] init];
-    if ([device isInput]) {
-        id tmp = [device delegate];
-        [tmp audioInput:device didReceiveBufferList:inInputData atTime:inInputTime];
-    } else {
-        id tmp = [device delegate];
-        [tmp audioOutput:device didRequestBufferList:outOutputData forTime:inOutputTime];
+	@autoreleasepool {
+        if ([device isInput]) {
+            id tmp = [device delegate];
+            [tmp audioInput:device didReceiveBufferList:inInputData atTime:inInputTime];
+        } else {
+            id tmp = [device delegate];
+            [tmp audioOutput:device didRequestBufferList:outOutputData forTime:inOutputTime];
+        }
     }
-    
-	[pool drain];
 	return noErr;
 }
 
@@ -63,7 +62,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 		.mScope = kAudioObjectPropertyScopeGlobal,
 		.mElement = kAudioObjectPropertyElementMaster,
 	};
-	ECVOSStatus(AudioObjectAddPropertyListener(kAudioObjectSystemObject, &addr, (AudioObjectPropertyListenerProc)ECVAudioObjectPropertyListenerProc, self));
+	ECVOSStatus(AudioObjectAddPropertyListener(kAudioObjectSystemObject, &addr, (AudioObjectPropertyListenerProc)ECVAudioObjectPropertyListenerProc, (__bridge void *)self));
 }
 + (id)allocWithZone:(NSZone *)zone
 {
@@ -89,7 +88,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	ECVOSStatus(AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr, 0, NULL, &size, deviceIDs));
 	NSUInteger i = 0;
 	for(; i < size / sizeof(AudioDeviceID); i++) {
-		ECVAudioDevice *const device = [[[self alloc] initWithDeviceID:deviceIDs[i]] autorelease];
+		ECVAudioDevice *const device = [[self alloc] initWithDeviceID:deviceIDs[i]];
 		if(device) [devices addObject:device];
 	}
 	free(deviceIDs);
@@ -105,7 +104,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 		.mElement = kAudioObjectPropertyElementMaster,
 	};
 	ECVOSStatus(AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr, 0, NULL, &deviceIDSize, &deviceID));
-	return [[[self alloc] initWithDeviceID:deviceID] autorelease];
+	return [[self alloc] initWithDeviceID:deviceID];
 }
 + (id)deviceWithUID:(NSString *)UID
 {
@@ -124,7 +123,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 		.mElement = kAudioObjectPropertyElementMaster,
 	};
 	ECVOSStatus(AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr, 0, NULL, &translationSize, &deviceUIDTranslation));
-	return [[[self alloc] initWithDeviceID:deviceID] autorelease];
+	return [[self alloc] initWithDeviceID:deviceID];
 }
 + (id)deviceWithIODevice:(io_service_t)device
 {
@@ -132,7 +131,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	io_service_t subservice = IO_OBJECT_NULL;
 	if(kIOReturnSuccess != ECVIOReturn(IORegistryEntryCreateIterator(device, kIOServicePlane, kIORegistryIterateRecursively, &iterator))) return nil;
 	while((subservice = IOIteratorNext(iterator))) if(IOObjectConformsTo(subservice, kIOAudioEngineClassName)) {
-		NSString *const UID = [(NSString *)IORegistryEntryCreateCFProperty(subservice, CFSTR(kIOAudioEngineGlobalUniqueIDKey), kCFAllocatorDefault, 0) autorelease];
+		NSString *const UID = (__bridge_transfer NSString *)IORegistryEntryCreateCFProperty(subservice, CFSTR(kIOAudioEngineGlobalUniqueIDKey), kCFAllocatorDefault, 0);
 		return UID ? [self deviceWithUID:UID] : nil;
 	}
 	return nil;
@@ -144,7 +143,6 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 {
 	if((self = [super init])) {
 		if(kAudioDeviceUnknown == deviceID) {
-			[self release];
 			return nil;
 		}
 
@@ -177,7 +175,6 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 		ECVOSStatus(AudioObjectSetPropertyData([self deviceID], &bufferFrameSizeAddr, 0, NULL, sizeof(size), &size));
 
 		if(![[self streams] count]) {
-			[self release];
 			return nil;
 		}
 	}
@@ -204,23 +201,23 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 }
 - (NSString *)UID
 {
-	NSString *UID = nil;
-	UInt32 UIDSize = sizeof(UID);
+	CFStringRef uid = NULL;
+	UInt32 UIDSize = sizeof(uid);
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioDevicePropertyDeviceUID,
 		.mScope = [self isInput] ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
 		.mElement = kAudioObjectPropertyElementMaster,
 	};
-	ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &addr, 0, NULL, &UIDSize, &UID));
-	return [UID autorelease];
+	ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &addr, 0, NULL, &UIDSize, &uid));
+	return (__bridge_transfer NSString *)uid;
 }
 
 #pragma mark -
 
 - (NSString *)name
 {
-	if(_name) return [[_name retain] autorelease];
-	NSString *name = nil;
+	if(_name) return _name;
+	CFStringRef name = NULL;
 	UInt32 nameSize = sizeof(name);
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioDevicePropertyDeviceNameCFString,
@@ -228,12 +225,11 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 		.mElement = kAudioObjectPropertyElementMaster,
 	};
 	ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &addr, 0, NULL, &nameSize, &name));
-	return [name autorelease];
+	return (__bridge_transfer NSString *)name;
 }
 - (void)setName:(NSString *)name
 {
 	if(BTEqualObjects(_name, name)) return;
-	[_name release];
 	_name = [name copy];
 }
 - (NSArray *)streams
@@ -250,7 +246,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	NSUInteger i = 0;
 	NSMutableArray *const streams = [NSMutableArray array];
 	for(; i < streamIDsSize / sizeof(AudioStreamID); i++) {
-		ECVAudioStream *const stream = [[[ECVAudioStream alloc] initWithStreamID:streamIDs[i]] autorelease];
+		ECVAudioStream *const stream = [[ECVAudioStream alloc] initWithStreamID:streamIDs[i]];
 		[streams addObject:stream];
 	}
 	free(streamIDs);
@@ -267,7 +263,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 - (BOOL)start
 {
 	if(_procID) return YES;
-	if(noErr == AudioDeviceCreateIOProcID([self deviceID], (AudioDeviceIOProc)ECVAudioDeviceIOProc, self, &_procID)) {
+	if(noErr == AudioDeviceCreateIOProcID([self deviceID], (AudioDeviceIOProc)ECVAudioDeviceIOProc, (__bridge void *)self, &_procID)) {
 		if(noErr == AudioDeviceStart([self deviceID], _procID)) return YES;
 		[self stop];
 	}
@@ -286,8 +282,6 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 - (void)dealloc
 {
 	[self stop];
-	[_name release];
-	[super dealloc];
 }
 
 #pragma mark -<NSObject>

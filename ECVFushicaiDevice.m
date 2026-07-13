@@ -93,7 +93,6 @@ enum {
 	ECVPixelFormatHack((void *)bytes+headerLength, realLength);
 	ECVPointerPixelBuffer *const buffer = [[ECVPointerPixelBuffer alloc] initWithPixelSize:inputSize bytesPerRow:bytesPerRow pixelFormat:pixelFormat bytes:bytes + headerLength validRange:NSMakeRange(_offset, realLength)];
 	[storage drawPixelBuffer:buffer atPoint:(ECVIntegerPoint){-8, 0}];
-	[buffer release];
 	_offset += realLength;
 }
 - (void)writeBrightnessAndContrast

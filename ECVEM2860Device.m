@@ -486,7 +486,6 @@ static void ECVPixelFormatHack(uint16_t *const bytes, size_t const len) {
 	ECVPixelFormatHack((void *)bytes + skip, realLength);
 	ECVPointerPixelBuffer *const buffer = [[ECVPointerPixelBuffer alloc] initWithPixelSize:inputSize bytesPerRow:bytesPerRow pixelFormat:pixelFormat bytes:bytes + skip validRange:NSMakeRange(_offset, realLength)];
 	[storage drawPixelBuffer:buffer atPoint:(ECVIntegerPoint){-8, 0}];
-	[buffer release];
 	_offset += realLength;
 }
 
@@ -545,8 +544,6 @@ static void ECVPixelFormatHack(uint16_t *const bytes, size_t const len) {
 - (void)dealloc
 {
 	[_SAA711XChip setDevice:nil];
-	[_SAA711XChip release];
-	[super dealloc];
 }
 
 @end

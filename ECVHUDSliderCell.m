@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 {
 	[NSGraphicsContext saveGraphicsState];
 
-	NSShadow *const s = [[[NSShadow alloc] init] autorelease];
+	NSShadow *const s = [[NSShadow alloc] init];
 	[s setShadowOffset:NSMakeSize(0.0f, -1.0f)];
 	[s setShadowBlurRadius:2.0f];
 	[s set];

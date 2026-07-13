@@ -73,7 +73,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (void)dealloc
 {
 	ECVErrno(pthread_rwlock_destroy(&_lock));
-	[super dealloc];
 }
 
 #pragma mark -<NSLocking>

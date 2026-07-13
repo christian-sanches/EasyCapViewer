@@ -67,7 +67,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 
 - (IBAction)cloneViewer:(id)sender
 {
-	ECVCaptureController *const controller = [[[[self class] alloc] init] autorelease];
+	ECVCaptureController *const controller = [[[self class] alloc] init];
 	[[self captureDocument] addWindowController:controller];
 	[controller showWindow:sender];
 	if(![[self captureDocument] isPaused]) [controller play];
@@ -93,7 +93,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 - (IBAction)startRecording:(id)sender
 {
 #if __LP64__
-	NSAlert *const alert = [[[NSAlert alloc] init] autorelease];
+	NSAlert *const alert = [[NSAlert alloc] init];
 	[alert setMessageText:NSLocalizedString(@"Recording is not supported in 64-bit mode.", nil)];
 	[alert setInformativeText:NSLocalizedString(@"Relaunch EasyCapViewer in 32-bit mode to record.", nil)];
 	[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
@@ -116,7 +116,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	for(NSString *const codec in videoCodecs) {
 		NSDictionary *const codecInfo = [infoByVideoCodec objectForKey:codec];
 		if(!codecInfo) continue;
-		NSMenuItem *const item = [[[NSMenuItem alloc] initWithTitle:[codecInfo objectForKey:@"ECVCodecLabel"] action:NULL keyEquivalent:@""] autorelease];
+		NSMenuItem *const item = [[NSMenuItem alloc] initWithTitle:[codecInfo objectForKey:@"ECVCodecLabel"] action:NULL keyEquivalent:@""];
 		[item setTag:(NSInteger)NSHFSTypeCodeFromFileType(codec)];
 		[[videoCodecPopUp menu] addItem:item];
 	}
@@ -128,7 +128,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	[d setObject:[NSNumber numberWithDouble:[videoQualitySlider doubleValue]] forKey:ECVVideoQualityKey];
 	if(NSFileHandlingPanelOKButton != returnCode) return;
 
-	ECVMovieRecordingOptions *const options = [[[ECVMovieRecordingOptions alloc] init] autorelease];
+	ECVMovieRecordingOptions *const options = [[ECVMovieRecordingOptions alloc] init];
 	[options setURL:[savePanel URL]];
 	[options setVideoStorage:[[[self captureDocument] videoDevice] videoStorage]];
 	[options setAudioInput:[[self captureDocument] audioDevice]];
@@ -141,10 +141,10 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	[options setFrameRate:[[self videoFormat] frameRate]];
 
 	NSError *error = nil;
-	ECVMovieRecorder *const recorder = [[[ECVMovieRecorder alloc] initWithOptions:options error:&error] autorelease];
+	ECVMovieRecorder *const recorder = [[ECVMovieRecorder alloc] initWithOptions:options error:&error];
 	if(recorder) {
 		@synchronized(self) {
-			_movieRecorder = [recorder retain];
+			_movieRecorder = recorder;
 		}
 		[[self window] setDocumentEdited:YES];
 	} else [[NSAlert alertWithError:error] runModal];
@@ -156,7 +156,6 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	if(!_movieRecorder) return;
 	[_movieRecorder stopRecording];
 	@synchronized(self) {
-		[_movieRecorder release];
 		_movieRecorder = nil;
 	}
 	[[self window] setDocumentEdited:NO];
@@ -219,7 +218,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 }
 - (IBAction)enterCustomCropMode:(id)sender
 {
-	ECVCropCell *const cell = [[[ECVCropCell alloc] initWithOpenGLContext:[videoView openGLContext]] autorelease];
+	ECVCropCell *const cell = [[ECVCropCell alloc] initWithOpenGLContext:[videoView openGLContext]];
 	[cell setDelegate:self];
 	[cell setCropRect:[self cropRect]];
 	[videoView setCropRect:ECVUncroppedRect];
@@ -287,8 +286,8 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 		frame = (NSRect){{100, 100}, [self outputSize]};
 	}
 	NSWindow *const oldWindow = [self window];
-	NSWindow *const w = [[[MPLWindow alloc] initWithContentRect:frame styleMask:styleMask backing:NSBackingStoreBuffered defer:YES] autorelease];
-	NSView *const contentView = [[[oldWindow contentView] retain] autorelease];
+	NSWindow *const w = [[MPLWindow alloc] initWithContentRect:frame styleMask:styleMask backing:NSBackingStoreBuffered defer:YES];
+	NSView *const contentView = [oldWindow contentView];
 	[oldWindow setContentView:nil];
 	[w setContentView:contentView];
 	[w setDelegate:self];
@@ -432,12 +431,6 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 - (id)init
 {
 	return [self initWithWindowNibName:@"ECVCapture"];
-}
-- (void)dealloc
-{
-	[_playButtonCell release];
-	[_movieRecorder release];
-	[super dealloc];
 }
 
 #pragma mark -NSObject(ECVTarget)

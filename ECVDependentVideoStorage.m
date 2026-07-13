@@ -85,7 +85,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	NSUInteger const i = [_frames indexOfObjectIdenticalTo:frame];
 	BOOL drop = NSNotFound != i;
 	if(drop) {
-		[[frame retain] autorelease];
 		[_unusedBufferIndexes addIndex:[frame bufferIndex]];
 		[_frames removeObjectAtIndex:i];
 	}
@@ -111,7 +110,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (ECVVideoFrame *)currentFrame
 {
 	[self lock];
-	ECVVideoFrame *const frame = [[[_frames lastObject] retain] autorelease];
+	ECVVideoFrame *const frame = [_frames lastObject];
 	[self unlock];
 	return frame;
 }
@@ -130,11 +129,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 		if(NSNotFound == i) return nil;
 	}
 	[_unusedBufferIndexes removeIndex:i];
-	return [[[ECVDependentPixelBuffer alloc] initWithVideoStorage:self bufferIndex:i] autorelease];
+	return [[ECVDependentPixelBuffer alloc] initWithVideoStorage:self bufferIndex:i];
 }
 - (ECVVideoFrame *)finishedFrameWithFinishedBuffer:(id)buffer
 {
-	ECVVideoFrame *const frame = [[[ECVDependentVideoFrame alloc] initWithVideoStorage:self bufferIndex:[buffer bufferIndex]] autorelease];
+	ECVVideoFrame *const frame = [[ECVDependentVideoFrame alloc] initWithVideoStorage:self bufferIndex:[buffer bufferIndex]];
 	[_frames addObject:frame];
 	return frame;
 }
@@ -144,18 +143,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (void)empty
 {
 	// We probably don't need to worry about the frames themselves because this should only happen while paused.
-	[_unusedBufferIndexes release];
 	_unusedBufferIndexes = [[NSMutableIndexSet alloc] initWithIndexesInRange:NSMakeRange(0, _numberOfBuffers)];
-}
-
-#pragma mark -NSObject
-
-- (void)dealloc
-{
-	[_frames release];
-	[_allBufferData release];
-	[_unusedBufferIndexes release];
-	[super dealloc];
 }
 
 @end
@@ -274,14 +262,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (NSUInteger)bufferIndex
 {
 	return _bufferIndex;
-}
-
-#pragma mark -NSObject
-
-- (void)dealloc
-{
-	[_lock release];
-	[super dealloc];
 }
 
 @end

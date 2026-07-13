@@ -24,8 +24,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 int main(int argc, char *argv[])
 {
-	NSAutoreleasePool *const pool = [[NSAutoreleasePool alloc] init];
-	[NSBundle ECV_prepareToAutoLocalize];
-	[pool drain];
+	@autoreleasepool {
+		[NSBundle ECV_prepareToAutoLocalize];
+	}
 	return NSApplicationMain(argc, (const char **)argv);
 }

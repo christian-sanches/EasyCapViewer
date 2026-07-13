@@ -44,16 +44,14 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 
 - (ECVAudioOutput *)audioOutput
 {
-	if(!_audioOutput) _audioOutput = [[ECVAudioOutput defaultDevice] retain];
-	return [[_audioOutput retain] autorelease];
+	if(!_audioOutput) _audioOutput = [ECVAudioOutput defaultDevice];
+	return _audioOutput;
 }
 - (void)setAudioOutput:(ECVAudioOutput *const)output
 {
 	if(BTEqualObjects(output, _audioOutput)) return;
 	[_captureDocument setPaused:YES];
-	[_audioOutput release];
-	_audioOutput = [output retain];
-	[_audioPipe release];
+	_audioOutput = output;
 	_audioPipe = nil;
 	[_captureDocument setPaused:NO];
 }
@@ -122,7 +120,6 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 - (void)dealloc
 {
 	[self stop];
-	[super dealloc];
 }
 
 #pragma mark -ECVAudioTarget<ECVAVTarget>
@@ -144,7 +141,6 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 {
 	[_audioOutput stop];
 	[_audioOutput setDelegate:nil];
-	[_audioPipe release];
 	_audioPipe = nil;
 }
 - (void)pushVideoFrame:(ECVVideoFrame *const)frame {}

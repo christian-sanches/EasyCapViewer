@@ -51,8 +51,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 }
 
 @property(copy) NSURL *URL;
-@property(retain) ECVVideoStorage *videoStorage;
-@property(retain) ECVAudioInput *audioInput;
+@property(strong) ECVVideoStorage *videoStorage;
+@property(strong) ECVAudioInput *audioInput;
 
 // Video
 @property(assign) OSType videoCodec;

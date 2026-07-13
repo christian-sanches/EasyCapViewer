@@ -58,7 +58,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	}
 	return self;
 bail:
-	[self release];
 	return nil;
 }
 - (NSUInteger)numberOfTransfers { return _numberOfTransfers; }
@@ -90,7 +89,6 @@ bail:
 		free(_transfers);
 	}
 	if(_interface) (*_interface)->Release(_interface);
-	[super dealloc];
 }
 
 @end

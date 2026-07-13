@@ -48,7 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 {
 	static ECVConfigController *c;
 	if(!c) c = [[self alloc] init];
-	return [[c retain] autorelease];
+	return c;
 }
 
 #pragma mark -ECVConfigController
@@ -121,7 +121,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 	[sourcePopUp removeAllItems];
 	for(ECVVideoSource *const source in [captureDevice supportedVideoSources]) {
-		NSMenuItem *const item = [[[NSMenuItem alloc] initWithTitle:[source localizedName] action:NULL keyEquivalent:@""] autorelease];
+		NSMenuItem *const item = [[NSMenuItem alloc] initWithTitle:[source localizedName] action:NULL keyEquivalent:@""];
 		[item setRepresentedObject:source];
 		[[sourcePopUp menu] addItem:item];
 	}
@@ -162,11 +162,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (void)audioHardwareDevicesDidChange:(NSNotification *)aNotif
 {
 	[audioSourcePopUp removeAllItems];
-	NSMenuItem *const nilItem = [[[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"No Input", nil) action:NULL keyEquivalent:@""] autorelease];
+	NSMenuItem *const nilItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"No Input", nil) action:NULL keyEquivalent:@""];
 	[[audioSourcePopUp menu] addItem:nilItem];
 	ECVAudioInput *const preferredInput = [[_captureDocument videoDevice] builtInAudioInput];
 	if(preferredInput) {
-		NSMenuItem *const item = [[[NSMenuItem alloc] initWithTitle:[preferredInput name] action:NULL keyEquivalent:@""] autorelease];
+		NSMenuItem *const item = [[NSMenuItem alloc] initWithTitle:[preferredInput name] action:NULL keyEquivalent:@""];
 		[item setRepresentedObject:preferredInput];
 		[[audioSourcePopUp menu] addItem:item];
 	}
@@ -175,7 +175,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	BOOL hasAdditionalItems = NO;
 	for(ECVAudioInput *const input in [ECVAudioInput allDevices]) {
 		if(BTEqualObjects(input, preferredInput)) continue;
-		NSMenuItem *const item = [[[NSMenuItem alloc] initWithTitle:[input name] action:NULL keyEquivalent:@""] autorelease];
+		NSMenuItem *const item = [[NSMenuItem alloc] initWithTitle:[input name] action:NULL keyEquivalent:@""];
 		[item setRepresentedObject:input];
 		[[audioSourcePopUp menu] addItem:item];
 		hasAdditionalItems = YES;
@@ -225,7 +225,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[super dealloc];
 }
 
 @end

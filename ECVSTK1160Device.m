@@ -248,7 +248,6 @@ enum {
 	NSUInteger const bytesPerRow = ECVPixelFormatBytesPerPixel(pixelFormat) * inputSize.width;
 	ECVPointerPixelBuffer *const buffer = [[ECVPointerPixelBuffer alloc] initWithPixelSize:inputSize bytesPerRow:bytesPerRow pixelFormat:pixelFormat bytes:bytes + skip validRange:NSMakeRange(_offset, realLength)];
 	[storage drawPixelBuffer:buffer atPoint:(ECVIntegerPoint){-8, 0}];
-	[buffer release];
 	_offset += realLength;
 }
 
@@ -258,9 +257,6 @@ enum {
 {
 	[_SAA711XChip setDevice:nil];
 	[_VT1612AChip setDevice:nil];
-	[_SAA711XChip release];
-	[_VT1612AChip release];
-	[super dealloc];
 }
 
 #pragma mark -ECVCaptureDevice<ECVCaptureDeviceConfiguring>

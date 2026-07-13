@@ -32,8 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 + (NSMenu *)menuWithVideoFormats:(NSSet *const)formats
 {
-	NSMenu *const menu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
-	NSMutableSet *const set = [[formats mutableCopy] autorelease];
+	NSMenu *const menu = [[NSMenu alloc] initWithTitle:@""];
+	NSMutableSet *const set = [formats mutableCopy];
 	NSMenuItem *const label60Hz = [menu addItemWithTitle:NSLocalizedString(@"60Hz", nil) action:@selector(ECVDisabledMenuItemSelector) keyEquivalent:@""];
 	[ECVVideoFormat_NTSC_M _addFromSet:set toMenu:menu];
 	[ECVVideoFormat_PAL_60 _addFromSet:set toMenu:menu];
@@ -55,7 +55,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 }
 + (id)format
 {
-	return [[[self alloc] init] autorelease];
+	return [[self alloc] init];
 }
 
 #pragma mark +ECVVideoFormat(Private)
@@ -80,7 +80,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)addToMenu:(NSMenu *const)menu
 {
-	NSMenuItem *const item = [[[NSMenuItem alloc] initWithTitle:[self localizedName] action:NULL keyEquivalent:@""] autorelease];
+	NSMenuItem *const item = [[NSMenuItem alloc] initWithTitle:[self localizedName] action:NULL keyEquivalent:@""];
 	[item setIndentationLevel:1];
 	[item setRepresentedObject:self];
 	[menu addItem:item];

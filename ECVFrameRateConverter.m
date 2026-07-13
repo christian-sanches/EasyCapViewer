@@ -115,12 +115,4 @@ static CMTime ECVRationalToCMTime(ECVRational r)
 	return ((NSUInteger *)[_frameRepeatData bytes])[i];
 }
 
-#pragma mark -NSObject
-
-- (void)dealloc
-{
-	[_frameRepeatData release];
-	[super dealloc];
-}
-
 @end

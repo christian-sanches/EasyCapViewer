@@ -96,10 +96,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)dealloc
 {
-	[_videoFormat release];
-	[_deinterlacingMode release];
-	[_lock release];
-	[super dealloc];
 }
 
 #pragma mark -<NSLocking>

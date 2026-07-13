@@ -39,7 +39,7 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 - (NSArray *)targets
 {
 	[_targetsLock readLock];
-	NSArray *const targets = [[_targets copy] autorelease];
+	NSArray *const targets = [_targets copy];
 	[_targetsLock unlock];
 	return targets;
 }
@@ -57,20 +57,19 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 }
 - (ECVAudioTarget *)audioTarget
 {
-	return [[_audioTarget retain] autorelease];
+	return _audioTarget;
 }
 
 #pragma mark -
 
 - (ECVCaptureDevice *)videoDevice
 {
-	return [[_videoDevice retain] autorelease];
+	return _videoDevice;
 }
 - (void)setVideoDevice:(ECVCaptureDevice *const)source
 {
 	if(source == _videoDevice) return;
-	[_videoDevice release];
-	_videoDevice = [source retain];
+	_videoDevice = source;
 	[_videoDevice setCaptureDocument:self];
 
 	// Yes, the audio input really is dependent on the video device.
@@ -125,14 +124,13 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 
 - (ECVAudioInput *)audioDevice
 {
-	return [[_audioDevice retain] autorelease];
+	return _audioDevice;
 }
 - (void)setAudioDevice:(ECVAudioInput *const)device
 {
 	if(!BTEqualObjects(device, _audioDevice)) {
 		[self setPaused:YES];
-		[_audioDevice release];
-		_audioDevice = [device retain];
+		_audioDevice = device;
 		[_audioDevice setDelegate:self];
 		if(_audioDevice) [_audioTarget setInputBasicDescription:[[_audioDevice stream] basicDescription]];
 		[self setPaused:NO];
@@ -200,7 +198,7 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 }
 - (void)makeWindowControllers
 {
-	[self addWindowController:[[[ECVCaptureController alloc] init] autorelease]];
+	[self addWindowController:[[ECVCaptureController alloc] init]];
 }
 
 #pragma mark -
@@ -239,15 +237,6 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 
 	ECVConfigController *const config = [ECVConfigController sharedConfigController];
 	if([config captureDocument] == self) [config setCaptureDocument:nil];
-
-	[_targetsLock release];
-	[_targets release];
-	[_audioTarget release];
-
-	[_videoDevice release];
-	[_audioDevice release];
-
-	[super dealloc];
 }
 
 @end

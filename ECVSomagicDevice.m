@@ -102,7 +102,6 @@ enum {
 	if(main) {
 		ECVPointerPixelBuffer *const b1 = [[ECVPointerPixelBuffer alloc] initWithPixelSize:s bytesPerRow:bytesPerRow pixelFormat:pixelFormat bytes:bytes validRange:NSMakeRange(_offset, main)];
 		[storage drawPixelBuffer:b1 atPoint:(ECVIntegerPoint){-8, 0}];
-		[b1 release];
 		_offset += main;
 	}
 	if(extra) {

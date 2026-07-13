@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 {
 	[NSGraphicsContext saveGraphicsState];
 
-	NSShadow *const s = [[[NSShadow alloc] init] autorelease];
+	NSShadow *const s = [[NSShadow alloc] init];
 	[s setShadowOffset:NSMakeSize(0.0f, -1.0f)];
 	[s setShadowBlurRadius:2.0f];
 	[s set];
@@ -66,7 +66,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 }
 - (NSRect)drawTitle:(NSAttributedString *)title withFrame:(NSRect)frame inView:(NSView *)controlView
 {
-	NSMutableAttributedString *const t = [[title mutableCopy] autorelease];
+	NSMutableAttributedString *const t = [title mutableCopy];
 	[t addAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSColor whiteColor], NSForegroundColorAttributeName,
 		nil] range:NSMakeRange(0, [t length])];

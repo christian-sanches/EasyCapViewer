@@ -37,28 +37,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 void ECVLog(ECVErrorLevel level, NSString *format, ...)
 {
-	NSAutoreleasePool *const pool = [[NSAutoreleasePool alloc] init];
-	va_list arguments;
+	@autoreleasepool {
+		va_list arguments;
 #if defined(ECV_LOG_TO_CONSOLE)
-	va_start(arguments, format);
-	NSLogv(format, arguments);
-	va_end(arguments);
+		va_start(arguments, format);
+		NSLogv(format, arguments);
+		va_end(arguments);
 #endif
 #if defined(ECV_LOG_TO_WINDOW)
-	va_start(arguments, format);
-	[[ECVErrorLogController sharedErrorLogController] logLevel:level format:format arguments:arguments];
-	va_end(arguments);
+		va_start(arguments, format);
+		[[ECVErrorLogController sharedErrorLogController] logLevel:level format:format arguments:arguments];
+		va_end(arguments);
 #endif
 #if defined(ECV_LOG_TO_DESKTOP)
-	NSOutputStream *const stream = [NSOutputStream outputStreamToFileAtPath:[@"~/Desktop/ECVComponent.log" stringByExpandingTildeInPath] append:YES];
-	[stream open];
-	va_start(arguments, format);
-	NSData *const data = [[[[[NSString alloc] initWithFormat:format arguments:arguments] autorelease] stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding];
-	va_end(arguments);
-	[stream write:[data bytes] maxLength:[data length]];
-	[stream close];
+		NSOutputStream *const stream = [NSOutputStream outputStreamToFileAtPath:[@"~/Desktop/ECVComponent.log" stringByExpandingTildeInPath] append:YES];
+		[stream open];
+		va_start(arguments, format);
+		NSData *const data = [[[NSString alloc] initWithFormat:format arguments:arguments] stringByAppendingString:@"\n"];
+		va_end(arguments);
+		[stream write:[data bytes] maxLength:[data length]];
+		[stream close];
 #endif
-	[pool drain];
+	}
 }
 
 #pragma mark -
@@ -208,7 +208,7 @@ NSString *ECVOSStatusToString(OSStatus error)
 		ERROR_CASE(kAudioDevicePermissionsError)
 #endif
 	}
-	return [NSString stringWithFormat:@"Unknown error %ld (%@)", (long)error, [(NSString *)UTCreateStringForOSType((OSType)error) autorelease]];
+	return [NSString stringWithFormat:@"Unknown error %ld (%@)", (long)error, (__bridge_transfer NSString *)UTCreateStringForOSType((OSType)error)];
 }
 NSString *ECVIOKitErrorToString(IOReturn error)
 {

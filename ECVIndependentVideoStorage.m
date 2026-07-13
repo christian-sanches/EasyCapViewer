@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (ECVVideoFrame *)currentFrame
 {
 	[self lock];
-	ECVVideoFrame *const frame = [[_currentFrame retain] autorelease];
+	ECVVideoFrame *const frame = _currentFrame;
 	[self unlock];
 	return frame;
 }
@@ -50,15 +50,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (ECVMutablePixelBuffer *)nextBuffer
 {
 	NSMutableData *const data = [NSMutableData dataWithLength:[self bufferSize]];
-	ECVMutablePixelBuffer *const buffer = [[[ECVDataPixelBuffer alloc] initWithPixelSize:[[self videoFormat] frameSize] bytesPerRow:[self bytesPerRow] pixelFormat:[self pixelFormat] data:data offset:0] autorelease];
+	ECVMutablePixelBuffer *const buffer = [[ECVDataPixelBuffer alloc] initWithPixelSize:[[self videoFormat] frameSize] bytesPerRow:[self bytesPerRow] pixelFormat:[self pixelFormat] data:data offset:0];
 	return buffer;
 }
 - (ECVVideoFrame *)finishedFrameWithFinishedBuffer:(id)buffer
 {
 	[self lock];
-	[_currentFrame release];
 	_currentFrame = [[ECVIndependentVideoFrame alloc] initWithVideoStorage:self data:[buffer mutableData]];
-	ECVVideoFrame *const frame = [[_currentFrame retain] autorelease];
+	ECVVideoFrame *const frame = _currentFrame;
 	[self unlock];
 	return frame;
 }
@@ -67,16 +66,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)empty
 {
-	[_currentFrame release];
 	_currentFrame = nil;
-}
-
-#pragma mark -NSObject
-
-- (void)dealloc
-{
-	[_currentFrame release];
-	[super dealloc];
 }
 
 @end
@@ -88,7 +78,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (id)initWithVideoStorage:(ECVVideoStorage *)storage data:(NSMutableData *)data
 {
 	if((self = [super initWithVideoStorage:storage])) {
-		_data = [data retain];
+		_data = data;
 	}
 	return self;
 }
@@ -115,13 +105,5 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)lock {}
 - (void)unlock {}
-
-#pragma mark -NSObject
-
-- (void)dealloc
-{
-	[_data release];
-	[super dealloc];
-}
 
 @end

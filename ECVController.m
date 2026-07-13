@@ -41,8 +41,11 @@ static NSArray *ECVUSBDevices(void) // TODO: Put this somewhere better.
 	io_service_t service = IO_OBJECT_NULL;
 	while((service = IOIteratorNext(iterator))) {
 		NSMutableDictionary *properties = nil;
-		if(kIOReturnSuccess != ECVIOReturn(IORegistryEntryCreateCFProperties(service, (CFMutableDictionaryRef *)&properties, kCFAllocatorDefault, kNilOptions))) break;
-		[properties autorelease];
+		{
+			CFMutableDictionaryRef cfDict = NULL;
+			if(kIOReturnSuccess != ECVIOReturn(IORegistryEntryCreateCFProperties(service, &cfDict, kCFAllocatorDefault, kNilOptions))) break;
+			properties = (__bridge_transfer NSMutableDictionary *)cfDict;
+		}
 		[devices addObject:[NSString stringWithFormat:@"(%04x:%04x) %@ - %@",
 			[[properties objectForKey:[NSString stringWithUTF8String:kUSBVendorID]] unsignedIntValue],
 			[[properties objectForKey:[NSString stringWithUTF8String:kUSBProductID]] unsignedIntValue],
@@ -132,13 +135,13 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 	for(Class const class in [ECVCaptureDevice deviceClasses]) {
 		NSDictionary *const matchingDict = [class matchingDictionary];
 		io_iterator_t iterator = IO_OBJECT_NULL;
-		if(kIOReturnSuccess != ECVIOReturn(IOServiceAddMatchingNotification(_notificationPort, kIOFirstMatchNotification, (CFDictionaryRef)[matchingDict retain], (IOServiceMatchingCallback)ECVDeviceAdded, class, &iterator))) continue;
+		if(kIOReturnSuccess != ECVIOReturn(IOServiceAddMatchingNotification(_notificationPort, kIOFirstMatchNotification, (__bridge_retained CFDictionaryRef)matchingDict, (IOServiceMatchingCallback)ECVDeviceAdded, (__bridge void *)class, &iterator))) continue;
 		[devices addObjectsFromArray:[class devicesWithIterator:iterator]];
 		[_notifications addObject:[NSNumber numberWithUnsignedInt:iterator]];
 	}
 	ECVLog(ECVNotice, @"USB Devices: %@", ECVUSBDevices());
 	if([devices count]) return [devices makeObjectsPerformSelector:@selector(ECV_display)];
-	NSAlert *const alert = [[[NSAlert alloc] init] autorelease];
+	NSAlert *const alert = [[NSAlert alloc] init];
 	[alert setMessageText:NSLocalizedString(@"No supported capture hardware was found.", nil)];
 	[alert setInformativeText:NSLocalizedString(@"Please connect an EasyCap DC60 to your computer. Please note that the DC60+ is not supported.", nil)];
 	[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
@@ -158,7 +161,7 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 - (id)init
 {
 	if((self = [super init])) {
-		if(!ECVSharedController) ECVSharedController = [self retain];
+		if(!ECVSharedController) ECVSharedController = self;
 		_notificationPort = IONotificationPortCreate(kIOMasterPortDefault);
 		_notifications = [[NSMutableArray alloc] init];
 		CFRunLoopAddSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(_notificationPort), kCFRunLoopDefaultMode);
@@ -170,10 +173,8 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 	CFRunLoopRemoveSource(CFRunLoopGetCurrent(), IONotificationPortGetRunLoopSource(_notificationPort), kCFRunLoopCommonModes);
 	for(NSNumber *const notif in _notifications) IOObjectRelease([notif unsignedIntValue]);
 
-	[_notifications release];
 	IONotificationPortDestroy(_notificationPort);
 	[_userActivityTimer invalidate];
-	[super dealloc];
 }
 
 #pragma mark -NSObject(NSNibAwaking)
@@ -195,7 +196,7 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 - (void)ECV_createDocument
 {
 	if(![self isValid]) return;
-	ECVCaptureDocument *const doc = [[[ECVCaptureDocument alloc] init] autorelease];
+	ECVCaptureDocument *const doc = [[ECVCaptureDocument alloc] init];
 	[doc setVideoDevice:self];
 	[[NSDocumentController sharedDocumentController] addDocument:doc];
 	[doc makeWindowControllers];

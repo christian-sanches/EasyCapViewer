@@ -46,7 +46,6 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 {
 	if((self = [super init])) {
 		if(kAudioFormatLinearPCM != inputDesc.mFormatID) {
-			[self release];
 			return nil;
 		}
 
@@ -68,7 +67,6 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 
 		ECVOSStatus(AudioConverterNew(&_inputStreamDescription, &_outputStreamDescription, &_converter));
 		if(!_converter) {
-			[self release];
 			return nil;
 		}
 		UInt32 quality = kAudioConverterQuality_Max;
@@ -167,10 +165,6 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 - (void)dealloc
 {
 	ECVOSStatus(AudioConverterDispose(_converter));
-	[_lock release];
-	[_unusedBuffers release];
-	[_usedBuffers release];
-	[super dealloc];
 }
 
 @end

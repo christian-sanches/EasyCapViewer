@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 + (id)source
 {
-	return [[[self alloc] init] autorelease];
+	return [[self alloc] init];
 }
 
 #pragma mark -ECVVideoSource

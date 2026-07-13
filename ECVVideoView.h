@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	CVDisplayLinkRef _displayLink;
 	NSRect _outputRect;
 
-	IBOutlet NSObject<ECVVideoViewDelegate> *delegate;
+	IBOutlet __weak NSObject<ECVVideoViewDelegate> *delegate;
 	ECVDependentVideoStorage *_videoStorage;
 	NSSize _aspectRatio;
 	NSRect _cropRect;
@@ -58,13 +58,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 // These methods are thread safe.
 - (ECVDependentVideoStorage *)videoStorage;
 - (void)setVideoStorage:(id)storage;
-@property(assign) NSObject<ECVVideoViewDelegate> *delegate;
+@property(weak) NSObject<ECVVideoViewDelegate> *delegate;
 @property(assign) NSSize aspectRatio;
 @property(assign) NSRect cropRect;
 @property(assign) BOOL vsync;
 @property(assign) GLint magFilter;
 @property(assign) BOOL showDroppedFrames;
-@property(nonatomic, retain) NSCell<ECVVideoViewCell> *cell;
+@property(nonatomic, strong) NSCell<ECVVideoViewCell> *cell;
 - (void)pushFrame:(ECVVideoFrame *)frame;
 
 @end

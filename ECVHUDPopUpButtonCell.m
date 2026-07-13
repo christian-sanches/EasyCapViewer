@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)drawTitleWithFrame:(NSRect)r inView:(NSView *)controlView
 {
-	NSMutableParagraphStyle *const style = [[[NSParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
+	NSMutableParagraphStyle *const style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 	[style setLineBreakMode:NSLineBreakByTruncatingTail];
 	[[self title] drawInRect:[self titleRectForBounds:r] withAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSColor colorWithCalibratedWhite:1.0f alpha:[self isEnabled] ? 1.0f : 0.67f], NSForegroundColorAttributeName,
@@ -55,7 +55,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 {
 	[NSGraphicsContext saveGraphicsState];
 
-	NSShadow *const s = [[[NSShadow alloc] init] autorelease];
+	NSShadow *const s = [[NSShadow alloc] init];
 	[s setShadowOffset:NSMakeSize(0.0f, -1.0f)];
 	[s setShadowBlurRadius:2.0f];
 	[s set];

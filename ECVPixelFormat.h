@@ -35,7 +35,7 @@ static size_t ECVPixelFormatBytesPerPixel(OSType const t)
 		case k2vuyPixelFormat: return 2;
 		case kYVYU422PixelFormat: return 2;
 	}
-	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", [(NSString *)UTCreateStringForOSType(t) autorelease], (unsigned long)t);
+	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", (__bridge_transfer NSString *)UTCreateStringForOSType(t), (unsigned long)t);
 	return 0;
 }
 
@@ -45,7 +45,7 @@ static uint64_t ECVPixelFormatBlackPattern(OSType const t)
 		case k2vuyPixelFormat: return CFSwapInt64HostToBig(0x8010801080108010ULL);
 		case kYVYU422PixelFormat: return CFSwapInt64HostToBig(0x1080108010801080ULL);
 	}
-	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", [(NSString *)UTCreateStringForOSType(t) autorelease], (unsigned long)t);
+	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", (__bridge_transfer NSString *)UTCreateStringForOSType(t), (unsigned long)t);
 	return 0;
 }
 
@@ -55,7 +55,7 @@ static GLenum ECVPixelFormatToGLFormat(OSType const t)
 		case k2vuyPixelFormat: return GL_YCBCR_422_APPLE;
 		case kYVYU422PixelFormat: return GL_YCBCR_422_APPLE;
 	}
-	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", [(NSString *)UTCreateStringForOSType(t) autorelease], (unsigned long)t);
+	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", (__bridge_transfer NSString *)UTCreateStringForOSType(t), (unsigned long)t);
 	return 0;
 }
 
@@ -70,6 +70,6 @@ static GLenum ECVPixelFormatToGLType(OSType const t)
 		case kYVYU422PixelFormat: return GL_UNSIGNED_SHORT_8_8_APPLE;
 #endif
 	}
-	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", [(NSString *)UTCreateStringForOSType(t) autorelease], (unsigned long)t);
+	ECVCAssertNotReached(@"Unknown pixel format '%@' (%lu)", (__bridge_transfer NSString *)UTCreateStringForOSType(t), (unsigned long)t);
 	return 0;
 }

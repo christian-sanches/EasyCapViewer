@@ -290,7 +290,6 @@ static void ECVDrawRect(ECVMutablePixelBuffer *dst, ECVPixelBuffer *src, ECVInte
 - (void)dealloc
 {
 	CVPixelBufferRelease(_pixelBuffer);
-	[super dealloc];
 }
 
 @end
@@ -306,14 +305,14 @@ static void ECVDrawRect(ECVMutablePixelBuffer *dst, ECVPixelBuffer *src, ECVInte
 		_bytesPerRow = bytesPerRow;
 		_pixelFormat = pixelFormat;
 
-		_data = [data retain];
+		_data = data;
 		_offset = offset;
 	}
 	return self;
 }
 - (NSMutableData *)mutableData
 {
-	return [[_data retain] autorelease];
+	return _data;
 }
 
 #pragma mark -ECVMutablePixelBuffer(ECVAbstract)
@@ -358,8 +357,6 @@ static void ECVDrawRect(ECVMutablePixelBuffer *dst, ECVPixelBuffer *src, ECVInte
 
 - (void)dealloc
 {
-	[_data release];
-	[super dealloc];
 }
 
 @end

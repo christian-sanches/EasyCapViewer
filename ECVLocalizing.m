@@ -188,7 +188,7 @@ static BOOL (*ECVNSBundleLoadNibFileExternalNameTableWithZone)(id, SEL, NSString
 + (BOOL)loadNibFile:(NSString *)fileName externalNameTable:(NSDictionary *)context withZone:(NSZone *)zone
 {
 	if(![context objectForKey:NSNibTopLevelObjects]) {
-		NSMutableDictionary *const dict = [[context mutableCopy] autorelease];
+		NSMutableDictionary *const dict = [context mutableCopy];
 		[dict setObject:[NSMutableArray array] forKey:NSNibTopLevelObjects];
 		context = dict;
 	}

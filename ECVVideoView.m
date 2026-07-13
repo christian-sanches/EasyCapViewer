@@ -49,9 +49,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 static CVReturn ECVDisplayLinkOutputCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *inNow, const CVTimeStamp *inOutputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, ECVVideoView *view)
 {
-	NSAutoreleasePool *const pool = [[NSAutoreleasePool alloc] init];
-	[view _drawOneFrame];
-	[pool drain];
+	@autoreleasepool {
+		[view _drawOneFrame];
+	}
 	return kCVReturnSuccess;
 }
 
@@ -73,7 +73,7 @@ static CVReturn ECVDisplayLinkOutputCallback(CVDisplayLinkRef displayLink, const
 
 - (ECVDependentVideoStorage *)videoStorage
 {
-	return [[_videoStorage retain] autorelease];
+	return _videoStorage;
 }
 - (void)setVideoStorage:(id)storage
 {
@@ -84,11 +84,8 @@ static CVReturn ECVDisplayLinkOutputCallback(CVDisplayLinkRef displayLink, const
 	ECVGLError(glEnable(GL_TEXTURE_RECTANGLE_EXT));
 
 	if(_textureNames) ECVGLError(glDeleteTextures((GLint)[_videoStorage numberOfBuffers], [_textureNames bytes]));
-	[_textureNames release];
-	[_frames release];
 
-	[_videoStorage release];
-	_videoStorage = [storage retain];
+	_videoStorage = storage;
 
 	ECVGLError(glTextureRangeAPPLE(GL_TEXTURE_RECTANGLE_EXT, (GLint)[_videoStorage bufferSize] * (GLint)[_videoStorage numberOfBuffers], [_videoStorage allBufferBytes]));
 	_textureNames = [[NSMutableData alloc] initWithLength:[_videoStorage numberOfBuffers] * sizeof(GLuint)];
@@ -176,13 +173,12 @@ static CVReturn ECVDisplayLinkOutputCallback(CVDisplayLinkRef displayLink, const
 @synthesize showDroppedFrames = _showDroppedFrames;
 - (NSCell<ECVVideoViewCell> *)cell
 {
-	return [[_cell retain] autorelease];
+	return _cell;
 }
 - (void)setCell:(NSCell<ECVVideoViewCell> *)cell
 {
 	if(cell == _cell) return;
-	[_cell release];
-	_cell = [cell retain];
+	_cell = cell;
 	[self setNeedsDisplay:YES];
 	[[self window] invalidateCursorRectsForView:self];
 }
@@ -212,7 +208,7 @@ static CVReturn ECVDisplayLinkOutputCallback(CVDisplayLinkRef displayLink, const
 
 	ECVVideoFrame *frame = nil;
 	while([_frames count]) {
-		frame = [[[_frames lastObject] retain] autorelease];
+		frame = [_frames lastObject];
 		[_frames removeLastObject];
 		if([frame lockIfHasBytes]) break;
 		frame = nil;
@@ -418,12 +414,7 @@ static CVReturn ECVDisplayLinkOutputCallback(CVDisplayLinkRef displayLink, const
 	ECVGLError(glTextureRangeAPPLE(GL_TEXTURE_RECTANGLE_EXT, 0, NULL));
 	ECVGLError(glDeleteTextures((GLint)[[self videoStorage] numberOfBuffers], [_textureNames bytes]));
 
-	[_videoStorage release];
-	[_textureNames release];
-	[_frames release];
 	CVDisplayLinkRelease(_displayLink);
-	[_cell release];
-	[super dealloc];
 }
 
 #pragma mark -NSObject(NSNibAwaking)
@@ -433,7 +424,7 @@ static CVReturn ECVDisplayLinkOutputCallback(CVDisplayLinkRef displayLink, const
 	_cropRect = ECVUncroppedRect;
 	_magFilter = GL_LINEAR;
 	ECVCVReturn(CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink));
-	ECVCVReturn(CVDisplayLinkSetOutputCallback(_displayLink, (CVDisplayLinkOutputCallback)ECVDisplayLinkOutputCallback, self));
+	ECVCVReturn(CVDisplayLinkSetOutputCallback(_displayLink, (CVDisplayLinkOutputCallback)ECVDisplayLinkOutputCallback, (__bridge void *)self));
 	[self windowDidChangeScreenProfile];
 }
 

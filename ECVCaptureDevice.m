@@ -115,7 +115,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 
 + (NSArray *)deviceClasses
 {
-	return [[ECVDeviceClasses copy] autorelease];
+	return [ECVDeviceClasses copy];
 }
 + (void)registerDeviceClass:(Class const)cls
 {
@@ -139,7 +139,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 {
 	NSDictionary *const deviceDict = [self deviceDictionary];
 	if(!deviceDict) return nil;
-	NSMutableDictionary *const matchingDict = [(NSMutableDictionary *)IOServiceMatching(kIOUSBDeviceClassName) autorelease];
+	NSMutableDictionary *const matchingDict = (__bridge_transfer NSMutableDictionary *)IOServiceMatching(kIOUSBDeviceClassName);
 	[matchingDict setObject:[deviceDict objectForKey:@"ECVVendorID"] forKey:[NSString stringWithUTF8String:kUSBVendorID]];
 	[matchingDict setObject:[deviceDict objectForKey:@"ECVProductID"] forKey:[NSString stringWithUTF8String:kUSBProductID]];
 	return matchingDict;
@@ -149,7 +149,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 	NSMutableArray *const devices = [NSMutableArray array];
 	io_service_t service = IO_OBJECT_NULL;
 	while((service = IOIteratorNext(iterator))) {
-		ECVCaptureDevice *const device = [[[self alloc] initWithService:service] autorelease];
+		ECVCaptureDevice *const device = [[self alloc] initWithService:service];
 		if(device) [devices addObject:device];
 		IOObjectRelease(service);
 	}
@@ -227,7 +227,6 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 - (id)initWithService:(io_service_t const)service
 {
 	if(!service) {
-		[self release];
 		return nil;
 	}
 	if((self = [super init])) {
@@ -238,10 +237,13 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 		_readLock = [[NSLock alloc] init];
 
 		NSMutableDictionary *properties = nil;
-		(void)ECVIOReturn(IORegistryEntryCreateCFProperties(_service, (CFMutableDictionaryRef *)&properties, kCFAllocatorDefault, kNilOptions));
-		[properties autorelease];
-		_productName = [[[properties objectForKey:[NSString stringWithUTF8String:kUSBProductString]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] copy];
-		if(![_productName length]) _productName = [NSLocalizedString(@"Capture Device", nil) retain];
+		{
+			CFMutableDictionaryRef cfDict = NULL;
+			(void)ECVIOReturn(IORegistryEntryCreateCFProperties(_service, &cfDict, kCFAllocatorDefault, kNilOptions));
+			properties = (__bridge_transfer NSMutableDictionary *)cfDict;
+		}
+		_productName = [[properties objectForKey:[NSString stringWithUTF8String:kUSBProductString]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] copy];
+		if(![_productName length]) _productName = NSLocalizedString(@"Capture Device", nil);
 
 		NSString *const mainSuiteName = [[[NSBundle bundleForClass:[self class]] infoDictionary] objectForKey:@"ECVMainSuiteName"];
 		NSString *const deviceSuiteName = [NSString stringWithFormat:@"%@.%04lx.%04lx", mainSuiteName, [[properties objectForKey:[NSString stringWithUTF8String:kUSBVendorID]] unsignedIntegerValue], [[properties objectForKey:[NSString stringWithUTF8String:kUSBProductID]] unsignedIntegerValue]];
@@ -270,7 +272,6 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 
 		if(kIOReturnSuccess != err) {
 			ECVLog(ECVError, @"Device %@ failed to open", self);
-			[self release];
 			return nil;
 		}
 
@@ -301,13 +302,12 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 {
 	if(mode == _deinterlacingMode) return;
 	[_captureDocument setPaused:YES];
-	[_deinterlacingMode release];
 	_deinterlacingMode = [mode copy];
 	[self _updateVideoStorage];
 	[_captureDocument setPaused:NO];
 	[[NSUserDefaults standardUserDefaults] setInteger:[mode deinterlacingModeType] forKey:ECVDeinterlacingModeKey];
 }
-- (ECVVideoStorage *)videoStorage { return [[_videoStorage retain] autorelease]; }
+- (ECVVideoStorage *)videoStorage { return _videoStorage; }
 
 #pragma mark -
 
@@ -329,15 +329,15 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 	UInt64 currentFrameNumber = 0;
 	BOOL read = YES;
 	while(read) {
-		NSAutoreleasePool *const pool = [[NSAutoreleasePool alloc] init];
-		NSUInteger i;
-		for(i = 0; i < numberOfTransfers; ++i) {
-			ECVUSBTransfer *const transfer = transfers + i;
-			read = read && [self _parseTransfer:transfer numberOfMicroframes:microframesPerTransfer frameRequestSize:frameRequestSize millisecondInterval:millisecondInterval];
-			read = read && [self _readTransfer:transfer numberOfMicroframes:microframesPerTransfer pipeRef:pipe frameNumber:&currentFrameNumber microsecondsInFrame:microsecondsInFrame millisecondInterval:millisecondInterval];
+		@autoreleasepool {
+			NSUInteger i;
+			for(i = 0; i < numberOfTransfers; ++i) {
+				ECVUSBTransfer *const transfer = transfers + i;
+				read = read && [self _parseTransfer:transfer numberOfMicroframes:microframesPerTransfer frameRequestSize:frameRequestSize millisecondInterval:millisecondInterval];
+				read = read && [self _readTransfer:transfer numberOfMicroframes:microframesPerTransfer pipeRef:pipe frameNumber:&currentFrameNumber microsecondsInFrame:microsecondsInFrame millisecondInterval:millisecondInterval];
+			}
+			if(![self keepReading]) read = NO;
 		}
-		if(![self keepReading]) read = NO;
-		[pool drain];
 	}
 }
 - (BOOL)keepReading
@@ -392,9 +392,8 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 - (void)_updateVideoStorage
 {
 	[_captureDocument setPaused:YES];
-	[_videoStorage release];
 	_videoStorage = nil;
-	if([self videoFormat]) _videoStorage = [[[ECVVideoStorage preferredVideoStorageClass] alloc] initWithVideoFormat:[self videoFormat] deinterlacingMode:[self deinterlacingMode] pixelFormat:[self pixelFormat]];
+	if([self videoFormat]) _videoStorage = [[ECVVideoStorage preferredVideoStorageClass] alloc] initWithVideoFormat:[self videoFormat] deinterlacingMode:[self deinterlacingMode] pixelFormat:[self pixelFormat]];
 	[_captureDocument setPaused:NO];
 }
 
@@ -415,44 +414,42 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 }
 - (ECVUSBTransferList *)_transferListWithFrameRequestSize:(NSUInteger const)frameRequestSize
 {
-	return [[[ECVUSBTransferList alloc] initWithInterface:_USBInterface numberOfTransfers:32 microframesPerTransfer:32 frameRequestSize:frameRequestSize] autorelease];
+	return [[ECVUSBTransferList alloc] initWithInterface:_USBInterface numberOfTransfers:32 microframesPerTransfer:32 frameRequestSize:frameRequestSize];
 }
 
 - (void)_read
 {
-	NSAutoreleasePool *const pool = [[NSAutoreleasePool alloc] init];
-	[_readThreadLock lock];
-	if([self _keepReading]) {
-		ECVLog(ECVNotice, @"Starting device %@.", [self name]);
-		(void)[_captureDocument retain]; // We need it for -pushVideoFrame:. Is this the best solution?
+	@autoreleasepool {
+		[_readThreadLock lock];
+		if([self _keepReading]) {
+			ECVLog(ECVNotice, @"Starting device %@.", [self name]);
 
-		IOReturn err = kIOReturnSuccess;
-		err = err ?: ((_USBInterface = [[self class] USBInterfaceWithDevice:_USBDevice]) ? kIOReturnSuccess : kIOReturnError);
+			IOReturn err = kIOReturnSuccess;
+			err = err ?: ((_USBInterface = [[self class] USBInterfaceWithDevice:_USBDevice]) ? kIOReturnSuccess : kIOReturnError);
 
-		err = err ?: ECVIOReturn((*_USBInterface)->USBInterfaceOpen(_USBInterface));
-		err = err ?: ECVIOReturn((*_USBInterface)->CreateInterfaceAsyncEventSource(_USBInterface, &_ignoredEventSource));
-		CFRunLoopAddSource(CFRunLoopGetCurrent(), _ignoredEventSource, kCFRunLoopCommonModes);
+			err = err ?: ECVIOReturn((*_USBInterface)->USBInterfaceOpen(_USBInterface));
+			err = err ?: ECVIOReturn((*_USBInterface)->CreateInterfaceAsyncEventSource(_USBInterface, &_ignoredEventSource));
+			CFRunLoopAddSource(CFRunLoopGetCurrent(), _ignoredEventSource, kCFRunLoopCommonModes);
 
-		if(err) {
-			// Do nothing.
-		} else if([self _microsecondsInFrame] > [self maximumMicrosecondsInFrame]) {
-			ECVLog(ECVError, @"USB bus too slow (%lu > %lu).", (unsigned long)[self _microsecondsInFrame], (unsigned long)[self maximumMicrosecondsInFrame]);
-		} else {
-			[self read];
+			if(err) {
+				// Do nothing.
+			} else if([self _microsecondsInFrame] > [self maximumMicrosecondsInFrame]) {
+				ECVLog(ECVError, @"USB bus too slow (%lu > %lu).", (unsigned long)[self _microsecondsInFrame], (unsigned long)[self maximumMicrosecondsInFrame]);
+			} else {
+				[self read];
+			}
+
+			if(_ignoredEventSource) {
+				CFRunLoopSourceInvalidate(_ignoredEventSource);
+				CFRelease(_ignoredEventSource);
+			}
+			if(_USBInterface) (*_USBInterface)->Release(_USBInterface);
+			_USBInterface = NULL;
+
+			ECVLog(ECVNotice, @"Stopping device %@.", [self name]);
 		}
-
-		if(_ignoredEventSource) {
-			CFRunLoopSourceInvalidate(_ignoredEventSource);
-			CFRelease(_ignoredEventSource);
-		}
-		if(_USBInterface) (*_USBInterface)->Release(_USBInterface);
-		_USBInterface = NULL;
-
-		[_captureDocument release];
-		ECVLog(ECVNotice, @"Stopping device %@.", [self name]);
+		[_readThreadLock unlock];
 	}
-	[_readThreadLock unlock];
-	[pool drain];
 }
 - (BOOL)_keepReading
 {
@@ -511,16 +508,6 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 
 	IOObjectRelease(_service);
 	IOObjectRelease(_deviceRemovedNotification);
-
-	[_productName release];
-
-	[_deinterlacingMode release];
-	[_videoSource release];
-	[_videoFormat release];
-
-	[_videoStorage release];
-
-	[super dealloc];
 }
 
 
@@ -543,14 +530,13 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 
 - (ECVVideoSource *)videoSource
 {
-	return [[_videoSource retain] autorelease];
+	return _videoSource;
 }
 - (void)setVideoSource:(ECVVideoSource *const)source
 {
 	if(BTEqualObjects(source, _videoSource)) return;
 	[_captureDocument setPaused:YES];
-	[_videoSource release];
-	_videoSource = [source retain];
+	_videoSource = source;
 	[_captureDocument setPaused:NO];
 	NSString *const key = [NSString stringWithFormat:@"%@.%@", ECVVideoSourceKey, NSStringFromClass([self class])];
 	[[NSUserDefaults standardUserDefaults] setObject:[_videoSource serializedValue] forKey:key];
@@ -564,14 +550,13 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 }
 - (ECVVideoFormat *)videoFormat
 {
-	return [[_videoFormat retain] autorelease];
+	return _videoFormat;
 }
 - (void)setVideoFormat:(ECVVideoFormat *const)format
 {
 	if(BTEqualObjects(format, _videoFormat)) return;
 	[_captureDocument setPaused:YES];
-	[_videoFormat release];
-	_videoFormat = [format retain];
+	_videoFormat = format;
 	[self _updateVideoStorage];
 	[_captureDocument setPaused:NO];
 	NSString *const key = [NSString stringWithFormat:@"%@.%@", ECVVideoFormatKey, NSStringFromClass([self class])];

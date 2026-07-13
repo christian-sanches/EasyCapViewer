@@ -67,11 +67,11 @@ static ECVErrorLogController *ECVSharedErrorLogController;
 		[NSFont systemFontOfSize:[NSFont systemFontSize]], NSFontAttributeName,
 		color, NSForegroundColorAttributeName,
 		nil];
-	[self performSelectorOnMainThread:@selector(_mainThread_logAttributedString:) withObject:[[[NSAttributedString alloc] initWithString:string attributes:attributes] autorelease] waitUntilDone:NO];
+	[self performSelectorOnMainThread:@selector(_mainThread_logAttributedString:) withObject:[[NSAttributedString alloc] initWithString:string attributes:attributes] waitUntilDone:NO];
 }
 - (void)logLevel:(ECVErrorLevel)level format:(NSString *)format arguments:(va_list)arguments
 {
-	[self logLevel:level message:[[[NSString alloc] initWithFormat:format arguments:arguments] autorelease]];
+	[self logLevel:level message:[[NSString alloc] initWithFormat:format arguments:arguments]];
 }
 - (void)logLevel:(ECVErrorLevel)level format:(NSString *)format, ...
 {
@@ -97,7 +97,7 @@ static ECVErrorLogController *ECVSharedErrorLogController;
 	[super windowDidLoad];
 	[[errorLogTextView textStorage] setAttributedString:_errorLog];
 
-	NSToolbar *const toolbar = [[[NSToolbar alloc] initWithIdentifier:@"ECVErrorLogControllerToolbar1"] autorelease];
+	NSToolbar *const toolbar = [[NSToolbar alloc] initWithIdentifier:@"ECVErrorLogControllerToolbar1"];
 	[toolbar setDelegate:self];
 	[toolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
 	[toolbar setSizeMode:NSToolbarSizeModeSmall];
@@ -112,11 +112,6 @@ static ECVErrorLogController *ECVSharedErrorLogController;
 		_errorLog = [[NSMutableAttributedString alloc] init];
 	}
 	return self;
-}
-- (void)dealloc
-{
-	[_errorLog release];
-	[super dealloc];
 }
 
 #pragma mark -NSObject(NSToolbarItemValidation)
@@ -133,7 +128,7 @@ static ECVErrorLogController *ECVSharedErrorLogController;
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)ident willBeInsertedIntoToolbar:(BOOL)flag
 {
 	NSParameterAssert([ident isEqualToString:ECVClearLogItemIdentifier]);
-	NSToolbarItem *const item = [[[NSToolbarItem alloc] initWithItemIdentifier:ident] autorelease];
+	NSToolbarItem *const item = [[NSToolbarItem alloc] initWithItemIdentifier:ident];
 	[item setImage:[NSImage imageNamed:@"Log-Clear"]];
 	[item setLabel:NSLocalizedString(@"Clear Log", nil)];
 	[item setAction:@selector(clearLog:)];

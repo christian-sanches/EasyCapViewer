@@ -120,10 +120,10 @@ static ECVRectEdgeMask const ECVHandlePositions[] = {
 			return [NSCursor resizeUpDownCursor];
 		case ECVMinXMinYCorner:
 		case ECVMaxXMaxYCorner:
-			return [[[NSCursor alloc] initWithImage:[NSImage imageNamed:@"Cursor-Resize-135"] hotSpot:NSMakePoint(8.0f, 8.0f)] autorelease];
+			return [[NSCursor alloc] initWithImage:[NSImage imageNamed:@"Cursor-Resize-135"] hotSpot:NSMakePoint(8.0f, 8.0f)];
 		case ECVMinXMaxYCorner:
 		case ECVMaxXMinYCorner:
-			return [[[NSCursor alloc] initWithImage:[NSImage imageNamed:@"Cursor-Resize-45"] hotSpot:NSMakePoint(8.0f, 8.0f)] autorelease];
+			return [[NSCursor alloc] initWithImage:[NSImage imageNamed:@"Cursor-Resize-45"] hotSpot:NSMakePoint(8.0f, 8.0f)];
 		default:
 			return [NSCursor arrowCursor];
 	}
@@ -170,8 +170,6 @@ static ECVRectEdgeMask const ECVHandlePositions[] = {
 - (void)dealloc
 {
 	ECVGLError(glDeleteTextures(1, &_handleTextureName));
-	[_handleRep release];
-	[super dealloc];
 }
 
 #pragma mark -<ECVVideoViewCell>

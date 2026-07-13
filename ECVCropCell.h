@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 @interface ECVCropCell : NSCell <ECVVideoViewCell>
 {
 	@private
-	IBOutlet NSObject<ECVCropCellDelegate> *delegate;
+	IBOutlet __weak NSObject<ECVCropCellDelegate> *delegate;
 	NSRect _cropRect;
 	NSRect _tempCropRect;
 	NSBitmapImageRep *_handleRep;
@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 }
 
 - (id)initWithOpenGLContext:(NSOpenGLContext *)context;
-@property(assign) NSObject<ECVCropCellDelegate> *delegate;
+@property(weak) NSObject<ECVCropCellDelegate> *delegate;
 @property(nonatomic, assign) NSRect cropRect;
 
 - (NSRect)maskRectWithCropRect:(NSRect)crop frame:(NSRect)frame;

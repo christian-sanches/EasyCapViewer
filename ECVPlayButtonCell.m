@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 + (NSImage *)playButtonImage
 {
-	NSBitmapImageRep *const rep = [[[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL pixelsWide:ECVPlayButtonSize pixelsHigh:ECVPlayButtonSize bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bytesPerRow:ECVPlayButtonSize * 4 bitsPerPixel:0] autorelease];
+	NSBitmapImageRep *const rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL pixelsWide:ECVPlayButtonSize pixelsHigh:ECVPlayButtonSize bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bytesPerRow:ECVPlayButtonSize * 4 bitsPerPixel:0];
 	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:rep]];
 
 	[[NSColor clearColor] set];
@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	[[NSColor colorWithCalibratedWhite:0.5f alpha:0.67f] set];
 	[[NSBezierPath bezierPathWithOvalInRect:NSInsetRect(b, 0.5f, 0.5f)] fill];
 
-	NSShadow *const s = [[[NSShadow alloc] init] autorelease];
+	NSShadow *const s = [[NSShadow alloc] init];
 	[s setShadowBlurRadius:4.0f];
 	[s setShadowOffset:NSMakeSize(0.0f, -2.0f)];
 	[s set];
@@ -56,7 +56,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	[iconPath closePath];
 	[iconPath fill];
 
-	NSImage *const image = [[[NSImage alloc] initWithSize:NSMakeSize(ECVPlayButtonSize, ECVPlayButtonSize)] autorelease];
+	NSImage *const image = [[NSImage alloc] initWithSize:NSMakeSize(ECVPlayButtonSize, ECVPlayButtonSize)];
 	[image addRepresentation:rep];
 	return image;
 }
@@ -66,7 +66,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (id)initWithOpenGLContext:(NSOpenGLContext *)context
 {
 	if((self = [super init])) {
-		_context = [context retain];
+		_context = context;
 	}
 	return self;
 }
@@ -88,8 +88,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (void)dealloc
 {
 	ECVGLError(glDeleteTextures(1, &_textureName));
-	[_context release];
-	[super dealloc];
 }
 
 #pragma mark -<ECVVideoViewCell>
