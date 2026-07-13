@@ -1,6 +1,6 @@
 # EasyCapViewer — Modernization Plan
 
-**Target:** Native Apple Silicon macOS 13.0+ (Ventura and later)  
+**Target:** Native Apple Silicon macOS 14.0+ (Sonoma and later)  
 **Language:** Objective-C with ARC, potential Swift interop  
 **Status:** In Progress  
 
@@ -9,9 +9,9 @@
 ## Progress Tracker
 
 - [x] Phase 1 — Project Setup & Build System
-- [ ] Phase 2 — ARC Migration (Manual → Automatic Reference Counting)
-- [ ] Phase 3 — Remove Dead 32-bit Code (QuickTime Component, QTKit)
-- [ ] Phase 4 — OpenGL → Metal (Video Rendering)
+- [x] Phase 2 — ARC Migration (Manual → Automatic Reference Counting)
+- [x] Phase 3 — Remove Dead 32-bit Code (QuickTime Component, QTKit)
+- [x] Phase 4 — OpenGL → Metal (Video Rendering)
 - [ ] Phase 5 — QuickTime/ICM → AVFoundation (Movie Recording)
 - [ ] Phase 6 — USB Drivers Modernization
 - [ ] Phase 7 — Audio Pipeline Modernization
@@ -23,7 +23,7 @@
 
 ## Overview
 
-EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targets Mac OS X 10.5+. The codebase uses **manual reference counting (MRC)**, **OpenGL** for rendering, **QuickTime/ICM** for movie recording, and **QTKit** for a QuickTime component target. None of these APIs are available or supported on modern macOS / Apple Silicon.
+EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–4, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, and **OpenGL rendering has been replaced with Metal**. The remaining work is replacing QuickTime/ICM movie recording with AVFoundation.
 
 ### What works today on Apple Silicon
 | API | Status | Notes |
@@ -37,15 +37,16 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 | Swift / Objective-C runtime | ✅ Still works | ARC, modern ObjC features |
 
 ### What is dead and must be replaced
-| API | Status | Replacement |
-|-----|--------|-------------|
-| OpenGL (`NSOpenGLView`, `NSOpenGLContext`, `glTexImage2D`) | ❌ Deprecated 10.14, no future | **Metal** + `MTKView` |
-| QuickTime (`EnterMovies`, `ICMCompressionSession`, `Movie`, `Track`, `Media`) | ❌ Removed 10.15 | **AVFoundation** (`AVAssetWriter`, `AVAssetExportSession`) |
-| QTKit | ❌ Removed 10.15 | **Remove entirely** (component target) |
-| Carbon (parts used) | ⚠️ Mostly deprecated | Replace with Cocoa equivalents |
-| `NSAutoreleasePool` | ⚠️ ARC replacement | `@autoreleasepool {}` |
-| Manual retain/release | ⚠️ ARC replacement | Enable ARC compiler flag |
-| `CVDisplayLink` | ⚠️ Deprecated 14.0 | `CADisplayLink` (macOS 14+) or keep as-is with fallback |
+| API | Status | Replacement | Phase |
+|-----|--------|-------------|-------|
+| OpenGL (`NSOpenGLView`, `NSOpenGLContext`, `glTexImage2D`) | ~~Deprecated 10.14~~ ✅ Removed | **Metal** + `MTKView` | Phase 4 ✓ |
+| QuickTime (`EnterMovies`, `ICMCompressionSession`, `Movie`, `Track`, `Media`) | ~~Removed 10.15~~ ✅ Removed | **AVFoundation** (`AVAssetWriter`, `AVAssetWriterInput`) | Phase 3 ✓ (recording rewrite: Phase 5) |
+| QTKit | ~~Removed 10.15~~ ✅ Removed | **Remove entirely** (component target) | Phase 3 ✓ |
+| ECVICM.h (ICM macros) | ~~32-bit only~~ ✅ Removed | AVFoundation has its own API | Phase 3 ✓ |
+| Carbon (parts used) | ⚠️ Mostly deprecated | Replace with Cocoa equivalents | — |
+| `NSAutoreleasePool` | ~~ARC replacement~~ ✅ Done | `@autoreleasepool {}` | Phase 2 ✓ |
+| Manual retain/release | ~~ARC replacement~~ ✅ Done | Enable ARC compiler flag | Phase 2 ✓ |
+| `CVDisplayLink` | ⚠️ Deprecated 14.0 | `CADisplayLink` (macOS 14+) | Phase 4 ✓ (now using MTKView's built-in display link) |
 
 ---
 
@@ -62,82 +63,84 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 | `ECVFushicaiDevice.h/m` | Fushicai | NTSC/PAL mode switching |
 | `ECVDevices.plist` | — | USB vendor/product ID database |
 
-### Core Architecture — **Keep & Modernize**
-| File | Role | Changes Needed |
-|------|------|----------------|
-| `ECVController.h/m` | App controller (NSDocumentController) | IOKit enumeration OK; remove MRC |
-| `ECVCaptureDocument.h/m` | Document model (NSDocument) | Core logic OK; remove MRC, update recording |
-| `ECVCaptureDevice.h/m` | Abstract capture device | OK; remove MRC |
-| `ECVUSBTransferList.h/m` | Isochronous USB ring buffer | IOKit OK; remove MRC |
-| `ECVVideoSource.h/m` | Video source abstraction | OK; remove MRC |
-| `ECVVideoFormat.h/m` | Video format (resolution, framerate) | OK; remove MRC |
-| `ECVPixelFormat.h` | Pixel format constants | OK as-is |
+### Core Architecture — ARC Migrated, Deprecations Fixed
+| File | Role | Notes |
+|------|------|-------|
+| `ECVController.h/m` | App controller (NSDocumentController) | IOKit enumeration OK; ARC migrated; deprecation fixes |
+| `ECVCaptureDocument.h/m` | Document model (NSDocument) | ARC migrated; recording stub pending Phase 5 |
+| `ECVCaptureDevice.h/m` | Abstract capture device | ARC migrated; deprecation fixes |
+| `ECVUSBTransferList.h/m` | Isochronous USB ring buffer | IOKit OK; ARC migrated |
+| `ECVVideoSource.h/m` | Video source abstraction | OK |
+| `ECVVideoFormat.h/m` | Video format (resolution, framerate) | OK |
+| `ECVPixelFormat.h` | Pixel format constants | OpenGL imports removed; Metal helpers added |
 | `ECVDeinterlacingMode.h/m` | 7 deinterlacing modes | OK; Accelerate still works |
 | `ECVRational.h/m` | Rational number math | OK as-is |
-| `ECVFrameRateConverter.h/m` | Frame rate conversion | OK; remove MRC |
+| `ECVFrameRateConverter.h/m` | Frame rate conversion | OK |
 
-### Video Rendering — **Full Rewrite Required**
-| File | Current | Target |
-|------|---------|--------|
-| `ECVVideoView.h/m` | `NSOpenGLView` subclass, `glTexImage2D`, PBO textures, `CVDisplayLink` | `MTKView` subclass, Metal texture pipeline, `CADisplayLink` |
-| `ECVOpenGLAdditions.h/m` | OpenGL helper categories | Remove; replace with Metal equivalents |
-| `ECVAppKitAdditions.h` | `ECVLockContext()` — OpenGL lock helper | Remove or replace |
-| `ECVCropCell.h/m` | `NSOpenGLContext`-based crop drawing | Metal overlay or `NSView`-based |
-| `ECVPlayButtonCell.h/m` | `NSOpenGLContext`-based play button | Metal overlay or `NSView`-based |
+### Video Rendering — ~~Full Rewrite Required~~ ✅ Complete (Phase 4)
+| File | Before | After |
+|------|--------|-------|
+| `ECVVideoView.h/m` | `NSOpenGLView` subclass, `glTexImage2D`, PBO textures, `CVDisplayLink` | `MTKView` subclass, delegates rendering to `ECVMetalRenderer` |
+| `ECVMetalRenderer.h/m` | — | **New.** Metal pipeline: YUV→RGB fragment shader, frame queue, texture upload from CVPixelBuffer (UYVY + YVYU) |
+| `ECVMetalShaders.metal` | — | **New.** Vertex shader + BT.601 YCbCr→RGB conversion |
+| `ECVOpenGLAdditions.h/m` | OpenGL helper categories | **Removed** |
+| `ECVAppKitAdditions.h` | `ECVLockContext()` — OpenGL lock helper | Removed; `ECV_textureName` removed |
+| `ECVCropCell.h/m` | `NSOpenGLContext`-based crop drawing | `NSBezierPath`/`NSBitmapImageRep` overlay drawing |
+| `ECVPlayButtonCell.h/m` | `NSOpenGLContext`-based play button | `NSImage`-based overlay drawing |
 
-### Movie Recording — **Full Rewrite Required**
-| File | Current | Target |
-|------|---------|--------|
-| `ECVMovieRecorder.h/m` | QuickTime `ICMCompressionSession`, `Movie`, `Media` | `AVAssetWriter` with `AVAssetWriterInput` |
-| `ECVICM.h` | ICM compression session macros | Remove; AVFoundation has its own API |
-| `ECVComponent.h/m` | QuickTime component (32-bit only) | **Remove entirely** |
-| `ECVComponent.r` | QuickTime component resource | **Remove entirely** |
-| `ECVComponentDispatch.h` | QuickTime dispatch table | **Remove entirely** |
-| `ECVComponent-Info.plist` | QuickTime component plist | **Remove entirely** |
-| `ECVQTKitAdditions.h/m` | QTKit categories | **Remove entirely** |
+### Movie Recording — QuickTime/ICM Removed (Phase 3), AVFoundation Rewrite Pending
+| File | Status | Notes |
+|------|--------|-------|
+| `ECVMovieRecorder.h/m` | Guts removed; stub remains | All QuickTime/ICM code stripped out in Phase 3. Full rewrite with `AVAssetWriter` planned for Phase 5 |
+| `ECVICM.h` | **Removed** (Phase 3) | ICM compression session macros — no longer needed |
+| `ECVComponent.h/m` | **Removed** (Phase 3) | QuickTime component (32-bit only) |
+| `ECVComponent.r` | **Removed** (Phase 3) | QuickTime component resource |
+| `ECVComponentDispatch.h` | **Removed** (Phase 3) | QuickTime dispatch table |
+| `ECVComponent-Info.plist` | **Removed** (Phase 3) | QuickTime component plist |
+| `ECVQTKitAdditions.h/m` | **Removed** (Phase 3) | QTKit categories |
 
-### Audio Pipeline — **Minor Updates**
-| File | Role | Changes Needed |
-|------|------|----------------|
-| `ECVAudioDevice.h/m` | CoreAudio device wrapper | CoreAudio OK; remove MRC |
-| `ECVAudioPipe.h/m` | Audio format conversion pipe | OK; remove MRC |
-| `ECVAudioTarget.h/m` | Audio target abstraction | OK; remove MRC |
+### Audio Pipeline — MRC Removed, CoreAudio OK
+| File | Role | Notes |
+|------|------|-------|
+| `ECVAudioDevice.h/m` | CoreAudio device wrapper | CoreAudio OK; deprecation fixes applied |
+| `ECVAudioPipe.h/m` | Audio format conversion pipe | OK |
+| `ECVAudioTarget.h/m` | Audio target abstraction | OK |
 | `ECVAVTarget.h` | AV target protocol | OK as-is |
 
-### UI Components — **Modernize**
-| File | Role | Changes Needed |
-|------|------|----------------|
-| `ECVCaptureController.h/m` | Capture UI controller | Remove MRC, update recording calls |
-| `ECVConfigController.h/m` | Settings window | Remove MRC |
-| `ECVErrorLogController.h/m` | Error log window | Remove MRC |
-| `MPLWindow.h/m` | Custom NSWindow | Remove MRC |
-| `ECVHUDButtonCell.h/m` | HUD button cell | Remove MRC, may update for modern HUD |
-| `ECVHUDSliderCell.h/m` | HUD slider cell | Remove MRC |
-| `ECVHUDPopUpButtonCell.h/m` | HUD popup cell | Remove MRC |
-| `ECVHUDSwitchButtonCell.h/m` | HUD switch cell | Remove MRC |
-| `ECVTickMarkView.h/m` | Tick mark view | Remove MRC |
-| `ECVDividerView.h/m` | Divider view | Remove MRC |
+### UI Components — Deprecations Fixed
+| File | Role | Notes |
+|------|------|-------|
+| `ECVCaptureController.h/m` | Capture UI controller | Updated: removed `magFilter` usage, init calls updated for Metal renderer |
+| `ECVConfigController.h/m` | Settings window | Deprecation fixes applied |
+| `ECVErrorLogController.h/m` | Error log window | OK |
+| `MPLWindow.h/m` | Custom NSWindow | Deprecation fixes applied |
+| `ECVHUDButtonCell.h/m` | HUD button cell | OK |
+| `ECVHUDSliderCell.h/m` | HUD slider cell | Deprecation fixes applied |
+| `ECVHUDPopUpButtonCell.h/m` | HUD popup cell | Deprecation fixes applied |
+| `ECVHUDSwitchButtonCell.h/m` | HUD switch cell | Deprecation fixes applied |
+| `ECVTickMarkView.h/m` | Tick mark view | OK |
+| `ECVDividerView.h/m` | Divider view | OK |
 | `ECVRectEdgeMask.h/m` | Edge mask constants | OK as-is |
 
-### Utilities — **Keep**
-| File | Role | Changes Needed |
-|------|------|----------------|
-| `ECVDebug.h/m` | Logging, error formatting | Remove MRC |
-| `ECVLocalizing.h/m` | Localization helpers | Remove MRC |
-| `ECVFoundationAdditions.h/m` | Foundation categories | Remove MRC |
-| `ECVPixelBuffer.h/m` | CVPixelBuffer wrapper | Remove MRC |
-| `ECVReadWriteLock.h/m` | Read-write lock | Remove MRC |
-| `EasyCapViewer_Prefix.pch` | Prefix header | Modernize |
+### Utilities — Deprecations Fixed
+| File | Role | Notes |
+|------|------|-------|
+| `ECVDebug.h/m` | Logging, error formatting | `ECVGLError` macro removed; `ECVOpenGLErrorToString` removed |
+| `ECVLocalizing.h/m` | Localization helpers | OK |
+| `ECVFoundationAdditions.h/m` | Foundation categories | Deprecation fixes: `AbsoluteToNanoseconds` → `mach_absolute_time` |
+| `ECVPixelBuffer.h/m` | CVPixelBuffer wrapper | OK |
+| `ECVReadWriteLock.h/m` | Read-write lock | OK |
+| `EasyCapViewer_Prefix.pch` | Prefix header | OK |
 
-### Resources — **Update**
-| File | Changes Needed |
-|------|----------------|
-| `ECVCapture.xib` | Update to modern XIB format |
-| `ECVConfig.xib` | Update to modern XIB format |
-| `ECVErrorLog.xib` | Update to modern XIB format |
-| `ECVMenu.xib` | Update to modern XIB format |
+### Resources — Partially Updated
+| File | Notes |
+|------|-------|
+| `ECVCapture.xib` | Still references `openGLView` — needs update to `MTKView` custom class |
+| `ECVConfig.xib` | OK |
+| `ECVErrorLog.xib` | OK |
+| `ECVMenu.xib` | OK |
 | `EasyCapViewer.icns` | Possibly add @2x icon |
-| `EasyCapViewer-Info.plist` | Update deployment target, remove 32-bit keys |
+| `EasyCapViewer-Info.plist` | ✅ Updated: deployment target 14.0, 32-bit keys removed |
 | Localization `.strings` files | Keep as-is |
 
 ---
@@ -161,29 +164,29 @@ Each phase has its own detailed document:
 
 ## Risk Assessment
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Metal rendering complexity | High | Start with simple texture blit; iterate |
-| AVFoundation recording latency | Medium | Use async writing with buffer queues |
-| USB isochronous transfer changes on Apple Silicon | High | Test early; IOKit USB should work but verify |
-| Missing hardware for testing | High | Acquire EasyCap devices for each chipset |
-| Xcode project format incompatibility | Low | Create new project, migrate sources |
-| Carbon API removal | Low | Only used for minor helpers; replace with Cocoa |
+| Risk | Impact | Mitigation | Status |
+|------|--------|------------|--------|
+| Metal rendering complexity | High | Start with simple texture blit; iterate | ✅ Resolved (Phase 4) |
+| AVFoundation recording latency | Medium | Use async writing with buffer queues | Pending (Phase 5) |
+| USB isochronous transfer changes on Apple Silicon | High | Test early; IOKit USB should work but verify | Pending |
+| Missing hardware for testing | High | Acquire EasyCap devices for each chipset | Pending |
+| Xcode project format incompatibility | Low | Create new project, migrate sources | ✅ Resolved (Phase 1) |
+| Carbon API removal | Low | Only used for minor helpers; replace with Cocoa | ✅ Resolved (Phase 3) |
 
 ---
 
 ## Estimated Effort
 
-| Phase | Estimated Time |
-|-------|---------------|
-| Phase 1 — Project Setup | 1–2 hours |
-| Phase 2 — ARC Migration | 4–8 hours (mechanical but large) |
-| Phase 3 — Remove 32-bit Code | 1–2 hours |
-| Phase 4 — OpenGL → Metal | 2–3 days |
-| Phase 5 — QuickTime → AVFoundation | 2–3 days |
-| Phase 6 — USB Drivers | 1 day (mostly testing) |
-| Phase 7 — Audio Pipeline | 0.5 day |
-| Phase 8 — UI Modernization | 1 day |
-| Phase 9 — Restructuring | 1 day |
-| Phase 10 — Testing | 2–3 days |
-| **Total** | **~2–3 weeks** |
+| Phase | Estimated Time | Status |
+|-------|---------------|--------|
+| Phase 1 — Project Setup | 1–2 hours | ✅ Done |
+| Phase 2 — ARC Migration | 4–8 hours | ✅ Done |
+| Phase 3 — Remove 32-bit Code | 1–2 hours | ✅ Done |
+| Phase 4 — OpenGL → Metal | 2–3 days | ✅ Done |
+| Phase 5 — QuickTime → AVFoundation | 2–3 days | Pending |
+| Phase 6 — USB Drivers | 1 day (mostly testing) | Pending |
+| Phase 7 — Audio Pipeline | 0.5 day | Pending |
+| Phase 8 — UI Modernization | 1 day | Pending |
+| Phase 9 — Restructuring | 1 day | Pending |
+| Phase 10 — Testing | 2–3 days | Pending |
+| **Remaining** | **~8–10 days** | |
