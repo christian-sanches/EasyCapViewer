@@ -25,6 +25,7 @@
 		AA0000021E11A00000000002 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000002 /* MetalKit.framework */; };
 		AA0000021E11A00000000003 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000003 /* CoreMedia.framework */; };
 		AA0000021E11A00000000004 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000004 /* UniformTypeIdentifiers.framework */; };
+		AA0000021E11A00000000005 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000005 /* AVFoundation.framework */; };
 		AA0000061E11A00000000004 /* ECVMetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0000041E11A00000000002 /* ECVMetalRenderer.m */; };
 		AA0000071E11A00000000005 /* ECVMetalShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = AA0000051E11A00000000003 /* ECVMetalShaders.metal */; };
 
@@ -153,6 +154,7 @@
 		AA0000011E11A00000000002 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		AA0000011E11A00000000003 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		AA0000011E11A00000000004 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
+		AA0000011E11A00000000005 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		0E0C489B10B91DC2008731F2 /* ECVMovieRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVMovieRecorder.h; sourceTree = "<group>"; };
 		0E0C489C10B91DC2008731F2 /* ECVMovieRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVMovieRecorder.m; sourceTree = "<group>"; };
 		0E16F6AC10AE92C600730A18 /* SAA711XChip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAA711XChip.h; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 				AA0000021E11A00000000002 /* MetalKit.framework in Frameworks */,
 				AA0000021E11A00000000003 /* CoreMedia.framework in Frameworks */,
 				AA0000021E11A00000000004 /* UniformTypeIdentifiers.framework in Frameworks */,
+				AA0000021E11A00000000005 /* AVFoundation.framework in Frameworks */,
 				1CCD1F6B1A66C8C00000AB56 /* Accelerate.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0E78C9F30FC8FA1000E9C148 /* IOKit.framework in Frameworks */,
@@ -498,6 +501,7 @@
 			isa = PBXGroup;
 			children = (
 				1CCD1F6A1A66C8C00000AB56 /* Accelerate.framework */,
+				AA0000011E11A00000000005 /* AVFoundation.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);

@@ -25,6 +25,20 @@
 	<string>0.6.3a</string>
 	<key>ECVInfoByVideoCodec</key>
 	<dict>
+		<key>'avc1'</key>
+		<dict>
+			<key>ECVCodecLabel</key>
+			<string>H.264 (Hardware Accelerated)</string>
+			<key>ECVConfigurableQuality</key>
+			<true/>
+		</dict>
+		<key>'hvc1'</key>
+		<dict>
+			<key>ECVCodecLabel</key>
+			<string>HEVC / H.265 (Hardware Accelerated)</string>
+			<key>ECVConfigurableQuality</key>
+			<true/>
+		</dict>
 		<key>'jpeg'</key>
 		<dict>
 			<key>ECVCodecLabel</key>
@@ -32,21 +46,22 @@
 			<key>ECVConfigurableQuality</key>
 			<true/>
 		</dict>
-		<key>'mp4v'</key>
+		<key>'yv42'</key>
 		<dict>
 			<key>ECVCodecLabel</key>
-			<string>MPEG-4</string>
+			<string>Apple ProRes 422 (High Quality)</string>
 			<key>ECVConfigurableQuality</key>
-			<true/>
+			<false/>
 		</dict>
 	</dict>
 	<key>ECVMainSuiteName</key>
 	<string>${ECV_BUNDLE_IDENTIFIER}</string>
 	<key>ECVVideoCodecs</key>
 	<array>
+		<string>'avc1'</string>
+		<string>'hvc1'</string>
 		<string>'jpeg'</string>
-		<string>'mp4v'</string>
-		<string>'yuv2'</string>
+		<string>'yv42'</string>
 	</array>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>

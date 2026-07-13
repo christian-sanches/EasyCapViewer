@@ -12,7 +12,7 @@
 - [x] Phase 2 — ARC Migration (Manual → Automatic Reference Counting)
 - [x] Phase 3 — Remove Dead 32-bit Code (QuickTime Component, QTKit)
 - [x] Phase 4 — OpenGL → Metal (Video Rendering)
-- [ ] Phase 5 — QuickTime/ICM → AVFoundation (Movie Recording)
+- [x] Phase 5 — QuickTime/ICM → AVFoundation (Movie Recording)
 - [ ] Phase 6 — USB Drivers Modernization
 - [ ] Phase 7 — Audio Pipeline Modernization
 - [ ] Phase 8 — UI & HUD Modernization
@@ -23,7 +23,7 @@
 
 ## Overview
 
-EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–4, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, and **OpenGL rendering has been replaced with Metal**. The remaining work is replacing QuickTime/ICM movie recording with AVFoundation.
+EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–5, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, and **movie recording has been rewritten from QuickTime/ICM to AVFoundation**. The remaining work is USB drivers, audio pipeline, UI, and project restructuring.
 
 ### What works today on Apple Silicon
 | API | Status | Notes |
@@ -88,10 +88,10 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 | `ECVCropCell.h/m` | `NSOpenGLContext`-based crop drawing | `NSBezierPath`/`NSBitmapImageRep` overlay drawing |
 | `ECVPlayButtonCell.h/m` | `NSOpenGLContext`-based play button | `NSImage`-based overlay drawing |
 
-### Movie Recording — QuickTime/ICM Removed (Phase 3), AVFoundation Rewrite Pending
+### Movie Recording — QuickTime/ICM Removed, AVFoundation Rewrite Complete
 | File | Status | Notes |
 |------|--------|-------|
-| `ECVMovieRecorder.h/m` | Guts removed; stub remains | All QuickTime/ICM code stripped out in Phase 3. Full rewrite with `AVAssetWriter` planned for Phase 5 |
+| `ECVMovieRecorder.h/m` | ✅ Rewritten | Full AVFoundation recording: `AVAssetWriter`, `AVAssetWriterInput`, `AVAssetWriterInputPixelBufferAdaptor` |
 | `ECVICM.h` | **Removed** (Phase 3) | ICM compression session macros — no longer needed |
 | `ECVComponent.h/m` | **Removed** (Phase 3) | QuickTime component (32-bit only) |
 | `ECVComponent.r` | **Removed** (Phase 3) | QuickTime component resource |
@@ -167,7 +167,7 @@ Each phase has its own detailed document:
 | Risk | Impact | Mitigation | Status |
 |------|--------|------------|--------|
 | Metal rendering complexity | High | Start with simple texture blit; iterate | ✅ Resolved (Phase 4) |
-| AVFoundation recording latency | Medium | Use async writing with buffer queues | Pending (Phase 5) |
+| AVFoundation recording latency | Medium | Use async writing with buffer queues | ✅ Resolved (Phase 5) |
 | USB isochronous transfer changes on Apple Silicon | High | Test early; IOKit USB should work but verify | Pending |
 | Missing hardware for testing | High | Acquire EasyCap devices for each chipset | Pending |
 | Xcode project format incompatibility | Low | Create new project, migrate sources | ✅ Resolved (Phase 1) |
@@ -183,10 +183,10 @@ Each phase has its own detailed document:
 | Phase 2 — ARC Migration | 4–8 hours | ✅ Done |
 | Phase 3 — Remove 32-bit Code | 1–2 hours | ✅ Done |
 | Phase 4 — OpenGL → Metal | 2–3 days | ✅ Done |
-| Phase 5 — QuickTime → AVFoundation | 2–3 days | Pending |
+| Phase 5 — QuickTime → AVFoundation | 2–3 days | ✅ Done |
 | Phase 6 — USB Drivers | 1 day (mostly testing) | Pending |
 | Phase 7 — Audio Pipeline | 0.5 day | Pending |
 | Phase 8 — UI Modernization | 1 day | Pending |
 | Phase 9 — Restructuring | 1 day | Pending |
 | Phase 10 — Testing | 2–3 days | Pending |
-| **Remaining** | **~8–10 days** | |
+| **Remaining** | **~5–7 days** | |
