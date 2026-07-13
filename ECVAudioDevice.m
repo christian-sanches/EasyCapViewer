@@ -50,7 +50,9 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	return noErr;
 }
 
-@implementation ECVAudioDevice
+@implementation ECVAudioDevice {
+	AudioDeviceIOProcID _procID;
+}
 
 #pragma mark +NSObject
 
@@ -74,7 +76,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 
 + (NSArray *)allDevices
 {
-	NSMutableArray *const devices = [NSMutableArray array];
+	NSMutableArray *const devices = [NSMutableArray new];
 	UInt32 size = 0;
 	AudioObjectPropertyAddress const addr = {
 		.mSelector = kAudioHardwarePropertyDevices,
@@ -183,18 +185,6 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 
 #pragma mark -
 
-- (NSObject<ECVAudioDeviceDelegate> *)delegate
-{
-	return delegate;
-}
-- (void)setDelegate:(NSObject<ECVAudioDeviceDelegate> *)obj
-{
-	delegate = obj;
-}
-- (AudioDeviceID)deviceID
-{
-	return _deviceID;
-}
 - (BOOL)isInput
 {
 	return [[self class] isInput];
@@ -227,11 +217,6 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &addr, 0, NULL, &nameSize, &name));
 	return (__bridge_transfer NSString *)name;
 }
-- (void)setName:(NSString *)name
-{
-	if(BTEqualObjects(_name, name)) return;
-	_name = [name copy];
-}
 - (NSArray *)streams
 {
 	UInt32 streamIDsSize = 0;
@@ -244,7 +229,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 	AudioStreamID *const streamIDs = malloc(streamIDsSize);
 	ECVOSStatus(AudioObjectGetPropertyData([self deviceID], &addr, 0, NULL, &streamIDsSize, streamIDs));
 	NSUInteger i = 0;
-	NSMutableArray *const streams = [NSMutableArray array];
+	NSMutableArray *const streams = [NSMutableArray new];
 	for(; i < streamIDsSize / sizeof(AudioStreamID); i++) {
 		ECVAudioStream *const stream = [[ECVAudioStream alloc] initWithStreamID:streamIDs[i]];
 		[streams addObject:stream];
@@ -255,7 +240,7 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 - (ECVAudioStream *)stream
 {
 	NSArray *const streams = [self streams];
-	return [streams count] ? [streams objectAtIndex:0] : nil;
+	return [streams count] ? streams[0] : nil;
 }
 
 #pragma mark -
@@ -337,16 +322,12 @@ static OSStatus ECVAudioDeviceIOProc(AudioDeviceID const inDevice, AudioTimeStam
 
 #pragma mark -ECVAudioStream
 
-- (id)initWithStreamID:(AudioStreamID)streamID
+- (instancetype)initWithStreamID:(AudioStreamID)streamID
 {
 	if((self = [super init])) {
 		_streamID = streamID;
 	}
 	return self;
-}
-- (AudioStreamID)streamID
-{
-	return _streamID;
 }
 
 #pragma mark -

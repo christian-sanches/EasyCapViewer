@@ -14,7 +14,7 @@
 - [x] Phase 4 — OpenGL → Metal (Video Rendering)
 - [x] Phase 5 — QuickTime/ICM → AVFoundation (Movie Recording)
 - [x] Phase 6 — USB Drivers Modernization
-- [ ] Phase 7 — Audio Pipeline Modernization
+- [x] Phase 7 — Audio Pipeline Modernization
 - [ ] Phase 8 — UI & HUD Modernization
 - [ ] Phase 9 — Project Folder Restructuring
 - [ ] Phase 10 — Testing, Signing & Distribution
@@ -23,7 +23,7 @@
 
 ## Overview
 
-EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–6, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, and **USB drivers have been modernized** with upgraded interface versions and improved error handling. The remaining work is audio pipeline, UI, and project restructuring.
+EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–7, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, **USB drivers have been modernized** with upgraded interface versions and improved error handling, and the **audio pipeline has been modernized** with modern Objective-C patterns (properties, weak delegates, nullability). The remaining work is UI modernization, project restructuring, and testing.
 
 ### What works today on Apple Silicon
 | API | Status | Notes |
@@ -99,12 +99,12 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 | `ECVComponent-Info.plist` | **Removed** (Phase 3) | QuickTime component plist |
 | `ECVQTKitAdditions.h/m` | **Removed** (Phase 3) | QTKit categories |
 
-### Audio Pipeline — MRC Removed, CoreAudio OK
+### Audio Pipeline — ✅ Complete (Phase 7)
 | File | Role | Notes |
 |------|------|-------|
-| `ECVAudioDevice.h/m` | CoreAudio device wrapper | CoreAudio OK; deprecation fixes applied |
-| `ECVAudioPipe.h/m` | Audio format conversion pipe | OK |
-| `ECVAudioTarget.h/m` | Audio target abstraction | OK |
+| `ECVAudioDevice.h/m` | CoreAudio device wrapper | ✅ Modernized: properties, weak delegate, instancetype, nullability |
+| `ECVAudioPipe.h/m` | Audio format conversion pipe | ✅ Modernized: class extension, nullability, instancetype |
+| `ECVAudioTarget.h/m` | Audio target abstraction | ✅ Modernized: weak captureDocument, literals, nullability |
 | `ECVAVTarget.h` | AV target protocol | OK as-is |
 
 ### UI Components — Deprecations Fixed
@@ -185,8 +185,8 @@ Each phase has its own detailed document:
 | Phase 4 — OpenGL → Metal | 2–3 days | ✅ Done |
 | Phase 5 — QuickTime → AVFoundation | 2–3 days | ✅ Done |
 | Phase 6 — USB Drivers | 1 day (mostly testing) | ✅ Done |
-| Phase 7 — Audio Pipeline | 0.5 day | Pending |
+| Phase 7 — Audio Pipeline | 0.5 day | ✅ Done |
 | Phase 8 — UI Modernization | 1 day | Pending |
 | Phase 9 — Restructuring | 1 day | Pending |
 | Phase 10 — Testing | 2–3 days | Pending |
-| **Remaining** | **~4–6 days** | |
+| **Remaining** | **~3.5–5.5 days** | |
