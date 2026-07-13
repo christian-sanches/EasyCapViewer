@@ -33,6 +33,7 @@
 
 		0E3B7F8B11091253003A8A39 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B3310F679A400935C48 /* InfoPlist.strings */; };
 
+		0E4D778711046F9E00FE3DDC /* EasyCapViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E4D778611046F9E00FE3DDC /* EasyCapViewer.m */; };
 		0E78C93E0FC8F98100E9C148 /* ECVCaptureController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78C93D0FC8F98100E9C148 /* ECVCaptureController.m */; };
 		0E78C9F30FC8FA1000E9C148 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E78C9F20FC8FA1000E9C148 /* IOKit.framework */; };
 		0E78CA4F0FC9128000E9C148 /* ECVController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CA4E0FC9128000E9C148 /* ECVController.m */; };
@@ -556,7 +557,8 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXNativeTarget section */ = {
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* EasyCapViewer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "EasyCapViewer" */;
 			buildPhases = (
@@ -613,7 +615,8 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */ = {
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
