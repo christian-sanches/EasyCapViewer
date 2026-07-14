@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #import <Foundation/NSHFSFileTypes.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#import <IOKit/pwr_mgt/IOPMLib.h>
 
 // Models
 #import "ECVCaptureDocument.h"
@@ -421,11 +422,23 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 {
 	[videoView setVideoStorage:[[self videoDevice] videoStorage]];
 	[videoView startDrawing];
+
+	if (!_sleepAssertionID) {
+		IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleSystemSleep,
+								   kIOPMAssertionLevelOn,
+								   CFSTR("EasyCapViewer is capturing video"),
+								   &_sleepAssertionID);
+	}
 }
 - (void)stop
 {
 	[videoView stopDrawing];
 	[self stopRecording:self];
+
+	if (_sleepAssertionID) {
+		IOPMAssertionRelease(_sleepAssertionID);
+		_sleepAssertionID = 0;
+	}
 }
 - (void)pushVideoFrame:(ECVVideoFrame *const)frame
 {

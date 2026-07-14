@@ -19,39 +19,12 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-// Views
-#import "ECVVideoView.h"
 
-// Other Sources
-#import "ECVRectEdgeMask.h"
+@interface ECVWelcomeWindowController : NSWindowController
 
-NS_ASSUME_NONNULL_BEGIN
++ (id)sharedWelcomeWindowController;
 
-@protocol ECVCropCellDelegate;
-
-@interface ECVCropCell : NSCell <ECVVideoViewCell>
-{
-	@private
-	IBOutlet __weak NSObject<ECVCropCellDelegate> *delegate;
-	NSRect _cropRect;
-	NSRect _tempCropRect;
-	NSBitmapImageRep *_handleRep;
-}
-
-- (id)init;
-@property(nullable, weak) NSObject<ECVCropCellDelegate> *delegate;
-@property(nonatomic, assign) NSRect cropRect;
-
-- (NSRect)maskRectWithCropRect:(NSRect)crop frame:(NSRect)frame;
-- (NSRect)frameForHandlePosition:(ECVRectEdgeMask)pos maskRect:(NSRect)mask inFrame:(NSRect)frame;
-- (ECVRectEdgeMask)handlePositionForPoint:(NSPoint)point withMaskRect:(NSRect)mask inFrame:(NSRect)frame view:(NSView *)aView;
-- (NSCursor *)cursorForHandlePosition:(ECVRectEdgeMask)pos;
+- (void)ECV_showWelcome;
+- (void)ECV_closeWelcome;
 
 @end
-
-@protocol ECVCropCellDelegate <NSObject>
-@optional
-- (void)cropCellDidFinishCropping:(ECVCropCell *)sender;
-@end
-
-NS_ASSUME_NONNULL_END

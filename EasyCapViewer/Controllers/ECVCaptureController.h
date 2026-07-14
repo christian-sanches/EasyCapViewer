@@ -20,6 +20,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import <QuartzCore/QuartzCore.h>
+#import <IOKit/pwr_mgt/IOPMLib.h>
 #import "ECVAVTarget.h"
 
 // Models
@@ -65,7 +66,8 @@ typedef NSInteger ECVCropBorder;
 	ECVMovieRecorder *_movieRecorder;
 
 	ECVCropBorder _cropBorder;
-	ECVAspectRatio _cropSourceAspectRatio;
+	ECVCropBorder _cropSourceAspectRatio;
+	IOPMAssertionID _sleepAssertionID;
 }
 
 - (IBAction)cloneViewer:(id)sender;

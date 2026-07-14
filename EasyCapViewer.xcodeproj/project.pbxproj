@@ -27,6 +27,7 @@
 		AA0000021E11A00000000004 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000004 /* UniformTypeIdentifiers.framework */; };
 		AA0000021E11A00000000005 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000005 /* AVFoundation.framework */; };
 		AA0000061E11A00000000004 /* ECVMetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0000041E11A00000000002 /* ECVMetalRenderer.m */; };
+		AA0000081E11A00000000001 /* ECVWelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00000A1E11A00000000003 /* ECVWelcomeWindowController.m */; };
 		AA0000071E11A00000000005 /* ECVMetalShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = AA0000051E11A00000000003 /* ECVMetalShaders.metal */; };
 
 		0E053FF60FDF1FFD003688BB /* MPLWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E053FF40FDF1FFD003688BB /* MPLWindow.m */; };
@@ -279,6 +280,8 @@
 		AA0000031E11A00000000001 /* ECVMetalRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVMetalRenderer.h; sourceTree = "<group>"; };
 		AA0000041E11A00000000002 /* ECVMetalRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVMetalRenderer.m; sourceTree = "<group>"; };
 		AA0000051E11A00000000003 /* ECVMetalShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = ECVMetalShaders.metal; sourceTree = "<group>"; };
+		AA00000A1E11A00000000003 /* ECVWelcomeWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVWelcomeWindowController.m; sourceTree = "<group>"; };
+		AA00000C1E11A00000000005 /* ECVWelcomeWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVWelcomeWindowController.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -315,6 +318,8 @@
 				0E26A998100314E6002FF95A /* ECVConfigController.m */,
 				0E984D69108C65D100CB469C /* ECVErrorLogController.h */,
 				0E984D6A108C65D100CB469C /* ECVErrorLogController.m */,
+				AA00000C1E11A00000000005 /* ECVWelcomeWindowController.h */,
+				AA00000A1E11A00000000003 /* ECVWelcomeWindowController.m */,
 			);
 			name = Controllers;
 			path = Controllers;
@@ -764,6 +769,7 @@
 				0E7FFD1E1089D60A000C8217 /* ECVCropCell.m in Sources */,
 				AA0000061E11A00000000004 /* ECVMetalRenderer.m in Sources */,
 				AA0000071E11A00000000005 /* ECVMetalShaders.metal in Sources */,
+				AA0000081E11A00000000001 /* ECVWelcomeWindowController.m in Sources */,
 				0E984D6B108C65D100CB469C /* ECVErrorLogController.m in Sources */,
 				0EC8BF901090A3F400ED9BB0 /* ECVRectEdgeMask.m in Sources */,
 				0E16F6AE10AE92C600730A18 /* SAA711XChip.m in Sources */,
@@ -964,7 +970,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				ECV_BUNDLE_IDENTIFIER = com.BenTrask.EasyCapViewer;
+				ECV_BUNDLE_IDENTIFIER = com.christian-sanches.EasyCapViewer;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -1002,7 +1008,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				ECV_BUNDLE_IDENTIFIER = com.BenTrask.EasyCapViewer;
+				ECV_BUNDLE_IDENTIFIER = com.christian-sanches.EasyCapViewer;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;

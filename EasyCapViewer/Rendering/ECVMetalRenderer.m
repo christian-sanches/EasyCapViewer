@@ -108,6 +108,18 @@ typedef struct {
     pipelineDescriptor.vertexFunction = vertexFunction;
     pipelineDescriptor.fragmentFunction = fragmentFunction;
     pipelineDescriptor.colorAttachments[0].pixelFormat = _view.colorPixelFormat;
+
+    MTLVertexDescriptor *vertexDescriptor = [[MTLVertexDescriptor alloc] init];
+    vertexDescriptor.attributes[0].format = MTLVertexFormatFloat4;
+    vertexDescriptor.attributes[0].offset = offsetof(ECVVertex, position);
+    vertexDescriptor.attributes[0].bufferIndex = 0;
+    vertexDescriptor.attributes[1].format = MTLVertexFormatFloat2;
+    vertexDescriptor.attributes[1].offset = offsetof(ECVVertex, texCoord);
+    vertexDescriptor.attributes[1].bufferIndex = 0;
+    vertexDescriptor.layouts[0].stride = sizeof(ECVVertex);
+    vertexDescriptor.layouts[0].stepRate = 1;
+    vertexDescriptor.layouts[0].stepFunction = MTLVertexStepFunctionPerVertex;
+    pipelineDescriptor.vertexDescriptor = vertexDescriptor;
     
     _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineDescriptor error:&error];
     if (!_pipelineState) {
@@ -149,7 +161,7 @@ typedef struct {
 
 - (void)stopRendering
 {
-    _isPlaying = YES;
+    _isPlaying = NO;
     _view.paused = YES;
     [_view setNeedsDisplay:YES];
 }
@@ -220,21 +232,25 @@ typedef struct {
     }
     
     // Deinterleave based on pixel format
+    // UYVY: [Cb Y0 Cr Y1] per pixel pair (4 bytes)
+    // YVYU: [Y0 Cb Y1 Cr] per pixel pair (4 bytes)
+    size_t dstY = 0;
+    size_t dstCbCr = 0;
+    size_t totalBytes = frameSize.width * frameSize.height * 2;
+
     if (pixelFormat == k2vuyPixelFormat) {
-        // UYVY: Cb Y Cr Y -> Y plane + CbCr plane
-        for (size_t i = 0; i < frameSize.width * frameSize.height; i += 2) {
-            yData[i / 2] = bytes[i * 2 + 1]; // Y0
-            yData[i / 2 + frameSize.width / 2] = bytes[i * 2 + 3]; // Y1
-            cbcrData[i] = bytes[i * 2]; // Cb
-            cbcrData[i + 1] = bytes[i * 2 + 2]; // Cr
+        for (size_t src = 0; src < totalBytes; src += 4) {
+            cbcrData[dstCbCr++] = bytes[src];     // Cb
+            yData[dstY++]       = bytes[src + 1]; // Y0
+            cbcrData[dstCbCr++] = bytes[src + 2]; // Cr
+            yData[dstY++]       = bytes[src + 3]; // Y1
         }
     } else if (pixelFormat == kYVYU422PixelFormat) {
-        // YVYU: Y Cb Y Cr -> Y plane + CbCr plane
-        for (size_t i = 0; i < frameSize.width * frameSize.height; i += 2) {
-            yData[i / 2] = bytes[i * 2]; // Y0
-            yData[i / 2 + frameSize.width / 2] = bytes[i * 2 + 2]; // Y1
-            cbcrData[i] = bytes[i * 2 + 1]; // Cb
-            cbcrData[i + 1] = bytes[i * 2 + 3]; // Cr
+        for (size_t src = 0; src < totalBytes; src += 4) {
+            yData[dstY++]       = bytes[src];     // Y0
+            cbcrData[dstCbCr++] = bytes[src + 1]; // Cb
+            yData[dstY++]       = bytes[src + 2]; // Y1
+            cbcrData[dstCbCr++] = bytes[src + 3]; // Cr
         }
     }
     

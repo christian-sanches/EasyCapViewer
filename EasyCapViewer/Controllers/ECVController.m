@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 // Controllers
 #import "ECVConfigController.h"
 #import "ECVErrorLogController.h"
+#import "ECVWelcomeWindowController.h"
 
 // Other Sources
 #import "ECVAppKitAdditions.h"
@@ -142,12 +143,7 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 	}
 	ECVLog(ECVNotice, @"USB Devices: %@", ECVUSBDevices());
 	if([devices count]) return [devices makeObjectsPerformSelector:@selector(ECV_display)];
-	NSAlert *const alert = [[NSAlert alloc] init];
-	[alert setMessageText:NSLocalizedString(@"No supported capture hardware was found.", nil)];
-	[alert setInformativeText:NSLocalizedString(@"Please connect an EasyCap DC60 to your computer. Please note that the DC60+ is not supported.", nil)];
-	[alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
-	[alert addButtonWithTitle:NSLocalizedString(@"Show Error Log", nil)];
-	if(NSAlertSecondButtonReturn == [alert runModal]) [[ECVErrorLogController sharedErrorLogController] showWindow:nil];
+	[[ECVWelcomeWindowController sharedWelcomeWindowController] ECV_showWelcome];
 }
 
 #pragma mark -ECVController(Private)
@@ -186,6 +182,7 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 
 - (void)ECV_display
 {
+	[[ECVWelcomeWindowController sharedWelcomeWindowController] ECV_closeWelcome];
 	[self performSelector:@selector(ECV_createDocument) withObject:nil afterDelay:1.0 inModes:[NSArray arrayWithObject:(NSString *)kCFRunLoopCommonModes]]; // This is the easiest and most sensible way to ensure that the device is entirely reset before we start using it. In particular, calling SetConfiguration() causes any audio devices associated with the hardware to be lost, and we don't know if there are any or when they will be found.
 }
 - (void)ECV_createDocument

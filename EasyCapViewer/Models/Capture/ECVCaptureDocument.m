@@ -75,7 +75,11 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 	// Yes, the audio input really is dependent on the video device.
 	NSString *const UID = [[NSUserDefaults standardUserDefaults] objectForKey:ECVAudioInputUIDKey];
 	if(BTEqualObjects(ECVAudioInputVideoDevice, UID) || !UID) {
-		[self setAudioDevice:[[self videoDevice] builtInAudioInput]];
+		ECVAudioInput *const input = [[self videoDevice] builtInAudioInput];
+		[self setAudioDevice:input];
+		if(!input) {
+			ECVLog(ECVWarning, @"No built-in audio input found for device '%@'. Audio will be silent.", [_videoDevice name]);
+		}
 	} else if(BTEqualObjects(ECVAudioInputNone, UID)) {
 		[self setAudioDevice:nil];
 	} else {
@@ -150,7 +154,11 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 - (void)play
 {
 	[NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceReferenceDate:_lastStopTime + 0.75]];
-	if(_audioDevice) [self addTarget:_audioTarget];
+	if(_audioDevice) {
+		[self addTarget:_audioTarget];
+	} else {
+		ECVLog(ECVWarning, @"No audio input device found. Audio will be silent.");
+	}
 	[_videoDevice play];
 	[_audioDevice start];
 	[_targets makeObjectsPerformSelector:@selector(play)];
