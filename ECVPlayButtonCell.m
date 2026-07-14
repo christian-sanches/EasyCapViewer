@@ -77,13 +77,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	[super setImage:image];
 }
 
-#pragma mark -NSObject
-
-- (void)dealloc
-{
-	// No OpenGL cleanup needed
-}
-
 #pragma mark -<ECVVideoViewCell>
 
 - (void)drawWithFrame:(NSRect)r inVideoView:(ECVVideoView *)v playing:(BOOL)flag

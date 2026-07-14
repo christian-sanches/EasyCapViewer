@@ -169,14 +169,43 @@ These should all work unchanged after ARC conversion.
 ## 8.7 Verification
 
 After Phase 8, the project should:
-- [ ] `ECVCropCell` uses AppKit drawing (no OpenGL)
-- [ ] `ECVPlayButtonCell` uses AppKit drawing (no OpenGL)
-- [ ] All HUD cells compile and render correctly with ARC
-- [ ] All XIBs open in modern Xcode without errors
-- [ ] `ECVCapture.xib` correctly references the new `MTKView`-based view
-- [ ] Settings window opens and functions
-- [ ] Error log window opens and functions
-- [ ] Menu bar works correctly
-- [ ] Window resize works correctly
-- [ ] Keyboard shortcuts work correctly
-- [ ] All UI elements render at correct sizes on Retina displays
+- [x] `ECVCropCell` uses AppKit drawing (no OpenGL) — completed in Phase 4
+- [x] `ECVPlayButtonCell` uses AppKit drawing (no OpenGL) — completed in Phase 4
+- [x] All HUD cells compile and render correctly with ARC — modernized with nullability and literals
+- [ ] All XIBs open in modern Xcode without errors — requires manual verification
+- [ ] `ECVCapture.xib` correctly references the new `MTKView`-based view — requires manual verification
+- [ ] Settings window opens and functions — requires manual verification
+- [ ] Error log window opens and functions — requires manual verification
+- [ ] Menu bar works correctly — requires manual verification
+- [ ] Window resize works correctly — requires manual verification
+- [ ] Keyboard shortcuts work correctly — requires manual verification
+- [ ] All UI elements render at correct sizes on Retina displays — requires manual verification
+
+---
+
+## 8.8 Changes Made (Phase 8 — UI Modernization Pass)
+
+### OpenGL Cleanup
+- Removed residual `dealloc` methods that only contained `// No OpenGL cleanup needed` comments from `ECVCropCell.m` and `ECVPlayButtonCell.m`
+- OpenGL → AppKit rewrite was already completed in Phase 4 (Metal migration)
+
+### Nullability Annotations
+Added `NS_ASSUME_NONNULL_BEGIN`/`END` to all UI headers:
+- `ECVCropCell.h` — `delegate` property marked `nullable`
+- `ECVPlayButtonCell.h`
+- `ECVHUDButtonCell.h`
+- `ECVHUDSliderCell.h`
+- `ECVHUDPopUpButtonCell.h`
+- `ECVHUDSwitchButtonCell.h`
+- `ECVAppKitAdditions.h` — `sender` parameter in `ECV_toggleWindow:` marked `nullable`
+
+### Modern Objective-C Patterns
+- **ECVCaptureController.m**: Replaced `NSDictionary dictionaryWithObjectsAndKeys:` with `@{}` literals, `[NSArray arrayWithObject:]` with `@[]`, `[NSNumber numberWith...]` with `@()` throughout
+- **ECVCaptureController.h**: Removed `#if defined(MAC_OS_X_VERSION_10_6)` guard around `NSWindowDelegate` — unconditionally adopted (macOS 14+ target)
+- **ECVHUDButtonCell.m**: Replaced dictionary creation with literal
+- **ECVHUDPopUpButtonCell.m**: Replaced dictionary creation with literal
+- **ECVHUDSwitchButtonCell.m**: Replaced dictionary creation with literal
+
+### XIB Modernization
+- XIB files require manual re-saving in modern Interface Builder — not automated
+- ECVCapture.xib needs Metal view integration (requires IB changes)

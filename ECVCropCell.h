@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 // Other Sources
 #import "ECVRectEdgeMask.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol ECVCropCellDelegate;
 
 @interface ECVCropCell : NSCell <ECVVideoViewCell>
@@ -37,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 }
 
 - (id)init;
-@property(weak) NSObject<ECVCropCellDelegate> *delegate;
+@property(nullable, weak) NSObject<ECVCropCellDelegate> *delegate;
 @property(nonatomic, assign) NSRect cropRect;
 
 - (NSRect)maskRectWithCropRect:(NSRect)crop frame:(NSRect)frame;
@@ -46,6 +48,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (NSCursor *)cursorForHandlePosition:(ECVRectEdgeMask)pos;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 @protocol ECVCropCellDelegate <NSObject>
 @optional

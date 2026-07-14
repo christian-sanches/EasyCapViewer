@@ -67,9 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (NSRect)drawTitle:(NSAttributedString *)title withFrame:(NSRect)frame inView:(NSView *)controlView
 {
 	NSMutableAttributedString *const t = [title mutableCopy];
-	[t addAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-		[NSColor whiteColor], NSForegroundColorAttributeName,
-		nil] range:NSMakeRange(0, [t length])];
+	[t addAttributes:@{NSForegroundColorAttributeName: [NSColor whiteColor]} range:NSMakeRange(0, [t length])];
 	return [super drawTitle:t withFrame:frame inView:controlView];
 }
 

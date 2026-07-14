@@ -45,11 +45,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 {
 	NSMutableParagraphStyle *const style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 	[style setLineBreakMode:NSLineBreakByTruncatingTail];
-	[[self title] drawInRect:[self titleRectForBounds:r] withAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-		[NSColor colorWithCalibratedWhite:1.0f alpha:[self isEnabled] ? 1.0f : 0.67f], NSForegroundColorAttributeName,
-		[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:[self controlSize]]], NSFontAttributeName,
-		style, NSParagraphStyleAttributeName,
-		nil]];
+	[[self title] drawInRect:[self titleRectForBounds:r] withAttributes:@{
+		NSForegroundColorAttributeName: [NSColor colorWithCalibratedWhite:1.0f alpha:[self isEnabled] ? 1.0f : 0.67f],
+		NSFontAttributeName: [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:[self controlSize]]],
+		NSParagraphStyleAttributeName: style,
+	}];
 }
 - (void)drawBorderAndBackgroundWithFrame:(NSRect)r inView:(NSView *)controlView
 {

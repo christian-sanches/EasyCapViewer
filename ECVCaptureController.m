@@ -98,7 +98,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	NSUserDefaults *const d = [NSUserDefaults standardUserDefaults];
 
 	NSSavePanel *const savePanel = [NSSavePanel savePanel];
-	[savePanel setAllowedContentTypes:[NSArray arrayWithObject:[UTType typeWithFilenameExtension:@"mov"]]];
+	[savePanel setAllowedContentTypes:@[[UTType typeWithFilenameExtension:@"mov"]]];
 	[savePanel setCanCreateDirectories:YES];
 	[savePanel setCanSelectHiddenExtension:YES];
 	[savePanel setPrompt:NSLocalizedString(@"Record", nil)];
@@ -121,7 +121,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	[savePanel setDirectoryURL:nil];
 	[savePanel setNameFieldStringValue:NSLocalizedString(@"untitled", nil)];
 	NSInteger const returnCode = [savePanel runModal];
-	[d setObject:[NSNumber numberWithDouble:[videoQualitySlider doubleValue]] forKey:ECVVideoQualityKey];
+	[d setObject:@([videoQualitySlider doubleValue]) forKey:ECVVideoQualityKey];
 	if(NSModalResponseOK != returnCode) return;
 
 	ECVMovieRecordingOptions *const options = [[ECVMovieRecordingOptions alloc] init];
@@ -187,7 +187,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 - (IBAction)changeAspectRatio:(id)sender
 {
 	[self setAspectRatio:[self sizeWithAspectRatio:[sender tag]]];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithUnsignedInteger:[sender tag]] forKey:ECVAspectRatio2Key];
+	[[NSUserDefaults standardUserDefaults] setObject:@([sender tag]) forKey:ECVAspectRatio2Key];
 }
 
 #pragma mark -
@@ -371,16 +371,16 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 - (void)windowDidLoad
 {
 	NSUserDefaults *const d = [NSUserDefaults standardUserDefaults];
-	[d registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
-		[NSNumber numberWithUnsignedInteger:ECVAspectRatio4x3], ECVAspectRatio2Key,
-		[NSNumber numberWithBool:YES], ECVVsyncKey,
-		[NSNumber numberWithBool:NO], ECVShowDroppedFramesKey,
-		@"'avc1'", ECVVideoCodecKey,
-		[NSNumber numberWithDouble:0.5f], ECVVideoQualityKey,
-		NSStringFromRect(ECVUncroppedRect), ECVCropRectKey,
-		[NSNumber numberWithInteger:ECVAspectRatioUnknown], ECVCropSourceAspectRatioKey,
-		[NSNumber numberWithInteger:ECVCropBorderNone], ECVCropBorderKey,
-		nil]];
+	[d registerDefaults:@{
+		ECVAspectRatio2Key: @(ECVAspectRatio4x3),
+		ECVVsyncKey: @YES,
+		ECVShowDroppedFramesKey: @NO,
+		ECVVideoCodecKey: @"'avc1'",
+		ECVVideoQualityKey: @0.5f,
+		ECVCropRectKey: NSStringFromRect(ECVUncroppedRect),
+		ECVCropSourceAspectRatioKey: @(ECVAspectRatioUnknown),
+		ECVCropBorderKey: @(ECVCropBorderNone),
+	}];
 
 	_cropSourceAspectRatio = [d integerForKey:ECVCropSourceAspectRatioKey];
 	_cropBorder = [d integerForKey:ECVCropBorderKey];
@@ -526,7 +526,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotif
 {
-	if([self isFullScreen]) [self performSelector:@selector(_hideMenuBar) withObject:nil afterDelay:0.0f inModes:[NSArray arrayWithObject:(NSString *)kCFRunLoopCommonModes]];
+	if([self isFullScreen]) [self performSelector:@selector(_hideMenuBar) withObject:nil afterDelay:0.0f inModes:@[(NSString *)kCFRunLoopCommonModes]];
 	[[ECVConfigController sharedConfigController] setCaptureDocument:[self captureDocument]];
 }
 - (void)windowDidResignMain:(NSNotification *)aNotif

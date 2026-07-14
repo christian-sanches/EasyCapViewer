@@ -52,11 +52,7 @@ enum {
 };
 typedef NSInteger ECVCropBorder;
 
-@interface ECVCaptureController : NSWindowController <ECVAVTarget, ECVCropCellDelegate, ECVVideoViewDelegate
-#if defined(MAC_OS_X_VERSION_10_6)
-, NSWindowDelegate
-#endif
->
+@interface ECVCaptureController : NSWindowController <ECVAVTarget, ECVCropCellDelegate, ECVVideoViewDelegate, NSWindowDelegate>
 {
 	@private
 	IBOutlet ECVVideoView *videoView;
