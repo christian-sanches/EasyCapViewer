@@ -61,7 +61,7 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 
 		_upconvertsFromMono = flag;
 		_volume = 1.0f;
-		_previousSquaredVolume = 1.0f;
+		_previousSquaredVolume = 0.0f;
 		_dropsBuffers = YES;
 		_lock = [[NSLock alloc] init];
 		_unusedBuffers = [[NSMutableArray alloc] init];
@@ -158,6 +158,7 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 	NSUInteger i = 0;
 	UInt32 packetCount = 0;
 	for(; i < outputBufferList->mNumberBuffers; i++) packetCount += outputBufferList->mBuffers[i].mDataByteSize / _outputStreamDescription.mBytesPerPacket;
+	UInt32 const originalPacketCount = packetCount;
 	[_lock lock];
 	NSUInteger const bufCount = [_unusedBuffers count];
 	[_lock unlock];
@@ -165,6 +166,7 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 		for(i = 0; i < outputBufferList->mNumberBuffers; i++) {
 			memset(outputBufferList->mBuffers[i].mData, 0, outputBufferList->mBuffers[i].mDataByteSize);
 		}
+		_previousSquaredVolume = 0.0f;
 		static NSUInteger sUnderrunCount = 0;
 		sUnderrunCount++;
 		if(sUnderrunCount <= 10 || (sUnderrunCount % 100 == 0)) {
@@ -173,6 +175,13 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 		return;
 	}
 	(void)AudioConverterFillComplexBuffer(_converter, (AudioConverterComplexInputDataProc)ECVAudioConverterComplexInputDataProc, (__bridge void *)self, &packetCount, outputBufferList, NULL);
+	for(i = 0; i < outputBufferList->mNumberBuffers; i++) {
+		AudioBuffer *buf = &outputBufferList->mBuffers[i];
+		UInt32 const bytesFilled = packetCount * (buf->mDataByteSize / originalPacketCount);
+		if(bytesFilled < buf->mDataByteSize) {
+			memset((uint8_t *)buf->mData + bytesFilled, 0, buf->mDataByteSize - bytesFilled);
+		}
+	}
 	[_usedBuffers removeAllObjects];
 }
 

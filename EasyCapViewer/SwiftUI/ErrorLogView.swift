@@ -31,24 +31,15 @@ struct ErrorLogView: View {
         VStack(spacing: 0) {
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 2) {
-                        ForEach(model.entries) { entry in
-                            HStack(alignment: .top, spacing: 4) {
-                                Text(formatDate(entry.date))
-                                    .foregroundStyle(.secondary)
-                                Text(entry.message)
-                                    .foregroundStyle(colorForLevel(entry.level))
-                            }
-                            .font(.system(size: 11, design: .monospaced))
-                            .id(entry.id)
-                        }
-                    }
-                    .padding(8)
+                    Text(attributedEntries)
+                        .font(.system(size: 11, design: .monospaced))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(8)
+                        .textSelection(.enabled)
+                        .id("bottom")
                 }
                 .onChange(of: model.entries.count) { _, _ in
-                    if let last = model.entries.last {
-                        withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
-                    }
+                    withAnimation { proxy.scrollTo("bottom", anchor: .bottom) }
                 }
             }
         }
@@ -58,6 +49,21 @@ struct ErrorLogView: View {
                     .disabled(!model.hasContent)
             }
         }
+    }
+
+    private var attributedEntries: AttributedString {
+        var result = AttributedString()
+        for entry in model.entries {
+            let timestamp = formatDate(entry.date)
+            let line = "\(timestamp) \(entry.message)\n"
+            var attr = AttributedString(line)
+            attr.foregroundColor = colorForLevel(entry.level)
+            if let range = attr.range(of: timestamp) {
+                attr[range].foregroundColor = .secondary
+            }
+            result.append(attr)
+        }
+        return result
     }
 
     private func formatDate(_ date: Date) -> String {

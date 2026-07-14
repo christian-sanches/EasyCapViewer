@@ -88,17 +88,18 @@ enum {
 	[_audioBuffer appendBytes:data length:length];
 
 	NSUInteger const channelsPerFrame = 2;
-	NSUInteger const bytesPerFrame = sizeof(SInt32) * channelsPerFrame;
+	NSUInteger const bytesPerSample = sizeof(SInt32);
+	NSUInteger const bytesPerFrame = bytesPerSample * channelsPerFrame;
 
 	NSUInteger totalBytes = [_audioBuffer length];
 	UInt8 const *bytes = [_audioBuffer bytes];
 
 	NSUInteger offset = _audioReadOffset;
-	if(offset + bytesPerFrame <= totalBytes && bytes[offset] == 0x00 && bytes[offset + channelsPerFrame] == 0x00) {
+	if(offset + bytesPerFrame <= totalBytes && bytes[offset] == 0x00 && bytes[offset + bytesPerSample] == 0x00) {
 	} else {
 		offset = 0;
 		for(; offset + bytesPerFrame <= totalBytes; offset++) {
-			if(bytes[offset] == 0x00 && bytes[offset + channelsPerFrame] == 0x00) break;
+			if(bytes[offset] == 0x00 && bytes[offset + bytesPerSample] == 0x00) break;
 		}
 		if(offset + bytesPerFrame > totalBytes) {
 			_audioReadOffset = 0;
@@ -125,8 +126,10 @@ enum {
 	}
 
 	if(_audioBlockCount < 3 || (_audioBlockCount % 500 == 0)) {
-		ECVLog(ECVNotice, @"Audio push #%lu: %lu frames, samples[0..3] = [%d, %d, %d, %d], align=%lu bufLen=%lu",
+		ECVLog(ECVNotice, @"Audio push #%lu: %lu frames, data[0..7]=[%02x %02x %02x %02x %02x %02x %02x %02x], samples[0..3]=[%d %d %d %d], align=%lu bufLen=%lu",
 			(unsigned long)_audioBlockCount, (unsigned long)completeFrames,
+			bytes[offset], bytes[offset+1], bytes[offset+2], bytes[offset+3],
+			bytes[offset+4], bytes[offset+5], bytes[offset+6], bytes[offset+7],
 			inputSamples[0], inputSamples[1], inputSamples[2], inputSamples[3],
 			(unsigned long)offset, (unsigned long)totalBytes);
 	}
