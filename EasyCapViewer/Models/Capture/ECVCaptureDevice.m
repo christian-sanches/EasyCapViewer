@@ -23,6 +23,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import <IOKit/IOCFPlugIn.h>
 #import <IOKit/IOMessage.h>
 #import <mach/mach_time.h>
+#import "ECVWelcomeWindowController.h"
 
 // Models
 #import "ECVCaptureDocument.h"
@@ -289,7 +290,14 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 - (void)invalidate
 {
 	_valid = NO;
-	[[self captureDocument] close];
+	ECVCaptureDocument *const doc = [self captureDocument];
+	[doc close];
+
+	// If no other capture documents remain, show the welcome window
+	for(NSDocument *const otherDoc in [[NSDocumentController sharedDocumentController] documents]) {
+		if(otherDoc != doc && [otherDoc isKindOfClass:NSClassFromString(@"ECVCaptureDocument")]) return;
+	}
+	[[ECVWelcomeWindowController sharedWelcomeWindowController] ECV_showWelcome];
 }
 
 #pragma mark -
