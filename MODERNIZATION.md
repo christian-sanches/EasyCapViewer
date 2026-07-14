@@ -16,14 +16,14 @@
 - [x] Phase 6 — USB Drivers Modernization
 - [x] Phase 7 — Audio Pipeline Modernization
 - [x] Phase 8 — UI & HUD Modernization
-- [ ] Phase 9 — Project Folder Restructuring
+- [x] Phase 9 — Project Folder Restructuring
 - [ ] Phase 10 — Testing, Signing & Distribution
 
 ---
 
 ## Overview
 
-EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–8, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, **USB drivers have been modernized** with upgraded interface versions and improved error handling, the **audio pipeline has been modernized** with modern Objective-C patterns (properties, weak delegates, nullability), and the **UI layer has been modernized** with nullability annotations, modern Objective-C literals, and removal of legacy OpenGL references. The remaining work is project restructuring and testing.
+EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–9, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, **USB drivers have been modernized** with upgraded interface versions and improved error handling, the **audio pipeline has been modernized** with modern Objective-C patterns (properties, weak delegates, nullability), the **UI layer has been modernized** with nullability annotations, modern Objective-C literals, and removal of legacy OpenGL references, and the **project has been restructured** into a clean directory hierarchy with logical grouping. The remaining work is testing and distribution.
 
 ### What works today on Apple Silicon
 | API | Status | Notes |
@@ -190,6 +190,6 @@ Each phase has its own detailed document:
 | Phase 6 — USB Drivers | 1 day (mostly testing) | ✅ Done |
 | Phase 7 — Audio Pipeline | 0.5 day | ✅ Done |
 | Phase 8 — UI Modernization | 1 day | ✅ Done |
-| Phase 9 — Restructuring | 1 day | Pending |
+| Phase 9 — Restructuring | 1 day | ✅ Done |
 | Phase 10 — Testing | 2–3 days | Pending |
-| **Remaining** | **~3.5–5.5 days** | |
+| **Remaining** | **2–3 days** | |
