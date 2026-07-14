@@ -1,0 +1,8 @@
+#import "App/EasyCapViewer-Prefix.pch"
+#import "Models/Capture/ECVCaptureDocument.h"
+#import "Models/Capture/ECVCaptureDevice.h"
+#import "Models/Capture/ECVVideoFormat.h"
+#import "Models/Capture/ECVVideoSource.h"
+#import "Models/Capture/ECVDeinterlacingMode.h"
+#import "Models/Audio/ECVAudioDevice.h"
+#import "Models/Audio/ECVAudioTarget.h"

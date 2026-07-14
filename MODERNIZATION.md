@@ -18,13 +18,13 @@
 - [x] Phase 8 — UI & HUD Modernization
 - [x] Phase 9 — Project Folder Restructuring
 - [ ] Phase 10 — Testing, Signing & Distribution
-- [ ] Phase 11 — SwiftUI & macOS Modernization
+- [x] Phase 11 — SwiftUI & macOS Modernization (11A, 11B, 11C, 11D, 11E, 11G complete; 11F, 11H, 11I deferred)
 
 ---
 
 ## Overview
 
-EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–9, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, **USB drivers have been modernized** with upgraded interface versions and improved error handling, the **audio pipeline has been modernized** with modern Objective-C patterns (properties, weak delegates, nullability), the **UI layer has been modernized** with nullability annotations, modern Objective-C literals, and removal of legacy OpenGL references, and the **project has been restructured** into a clean directory hierarchy with logical grouping. The remaining work is testing and distribution.
+EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–11, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, **USB drivers have been modernized** with upgraded interface versions and improved error handling, the **audio pipeline has been modernized** with modern Objective-C patterns (properties, weak delegates, nullability), the **UI layer has been modernized** with nullability annotations, modern Objective-C literals, and removal of legacy OpenGL references, the **project has been restructured** into a clean directory hierarchy with logical grouping, and **SwiftUI has been adopted incrementally** for settings, welcome window, error log, and menu definitions (with @Observable, modern onChange, keyboard navigation, and state restoration). The remaining work is testing and distribution.
 
 ### What works today on Apple Silicon
 | API | Status | Notes |
@@ -108,23 +108,29 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 | `ECVAudioTarget.h/m` | Audio target abstraction | ✅ Modernized: weak captureDocument, literals, nullability |
 | `ECVAVTarget.h` | AV target protocol | OK as-is |
 
-### UI Components — Modernized (Phase 8)
+### UI Components — Modernized (Phase 8) + SwiftUI (Phase 11)
 | File | Role | Notes |
 |------|------|-------|
-| `ECVCaptureController.h/m` | Capture UI controller | Updated: removed `magFilter` usage, init calls updated for Metal renderer, modern ObjC literals, removed version-guarded `NSWindowDelegate` |
-| `ECVConfigController.h/m` | Settings window | Deprecation fixes applied |
-| `ECVErrorLogController.h/m` | Error log window | OK |
+| `ECVCaptureController.h/m` | Capture UI controller | Updated: removed `magFilter` usage, init calls updated for Metal renderer, modern ObjC literals, removed version-guarded `NSWindowDelegate`; Phase 11: added window identifier, autosave name, key view loop |
+| `ECVErrorLogController.h/m` | Error log window | ✅ Phase 11: Replaced NIB-based UI with SwiftUI `ErrorLogView` via `NSHostingView` |
 | `MPLWindow.h/m` | Custom NSWindow | Deprecation fixes applied |
-| `ECVHUDButtonCell.h/m` | HUD button cell | Nullability annotations, modern dictionary literals |
-| `ECVHUDSliderCell.h/m` | HUD slider cell | Nullability annotations |
-| `ECVHUDPopUpButtonCell.h/m` | HUD popup cell | Nullability annotations, modern dictionary literals |
-| `ECVHUDSwitchButtonCell.h/m` | HUD switch cell | Nullability annotations, modern dictionary literals |
-| `ECVTickMarkView.h/m` | Tick mark view | OK |
-| `ECVDividerView.h/m` | Divider view | OK |
 | `ECVRectEdgeMask.h/m` | Edge mask constants | OK as-is |
 | `ECVCropCell.h/m` | Crop overlay | Nullability annotations, removed OpenGL dealloc remnants |
 | `ECVPlayButtonCell.h/m` | Play button overlay | Nullability annotations, removed OpenGL dealloc remnants |
-| `ECVAppKitAdditions.h/m` | Drawing helpers | Nullability annotations |
+| `ECVAppKitAdditions.h/m` | Drawing helpers | Nullability annotations; gradient helpers removed (Phase 11, only used by deleted HUD cells) |
+| `ECVWelcomeWindowController.h/m` | Welcome window | ✅ Phase 11: Simplified to host SwiftUI `WelcomeView` via `NSHostingView` |
+| `ECVController.h/m` | App controller | Phase 11: Ready for future menu migration |
+
+#### Deleted (Phase 11E — Dead Code Removal)
+| File | Reason |
+|------|--------|
+| `ECVConfigController.h/m` | Superseded by `ECVSwiftConfigController` (SwiftUI); protocol moved to `ECVCaptureDevice.h` |
+| `ECVHUDButtonCell.h/m` | Legacy, unused by SwiftUI config |
+| `ECVHUDSliderCell.h/m` | Legacy, unused by SwiftUI config |
+| `ECVHUDPopUpButtonCell.h/m` | Legacy, unused by SwiftUI config |
+| `ECVHUDSwitchButtonCell.h/m` | Legacy, unused by SwiftUI config |
+| `ECVDividerView.h/m` | Legacy, unused by SwiftUI config |
+| `ECVTickMarkView.h/m` | Legacy, unused by SwiftUI config |
 
 ### Utilities — Deprecations Fixed
 | File | Role | Notes |
@@ -140,12 +146,22 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 | File | Notes |
 |------|-------|
 | `ECVCapture.xib` | Still references `openGLView` — needs update to `MTKView` custom class |
-| `ECVConfig.xib` | OK |
-| `ECVErrorLog.xib` | OK |
-| `ECVMenu.xib` | OK |
+| `ECVConfig.xib` | Superseded by `ConfigView.swift` (can be deleted in future cleanup) |
+| `ECVErrorLog.xib` | **Removed** (Phase 11C) — replaced by `ErrorLogView.swift` |
+| `ECVMenu.xib` | Kept as active menu; `AppMenu.swift` created as foundation for future migration |
 | `EasyCapViewer.icns` | Possibly add @2x icon |
 | `EasyCapViewer-Info.plist` | ✅ Updated: deployment target 14.0, 32-bit keys removed |
 | Localization `.strings` files | Keep as-is |
+
+### SwiftUI Layer — ✅ New (Phase 11)
+| File | Role | Notes |
+|------|------|-------|
+| `SwiftUI/ConfigViewModel.swift` | Settings view model | ✅ Phase 11A: Migrated from `ObservableObject`/`@Published` to `@Observable` macro |
+| `SwiftUI/ConfigView.swift` | Settings panel view | ✅ Phase 11A: Migrated from `@ObservedObject` to `@Bindable`, updated all `onChange` calls to macOS 14+ signature |
+| `SwiftUI/ConfigWindowController.swift` | Settings panel host | `NSWindowController` hosting `ConfigView` via `NSHostingView` |
+| `SwiftUI/WelcomeView.swift` | Welcome window view | ✅ Phase 11B: New SwiftUI view for "no device found" message |
+| `SwiftUI/ErrorLogView.swift` | Error log view | ✅ Phase 11C: New `@Observable` model + SwiftUI view with color-coded entries, auto-scroll, Clear toolbar button |
+| `SwiftUI/AppMenu.swift` | Menu definitions | ✅ Phase 11D: SwiftUI menu structure as foundation for future NSHostingMenu migration |
 
 ---
 
@@ -177,6 +193,7 @@ Each phase has its own detailed document:
 | Missing hardware for testing | High | Acquire EasyCap devices for each chipset | Pending |
 | Xcode project format incompatibility | Low | Create new project, migrate sources | ✅ Resolved (Phase 1) |
 | Carbon API removal | Low | Only used for minor helpers; replace with Cocoa | ✅ Resolved (Phase 3) |
+| SwiftUI incremental adoption | Low | Keep AppKit where it excels; adopt SwiftUI where it simplifies | ✅ Resolved (Phase 11) |
 
 ---
 
@@ -194,4 +211,5 @@ Each phase has its own detailed document:
 | Phase 8 — UI Modernization | 1 day | ✅ Done |
 | Phase 9 — Restructuring | 1 day | ✅ Done |
 | Phase 10 — Testing | 2–3 days | Pending |
+| Phase 11 — SwiftUI & macOS Modernization | 1–2 days (11A-E, 11G done; 11F, 11H, 11I deferred) | ✅ Done |
 | **Remaining** | **2–3 days** | |

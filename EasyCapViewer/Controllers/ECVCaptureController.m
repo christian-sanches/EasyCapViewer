@@ -391,6 +391,9 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 	[self setAspectRatio:[self sizeWithAspectRatio:[[d objectForKey:ECVAspectRatio2Key] unsignedIntegerValue]]];
 
 	NSWindow *const w = [self window];
+	[w setIdentifier:@"ECVCaptureWindow"];
+	[w setFrameAutosaveName:@"ECVCaptureWindowFrame"];
+	[w setAutorecalculatesKeyViewLoop:YES];
 	NSSize const s = [self outputSize];
 	[w setFrame:[w frameRectForContentRect:NSMakeRect(0.0f, 0.0f, s.width, s.height)] display:NO];
 	[w setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];

@@ -21,7 +21,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVAudioDevice.h"
 #import "ECVCaptureDevice.h"
-#import "ECVConfigController.h"
 
 @class ECVAudioTarget;
 @class ECVCaptureDevice;

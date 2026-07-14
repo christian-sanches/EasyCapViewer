@@ -22,19 +22,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #if !defined(ECV_LOG_TO_DESKTOP)
 #import "ECVDebug.h"
 
+@class ErrorLogModel;
+
 @interface ECVErrorLogController : NSWindowController
-#if defined(MAC_OS_X_VERSION_10_6)
-<NSToolbarDelegate>
-#endif
 {
 	@private
-	IBOutlet NSTextView *errorLogTextView;
-	NSMutableAttributedString *_errorLog;
+	ErrorLogModel *_model;
 }
 
 + (id)sharedErrorLogController;
-
-- (IBAction)clearLog:(id)sender;
 
 - (void)logLevel:(ECVErrorLevel)level message:(NSString *)message;
 - (void)logLevel:(ECVErrorLevel)level format:(NSString *)format arguments:(va_list)arguments;

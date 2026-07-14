@@ -20,13 +20,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVErrorLogController.h"
+#import "EasyCapViewer-Swift.h"
 
-static NSString *const ECVClearLogItemIdentifier = @"ECVClearLogItem";
 static ECVErrorLogController *ECVSharedErrorLogController;
-
-@interface ECVErrorLogController(Private)
-- (void)_mainThread_logAttributedString:(NSAttributedString *)string;
-@end
 
 @implementation ECVErrorLogController
 
@@ -46,28 +42,12 @@ static ECVErrorLogController *ECVSharedErrorLogController;
 
 #pragma mark -ECVErrorLogController
 
-- (IBAction)clearLog:(id)sender
-{
-	[_errorLog deleteCharactersInRange:NSMakeRange(0, [_errorLog length])];
-	[[errorLogTextView textStorage] deleteCharactersInRange:NSMakeRange(0, [[errorLogTextView textStorage] length])];
-}
-
-#pragma mark -
-
 - (void)logLevel:(ECVErrorLevel)level message:(NSString *)message
 {
-	NSColor *color = nil;
-	switch(level) {
-		case ECVError: color = [NSColor blackColor]; break;
-		case ECVCritical: color = [NSColor redColor]; break;
-		default: color = [NSColor grayColor]; break;
-	}
-	NSString *const string = [NSString stringWithFormat:@"%@: %@\n", [[NSDate date] description], [message stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
-	NSDictionary *const attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-		[NSFont systemFontOfSize:[NSFont systemFontSize]], NSFontAttributeName,
-		color, NSForegroundColorAttributeName,
-		nil];
-	[self performSelectorOnMainThread:@selector(_mainThread_logAttributedString:) withObject:[[NSAttributedString alloc] initWithString:string attributes:attributes] waitUntilDone:NO];
+	NSString *const trimmed = [message stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self->_model appendLevel:(NSUInteger)level message:trimmed];
+	});
 }
 - (void)logLevel:(ECVErrorLevel)level format:(NSString *)format arguments:(va_list)arguments
 {
@@ -81,66 +61,23 @@ static ECVErrorLogController *ECVSharedErrorLogController;
 	va_end(arguments);
 }
 
-#pragma mark -ECVErrorLogController(Private)
-
-- (void)_mainThread_logAttributedString:(NSAttributedString *)string
-{
-	[_errorLog appendAttributedString:string];
-	[[errorLogTextView textStorage] appendAttributedString:string];
-	[errorLogTextView moveToEndOfDocument:self];
-}
-
 #pragma mark -NSWindowController
 
-- (void)windowDidLoad
+- (void)loadWindow
 {
-	[super windowDidLoad];
-	[[errorLogTextView textStorage] setAttributedString:_errorLog];
-
-	NSToolbar *const toolbar = [[NSToolbar alloc] initWithIdentifier:@"ECVErrorLogControllerToolbar1"];
-	[toolbar setDelegate:self];
-	[toolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
-	[toolbar setSizeMode:NSToolbarSizeModeSmall];
-	[[self window] setToolbar:toolbar];
+	_model = [[ErrorLogModel alloc] init];
+	NSWindow *const window = [ECVErrorLogSwiftHelper createErrorLogWindowWithModel:_model];
+	[self setWindow:window];
 }
 
 #pragma mark -NSObject
 
 - (id)init
 {
-	if((self = [super initWithWindowNibName:@"ECVErrorLog"])) {
-		_errorLog = [[NSMutableAttributedString alloc] init];
+	if((self = [super init])) {
+		[self loadWindow];
 	}
 	return self;
-}
-
-#pragma mark -NSObject(NSToolbarItemValidation)
-
-- (BOOL)validateToolbarItem:(NSToolbarItem *)anItem
-{
-	SEL const action = [anItem action];
-	if(@selector(clearLog:) == action) return !![_errorLog length];
-	return [self respondsToSelector:@selector(action)];
-}
-
-#pragma mark -<NSToolbarDelegate>
-
-- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)ident willBeInsertedIntoToolbar:(BOOL)flag
-{
-	NSParameterAssert([ident isEqualToString:ECVClearLogItemIdentifier]);
-	NSToolbarItem *const item = [[NSToolbarItem alloc] initWithItemIdentifier:ident];
-	[item setImage:[NSImage imageNamed:@"Log-Clear"]];
-	[item setLabel:NSLocalizedString(@"Clear Log", nil)];
-	[item setAction:@selector(clearLog:)];
-	return item;
-}
-- (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar
-{
-	return [NSArray arrayWithObjects:ECVClearLogItemIdentifier, nil];
-}
-- (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar
-{
-	return [self toolbarDefaultItemIdentifiers:toolbar];
 }
 
 @end

@@ -20,6 +20,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVWelcomeWindowController.h"
+#import "EasyCapViewer-Swift.h"
 
 static ECVWelcomeWindowController *ECVSharedWelcomeWindowController;
 
@@ -65,37 +66,7 @@ static ECVWelcomeWindowController *ECVSharedWelcomeWindowController;
 
 - (void)loadWindow
 {
-	NSRect const contentRect = NSMakeRect(0, 0, 420, 200);
-	NSWindow *const window = [[NSWindow alloc] initWithContentRect:contentRect styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:YES];
-	[window setTitle:@"EasyCapViewer"];
-	[window setReleasedWhenClosed:NO];
-	[window setMinSize:NSMakeSize(420, 200)];
-
-	NSView *const contentView = [window contentView];
-
-	NSTextField *const messageField = [[NSTextField alloc] initWithFrame:NSMakeRect(60, 120, 300, 24)];
-	[messageField setStringValue:NSLocalizedString(@"No capture device found", nil)];
-	[messageField setFont:[NSFont boldSystemFontOfSize:16]];
-	[messageField setBezeled:NO];
-	[messageField setDrawsBackground:NO];
-	[messageField setEditable:NO];
-	[messageField setSelectable:NO];
-	[messageField setAlignment:NSTextAlignmentCenter];
-	[messageField setAutoresizingMask:NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin];
-	[contentView addSubview:messageField];
-
-	NSTextField *const subtitleField = [[NSTextField alloc] initWithFrame:NSMakeRect(60, 90, 300, 17)];
-	[subtitleField setStringValue:NSLocalizedString(@"Connect an EasyCap DC60 to your computer to begin.", nil)];
-	[subtitleField setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
-	[subtitleField setBezeled:NO];
-	[subtitleField setDrawsBackground:NO];
-	[subtitleField setEditable:NO];
-	[subtitleField setSelectable:NO];
-	[subtitleField setAlignment:NSTextAlignmentCenter];
-	[subtitleField setTextColor:[NSColor secondaryLabelColor]];
-	[subtitleField setAutoresizingMask:NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin];
-	[contentView addSubview:subtitleField];
-
+	NSWindow *const window = [ECVWelcomeSwiftHelper createWelcomeWindow];
 	[self setWindow:window];
 }
 

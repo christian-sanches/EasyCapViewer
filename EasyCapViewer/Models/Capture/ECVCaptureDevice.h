@@ -20,8 +20,21 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import <IOKit/usb/IOUSBLib.h>
-#import "ECVConfigController.h"
 #import "ECVAVTarget.h"
+
+@protocol ECVCaptureDeviceConfiguring<NSObject>
+@optional
+
+- (CGFloat)brightness;
+- (void)setBrightness:(CGFloat const)val;
+- (CGFloat)contrast;
+- (void)setContrast:(CGFloat const)val;
+- (CGFloat)saturation;
+- (void)setSaturation:(CGFloat const)val;
+- (CGFloat)hue;
+- (void)setHue:(CGFloat const)val;
+
+@end
 
 // For subclassers
 #import "ECVVideoSource.h"
