@@ -26,13 +26,13 @@
                 <rect key="frame" x="0.0" y="0.0" width="303" height="247"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <openGLView wantsLayer="YES" focusRingType="none" fixedFrame="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" wantsBestResolutionOpenGLSurface="YES" translatesAutoresizingMaskIntoConstraints="NO" id="10" customClass="ECVVideoView">
+                    <customView focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="10" customClass="ECVVideoView">
                         <rect key="frame" x="0.0" y="0.0" width="303" height="247"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <connections>
                             <outlet property="delegate" destination="-2" id="12"/>
                         </connections>
-                    </openGLView>
+                    </customView>
                 </subviews>
             </view>
             <connections>

@@ -22,7 +22,7 @@
 		<string>x86_64</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>0.6.3a</string>
+	<string>1.0.0</string>
 	<key>ECVInfoByVideoCodec</key>
 	<dict>
 		<key>'avc1'</key>
