@@ -193,6 +193,10 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 	[[NSDocumentController sharedDocumentController] addDocument:doc];
 	[doc makeWindowControllers];
 	[doc showWindows];
+
+	if([[NSUserDefaults standardUserDefaults] boolForKey:@"ECVAutoPlay"]) {
+		[doc setPausedFromUI:NO];
+	}
 }
 
 @end

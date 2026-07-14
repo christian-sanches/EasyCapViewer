@@ -166,9 +166,23 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 
 - (ECVAudioInput *)builtInAudioInput
 {
-	ECVAudioInput *const input = [ECVAudioInput deviceWithIODevice:[self service]];
-	[input setName:[self name]];
-	return input;
+	// First try finding via IORegistry tree
+	ECVAudioInput *input = [ECVAudioInput deviceWithIODevice:[self service]];
+	if(input) {
+		[input setName:[self name]];
+		return input;
+	}
+
+	// Fallback: search all CoreAudio input devices for a name match
+	NSString *const deviceName = [self name];
+	for(ECVAudioInput *candidate in [ECVAudioInput allDevices]) {
+		NSString *const candidateName = [candidate name];
+		if([candidateName containsString:deviceName] || [deviceName containsString:candidateName]) {
+			[candidate setName:deviceName];
+			return candidate;
+		}
+	}
+	return nil;
 }
 
 @end

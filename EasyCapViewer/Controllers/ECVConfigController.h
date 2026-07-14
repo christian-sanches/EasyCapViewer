@@ -37,6 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	IBOutlet NSButtonCell *upconvertsFromMonoSwitch;
 	IBOutlet NSSlider *volumeSlider;
 
+	IBOutlet NSButton *autoPlaySwitch;
+
 	ECVCaptureDocument *_captureDocument;
 }
 
@@ -53,6 +55,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (IBAction)changeAudioInput:(id)sender;
 - (IBAction)changeUpconvertsFromMono:(id)sender;
 - (IBAction)changeVolume:(id)sender;
+- (IBAction)changeAutoPlay:(id)sender;
 
 - (ECVCaptureDocument *)captureDocument;
 - (void)setCaptureDocument:(ECVCaptureDocument *const)doc;

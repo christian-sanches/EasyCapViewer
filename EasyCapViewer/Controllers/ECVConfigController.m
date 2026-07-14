@@ -34,6 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #endif
 #import "ECVFoundationAdditions.h"
 
+static NSString *const ECVAutoPlayKey = @"ECVAutoPlay";
+
 @interface ECVConfigController(Private)
 
 - (void)_snapSlider:(NSSlider *)slider;
@@ -101,6 +103,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	[[_captureDocument audioTarget] setVolume:[sender doubleValue]];
 	[[_captureDocument audioTarget] setMuted:NO];
 }
+- (IBAction)changeAutoPlay:(id)sender
+{
+	[[NSUserDefaults standardUserDefaults] setBool:([sender state] == NSControlStateValueOn) forKey:ECVAutoPlayKey];
+}
 
 #pragma mark -
 
@@ -155,6 +161,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 	[self audioHardwareDevicesDidChange:nil];
 	[audioSourcePopUp setEnabled:!!_captureDocument];
+
+	[autoPlaySwitch setState:[[NSUserDefaults standardUserDefaults] boolForKey:ECVAutoPlayKey] ? NSControlStateValueOn : NSControlStateValueOff];
 }
 
 #pragma mark -
@@ -206,7 +214,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 {
 	[super windowDidLoad];
 	NSPanel *const w = (NSPanel *)[self window];
-	[w setBecomesKeyOnlyIfNeeded:YES];
 	[w setCollectionBehavior:NSWindowCollectionBehaviorFullScreenAuxiliary];
 	[[ECVAudioDevice class] ECV_addObserver:self selector:@selector(audioHardwareDevicesDidChange:) name:ECVAudioHardwareDevicesDidChangeNotification];
 	[self setCaptureDocument:_captureDocument];
