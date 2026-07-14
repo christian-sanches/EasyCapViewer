@@ -21,6 +21,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVSomagicDevice.h"
 #import "ECVDebug.h"
+#import "ECVCaptureDocument.h"
+#import <AudioToolbox/AudioToolbox.h>
 
 #define RECV(request, idx, val, ...) \
 	do { \
@@ -77,6 +79,49 @@ enum {
 		}
 	}
 	return NO;
+}
+- (void)processAudioBlock:(UInt8 const *)data length:(NSUInteger)length
+{
+	if(!_audioBuffer) {
+		_audioBuffer = [[NSMutableData alloc] initWithCapacity:4096];
+	}
+	[_audioBuffer appendBytes:data length:length];
+
+	NSUInteger const bytesPerSample = sizeof(SInt32);
+	NSUInteger const channelsPerFrame = 2;
+	NSUInteger const bytesPerFrame = bytesPerSample * channelsPerFrame;
+
+	NSUInteger const totalBytes = [_audioBuffer length];
+	NSUInteger const completeFrames = totalBytes / bytesPerFrame;
+
+	if(completeFrames > 0) {
+		SInt32 const *inputSamples = (SInt32 const *)[_audioBuffer bytes];
+		NSUInteger const outputLength = completeFrames * channelsPerFrame * sizeof(Float32);
+		Float32 *outputBuffer = (Float32 *)malloc(outputLength);
+		if(!outputBuffer) return;
+
+		float const scale = 1.0f / 2147483648.0f;
+		for(NSUInteger i = 0; i < completeFrames * channelsPerFrame; i++) {
+			outputBuffer[i] = (Float32)inputSamples[i] * scale;
+		}
+
+		AudioBufferList bufferList;
+		bufferList.mNumberBuffers = 1;
+		bufferList.mBuffers[0].mNumberChannels = channelsPerFrame;
+		bufferList.mBuffers[0].mDataByteSize = (UInt32)outputLength;
+		bufferList.mBuffers[0].mData = outputBuffer;
+
+		[[self captureDocument] pushAudioBufferListValue:[NSValue valueWithPointer:&bufferList]];
+
+		free(outputBuffer);
+
+		NSUInteger consumedBytes = completeFrames * bytesPerFrame;
+		if(consumedBytes < totalBytes) {
+			[_audioBuffer replaceBytesInRange:NSMakeRange(0, consumedBytes) withBytes:NULL length:0];
+		} else {
+			[_audioBuffer setLength:0];
+		}
+	}
 }
 - (void)writePacketBytes:(UInt8 const *)bytes length:(NSUInteger)length toStorage:(ECVVideoStorage *const)storage
 {
@@ -301,7 +346,7 @@ enum {
 		// GET_DESCRIPTOR_FROM_DEVICE
 		// SELECT_INTERFACE
 		[self setAlternateInterface:2];
-		SEND(kUSBRqClearFeature, 0x0000, 0x000b, 0x0b, 0x00, 0x00, 0x82, 0x01, 0x17, 0x40, 0x00, 0x00, 0x50, 0x18, 0x85, 0x00);
+		SEND(kUSBRqClearFeature, 0x0000, 0x000b, 0x0b, 0x00, 0x00, 0x82, 0x01, 0x17, 0x40, 0x1d, 0x00, 0x50, 0x18, 0x85, 0x00);
 	} else {
 		// GET_DESCRIPTOR_FROM_DEVICE
 		// GET_DESCRIPTOR_FROM_DEVICE
@@ -468,7 +513,7 @@ enum {
 		// GET_DESCRIPTOR_FROM_DEVICE
 		// SELECT_INTERFACE
 		[self setAlternateInterface:2];
-		SEND(kUSBRqClearFeature, 0x0000, 0x000b, 0x0b, 0x00, 0x00, 0x82, 0x01, 0x17, 0x40, 0x00, 0x00, 0xf0, 0xc9, 0x88, 0x00);
+		SEND(kUSBRqClearFeature, 0x0000, 0x000b, 0x0b, 0x00, 0x00, 0x82, 0x01, 0x17, 0x40, 0x1d, 0x00, 0xf0, 0xc9, 0x88, 0x00);
 	}
 	[super read];
 	[self setAlternateInterface:0];
@@ -482,8 +527,12 @@ enum {
 	NSUInteger const packetLength = 1024;
 	NSUInteger const headerLength = 4;
 	for(NSUInteger i = headerLength; i < length; i += packetLength) {
-		// TODO: Check for 0xaa00 header?
-		[self writePacketBytes:bytes+i length:MIN(length-i, packetLength-headerLength) toStorage:storage];
+		UInt8 const *header = bytes + i - headerLength;
+		if(header[0] == 0xaa && header[1] == 0xaa && header[2] == 0x00 && header[3] == 0x01) {
+			[self processAudioBlock:bytes + i length:MIN(length - i, packetLength - headerLength)];
+		} else {
+			[self writePacketBytes:bytes + i length:MIN(length - i, packetLength - headerLength) toStorage:storage];
+		}
 	}
 }
 

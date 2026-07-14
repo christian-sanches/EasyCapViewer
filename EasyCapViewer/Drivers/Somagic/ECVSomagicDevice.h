@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	NSUInteger _discard;
 	UInt8 _flags;
 	NSUInteger _hState, _vState;
+	NSMutableData *_audioBuffer;
 }
 
 - (BOOL)getStartOfRow:(out NSUInteger *const)outRow flags:(out UInt8 *const)outFlags withBytes:(UInt8 const *const)bytes length:(NSUInteger const)length;

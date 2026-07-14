@@ -154,11 +154,7 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 - (void)play
 {
 	[NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceReferenceDate:_lastStopTime + 0.75]];
-	if(_audioDevice) {
-		[self addTarget:_audioTarget];
-	} else {
-		ECVLog(ECVWarning, @"No audio input device found. Audio will be silent.");
-	}
+	[self addTarget:_audioTarget];
 	[_videoDevice play];
 	[_audioDevice start];
 	[_targets makeObjectsPerformSelector:@selector(play)];
@@ -180,7 +176,13 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 	[_targets makeObjectsPerformSelector:@selector(pushVideoFrame:) withObject:frame];
 	[_targetsLock unlock];
 }
-- (void)pushAudioBufferListValue:(NSValue *const)bufferListValue {}
+- (void)pushAudioBufferListValue:(NSValue *const)bufferListValue
+{
+	if(!bufferListValue) return;
+	[_targetsLock readLock];
+	[_targets makeObjectsPerformSelector:@selector(pushAudioBufferListValue:) withObject:bufferListValue];
+	[_targetsLock unlock];
+}
 
 #pragma mark -ECVCaptureDocument<ECVAudioDeviceDelegate>
 
