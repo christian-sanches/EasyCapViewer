@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVCropCell.h"
 
 // Controllers
-#import "ECVConfigController.h"
+#import "EasyCapViewer-Swift.h"
 
 static NSString *const ECVAspectRatio2Key = @"ECVAspectRatio2";
 static NSString *const ECVVsyncKey = @"ECVVsync";
@@ -540,7 +540,7 @@ static NSString *const ECVCropBorderKey = @"ECVCropBorder";
 - (void)windowDidBecomeMain:(NSNotification *)aNotif
 {
 	if([self isFullScreen]) [self performSelector:@selector(_hideMenuBar) withObject:nil afterDelay:0.0f inModes:@[(NSString *)kCFRunLoopCommonModes]];
-	[[ECVConfigController sharedConfigController] setCaptureDocument:[self captureDocument]];
+	[[ECVSwiftConfigController sharedSwiftConfigController] setCaptureDocument:[self captureDocument]];
 }
 - (void)windowDidResignMain:(NSNotification *)aNotif
 {

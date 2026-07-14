@@ -141,6 +141,7 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 	ECVAudioStream *const outputStream = [_audioOutput stream];
 	AudioStreamBasicDescription const outputDescription = [outputStream basicDescription];
 	_audioPipe = [[ECVAudioPipe alloc] initWithInputDescription:_inputDescription outputDescription:outputDescription upconvertFromMono:_upconvertsFromMono];
+	[_audioPipe setDropsBuffers:NO];
 	[_audioPipe setVolume:_muted ? 0.0 : _volume];
 	[_audioOutput setDelegate:self];
 	if(![_audioOutput start]) {

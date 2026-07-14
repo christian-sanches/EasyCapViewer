@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVController.h"
 #import "ECVDebug.h"
 #import "ECVReadWriteLock.h"
+#import "EasyCapViewer-Swift.h"
 
 static NSString *const ECVAudioInputUIDKey = @"ECVAudioInputUID";
 static NSString *const ECVAudioInputNone = @"ECVAudioInputNone";
@@ -245,7 +246,7 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 {
 	[[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
 
-	ECVConfigController *const config = [ECVConfigController sharedConfigController];
+	ECVSwiftConfigController *const config = [ECVSwiftConfigController sharedSwiftConfigController];
 	if([config captureDocument] == self) [config setCaptureDocument:nil];
 }
 

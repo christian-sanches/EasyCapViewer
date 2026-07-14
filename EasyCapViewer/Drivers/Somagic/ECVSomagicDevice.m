@@ -87,40 +87,68 @@ enum {
 	}
 	[_audioBuffer appendBytes:data length:length];
 
-	NSUInteger const bytesPerSample = sizeof(SInt32);
 	NSUInteger const channelsPerFrame = 2;
-	NSUInteger const bytesPerFrame = bytesPerSample * channelsPerFrame;
+	NSUInteger const bytesPerFrame = sizeof(SInt32) * channelsPerFrame;
 
-	NSUInteger const totalBytes = [_audioBuffer length];
-	NSUInteger const completeFrames = totalBytes / bytesPerFrame;
+	NSUInteger totalBytes = [_audioBuffer length];
+	UInt8 const *bytes = [_audioBuffer bytes];
 
-	if(completeFrames > 0) {
-		SInt32 const *inputSamples = (SInt32 const *)[_audioBuffer bytes];
-		NSUInteger const outputLength = completeFrames * channelsPerFrame * sizeof(Float32);
-		Float32 *outputBuffer = (Float32 *)malloc(outputLength);
-		if(!outputBuffer) return;
-
-		float const scale = 1.0f / 2147483648.0f;
-		for(NSUInteger i = 0; i < completeFrames * channelsPerFrame; i++) {
-			outputBuffer[i] = (Float32)inputSamples[i] * scale;
+	NSUInteger offset = _audioReadOffset;
+	if(offset + bytesPerFrame <= totalBytes && bytes[offset] == 0x00 && bytes[offset + channelsPerFrame] == 0x00) {
+	} else {
+		offset = 0;
+		for(; offset + bytesPerFrame <= totalBytes; offset++) {
+			if(bytes[offset] == 0x00 && bytes[offset + channelsPerFrame] == 0x00) break;
 		}
-
-		AudioBufferList bufferList;
-		bufferList.mNumberBuffers = 1;
-		bufferList.mBuffers[0].mNumberChannels = channelsPerFrame;
-		bufferList.mBuffers[0].mDataByteSize = (UInt32)outputLength;
-		bufferList.mBuffers[0].mData = outputBuffer;
-
-		[[self captureDocument] pushAudioBufferListValue:[NSValue valueWithPointer:&bufferList]];
-
-		free(outputBuffer);
-
-		NSUInteger consumedBytes = completeFrames * bytesPerFrame;
-		if(consumedBytes < totalBytes) {
-			[_audioBuffer replaceBytesInRange:NSMakeRange(0, consumedBytes) withBytes:NULL length:0];
-		} else {
-			[_audioBuffer setLength:0];
+		if(offset + bytesPerFrame > totalBytes) {
+			_audioReadOffset = 0;
+			return;
 		}
+		if(_audioBlockCount == 0 && offset > 0) {
+			ECVLog(ECVNotice, @"Audio alignment found at offset %lu within block", (unsigned long)offset);
+		}
+	}
+	_audioReadOffset = offset;
+	NSUInteger const availableFrames = (totalBytes - offset) / bytesPerFrame;
+	if(availableFrames == 0) return;
+
+	SInt32 const *inputSamples = (SInt32 const *)(bytes + offset);
+	NSUInteger const completeFrames = availableFrames;
+	NSUInteger const numSamples = completeFrames * channelsPerFrame;
+	NSUInteger const outputLength = numSamples * sizeof(Float32);
+	Float32 *outputBuffer = (Float32 *)malloc(outputLength);
+	if(!outputBuffer) return;
+
+	float const scale = 1.0f / 2147483648.0f;
+	for(NSUInteger i = 0; i < numSamples; i++) {
+		outputBuffer[i] = (Float32)inputSamples[i] * scale;
+	}
+
+	if(_audioBlockCount < 3 || (_audioBlockCount % 500 == 0)) {
+		ECVLog(ECVNotice, @"Audio push #%lu: %lu frames, samples[0..3] = [%d, %d, %d, %d], align=%lu bufLen=%lu",
+			(unsigned long)_audioBlockCount, (unsigned long)completeFrames,
+			inputSamples[0], inputSamples[1], inputSamples[2], inputSamples[3],
+			(unsigned long)offset, (unsigned long)totalBytes);
+	}
+	_audioBlockCount++;
+
+	AudioBufferList bufferList;
+	bufferList.mNumberBuffers = 1;
+	bufferList.mBuffers[0].mNumberChannels = channelsPerFrame;
+	bufferList.mBuffers[0].mDataByteSize = (UInt32)outputLength;
+	bufferList.mBuffers[0].mData = outputBuffer;
+
+	[[self captureDocument] pushAudioBufferListValue:[NSValue valueWithPointer:&bufferList]];
+
+	free(outputBuffer);
+
+	NSUInteger consumedBytes = offset + completeFrames * bytesPerFrame;
+	if(consumedBytes < totalBytes) {
+		[_audioBuffer replaceBytesInRange:NSMakeRange(0, consumedBytes) withBytes:NULL length:0];
+		_audioReadOffset = 0;
+	} else {
+		[_audioBuffer setLength:0];
+		_audioReadOffset = 0;
 	}
 }
 - (void)writePacketBytes:(UInt8 const *)bytes length:(NSUInteger)length toStorage:(ECVVideoStorage *const)storage
@@ -180,6 +208,13 @@ enum {
 	_flags = 0;
 	_hState = 0;
 	_vState = 0;
+	[_audioBuffer setLength:0];
+	_audioReadOffset = 0;
+	_audioBlockCount = 0;
+	_videoBlockCount = 0;
+	_unknownHeaderCount = 0;
+	_blockOffset = 0;
+	_foundBlockOffset = NO;
 	if([[self videoSource] composite]) {
 		// GET_DESCRIPTOR_FROM_DEVICE
 		// GET_DESCRIPTOR_FROM_DEVICE
@@ -526,11 +561,44 @@ enum {
 	}
 	NSUInteger const packetLength = 1024;
 	NSUInteger const headerLength = 4;
-	for(NSUInteger i = headerLength; i < length; i += packetLength) {
+	if(!_foundBlockOffset) {
+		_blockOffset = 0;
+		for(NSUInteger a = 0; a + headerLength < length && a < packetLength; a++) {
+			if(bytes[a] == 0xaa && bytes[a + 1] == 0xaa && bytes[a + 2] == 0x00 && (bytes[a + 3] == 0x00 || bytes[a + 3] == 0x01)) {
+				NSUInteger next = a + packetLength;
+				if(next + headerLength <= length && bytes[next] == 0xaa && bytes[next + 1] == 0xaa && bytes[next + 2] == 0x00 && (bytes[next + 3] == 0x00 || bytes[next + 3] == 0x01)) {
+					_blockOffset = a;
+					ECVLog(ECVNotice, @"Block alignment found at offset %lu", (unsigned long)a);
+					break;
+				}
+			}
+		}
+		_foundBlockOffset = YES;
+		if(_blockOffset > 0) {
+			ECVLog(ECVNotice, @"Using block offset %lu (not aligned to 1024)", (unsigned long)_blockOffset);
+		}
+	}
+	for(NSUInteger i = _blockOffset + headerLength; i < length; i += packetLength) {
 		UInt8 const *header = bytes + i - headerLength;
 		if(header[0] == 0xaa && header[1] == 0xaa && header[2] == 0x00 && header[3] == 0x01) {
+			if(_audioBlockCount < 3 || (_audioBlockCount % 500 == 0)) {
+				ECVLog(ECVNotice, @"Audio header at offset %lu, payload[0..7]: %02x %02x %02x %02x %02x %02x %02x %02x",
+					(unsigned long)(i - headerLength),
+					bytes[i], bytes[i+1], bytes[i+2], bytes[i+3],
+					bytes[i+4], bytes[i+5], bytes[i+6], bytes[i+7]);
+			}
 			[self processAudioBlock:bytes + i length:MIN(length - i, packetLength - headerLength)];
+		} else if(header[0] == 0xaa && header[1] == 0xaa && header[2] == 0x00 && header[3] == 0x00) {
+			_videoBlockCount++;
+			[self writePacketBytes:bytes + i length:MIN(length - i, packetLength - headerLength) toStorage:storage];
 		} else {
+			_unknownHeaderCount++;
+			if(_unknownHeaderCount <= 20 || (_unknownHeaderCount % 1000 == 0)) {
+				ECVLog(ECVWarning, @"Unknown header at offset %lu in microframe len=%lu: %02x %02x %02x %02x (audio=%lu video=%lu unknown=%lu)",
+					(unsigned long)(i - headerLength), (unsigned long)length,
+					header[0], header[1], header[2], header[3],
+					(unsigned long)_audioBlockCount, (unsigned long)_videoBlockCount, (unsigned long)_unknownHeaderCount);
+			}
 			[self writePacketBytes:bytes + i length:MIN(length - i, packetLength - headerLength) toStorage:storage];
 		}
 	}

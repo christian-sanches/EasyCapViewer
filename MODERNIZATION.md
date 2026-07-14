@@ -18,6 +18,7 @@
 - [x] Phase 8 — UI & HUD Modernization
 - [x] Phase 9 — Project Folder Restructuring
 - [ ] Phase 10 — Testing, Signing & Distribution
+- [ ] Phase 11 — SwiftUI & macOS Modernization
 
 ---
 
@@ -162,6 +163,7 @@ Each phase has its own detailed document:
 8. [Phase 8 — UI Modernization](docs/modernization/08-ui-modernization.md)
 9. [Phase 9 — Project Restructuring](docs/modernization/09-project-restructuring.md)
 10. [Phase 10 — Testing & Distribution](docs/modernization/10-testing-distribution.md)
+11. [Phase 11 — SwiftUI & macOS Modernization](docs/modernization/11-swiftui-modernization.md)
 
 ---
 

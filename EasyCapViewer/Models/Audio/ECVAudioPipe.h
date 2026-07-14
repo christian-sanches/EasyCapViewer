@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 	AudioStreamBasicDescription _outputStreamDescription;
 	AudioConverterRef _converter;
 	CGFloat _volume;
+	float _previousSquaredVolume;
 	BOOL _upconvertsFromMono;
 	BOOL _dropsBuffers;
 	NSLock *_lock;

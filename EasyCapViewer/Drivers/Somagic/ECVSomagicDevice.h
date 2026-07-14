@@ -30,6 +30,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	UInt8 _flags;
 	NSUInteger _hState, _vState;
 	NSMutableData *_audioBuffer;
+	NSUInteger _audioReadOffset;
+	NSUInteger _audioBlockCount;
+	NSUInteger _videoBlockCount;
+	NSUInteger _unknownHeaderCount;
+	NSUInteger _blockOffset;
+	BOOL _foundBlockOffset;
 }
 
 - (BOOL)getStartOfRow:(out NSUInteger *const)outRow flags:(out UInt8 *const)outFlags withBytes:(UInt8 const *const)bytes length:(NSUInteger const)length;

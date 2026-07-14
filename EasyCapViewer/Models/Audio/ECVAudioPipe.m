@@ -35,6 +35,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *conversionBufferList, AudioStreamPacketDescription **outDataPacketDescription, ECVAudioPipe *audioPipe)
 {
 	(void)[audioPipe _fillConversionBufferList:conversionBufferList];
+	UInt32 const maxPackets = *ioNumberDataPackets;
+	UInt32 totalPackets = 0;
+	AudioStreamBasicDescription const inputDesc = [audioPipe inputStreamDescription];
+	for(UInt32 i = 0; i < conversionBufferList->mNumberBuffers; i++) {
+		totalPackets += conversionBufferList->mBuffers[i].mDataByteSize / inputDesc.mBytesPerPacket;
+	}
+	*ioNumberDataPackets = MIN(totalPackets, maxPackets);
 	return noErr;
 }
 
@@ -54,6 +61,7 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 
 		_upconvertsFromMono = flag;
 		_volume = 1.0f;
+		_previousSquaredVolume = 1.0f;
 		_dropsBuffers = YES;
 		_lock = [[NSLock alloc] init];
 		_unusedBuffers = [[NSMutableArray alloc] init];
@@ -95,7 +103,9 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 {
 	NSMutableArray *const buffers = [NSMutableArray arrayWithCapacity:inputBufferList->mNumberBuffers];
 	NSUInteger i = 0;
-	float const volume = pow([self volume], 2);
+	float const newSquaredVolume = pow([self volume], 2);
+	float const previousSquaredVolume = _previousSquaredVolume;
+	BOOL const volumeChanging = (newSquaredVolume != previousSquaredVolume);
 	BOOL const upconvertFromMono = [self upconvertsFromMono];
 	UInt32 const intermediateChannelCount = [self inputStreamDescription].mChannelsPerFrame;
 	for(; i < inputBufferList->mNumberBuffers; i++) {
@@ -108,14 +118,35 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 		float *const floats = malloc(outputLength);
 		if(!floats) continue;
 		if(upconvertFromMono) {
-			UInt32 j = 0;
-			for(; j < intermediateChannelCount; j++) vDSP_vsmul(inputBufferList->mBuffers[i].mData, sourceChannelCount, &volume, floats + j, intermediateChannelCount, channelLength / sizeof(float));
+			if(volumeChanging) {
+				size_t const numOutputFloats = outputLength / sizeof(float);
+				float rampValue = previousSquaredVolume;
+				float const rampDelta = (newSquaredVolume - previousSquaredVolume) / (float)numOutputFloats;
+				float const *const src = inputBufferList->mBuffers[i].mData;
+				size_t const numSamples = channelLength / sizeof(float);
+				for(size_t k = 0; k < numSamples; k++) {
+					float const sample = src[k] * rampValue;
+					for(UInt32 j = 0; j < intermediateChannelCount; j++) {
+						floats[k * intermediateChannelCount + j] = sample;
+					}
+					rampValue += rampDelta;
+				}
+			} else {
+				UInt32 j = 0;
+				for(; j < intermediateChannelCount; j++) vDSP_vsmul(inputBufferList->mBuffers[i].mData, sourceChannelCount, &newSquaredVolume, floats + j, intermediateChannelCount, channelLength / sizeof(float));
+			}
 		} else {
-			NSAssert(inputLength == outputLength, @"If we aren't upconverting, we can't change the data length.");
-			vDSP_vsmul(inputBufferList->mBuffers[i].mData, 1, &volume, floats, 1, outputLength / sizeof(float));
+			if(volumeChanging) {
+				float rampValue = previousSquaredVolume;
+				float const rampDelta = (newSquaredVolume - previousSquaredVolume) / (float)(outputLength / sizeof(float));
+				vDSP_vrampmul(inputBufferList->mBuffers[i].mData, 1, &rampValue, &rampDelta, floats, 1, outputLength / sizeof(float));
+			} else {
+				vDSP_vsmul(inputBufferList->mBuffers[i].mData, 1, &newSquaredVolume, floats, 1, outputLength / sizeof(float));
+			}
 		}
 		[buffers addObject:[NSMutableData dataWithBytesNoCopy:floats length:outputLength freeWhenDone:YES]];
 	}
+	_previousSquaredVolume = newSquaredVolume;
 	[_lock lock];
 	if(_dropsBuffers) [_unusedBuffers setArray:buffers];
 	else [_unusedBuffers addObjectsFromArray:buffers];
@@ -127,6 +158,20 @@ static OSStatus ECVAudioConverterComplexInputDataProc(AudioConverterRef inAudioC
 	NSUInteger i = 0;
 	UInt32 packetCount = 0;
 	for(; i < outputBufferList->mNumberBuffers; i++) packetCount += outputBufferList->mBuffers[i].mDataByteSize / _outputStreamDescription.mBytesPerPacket;
+	[_lock lock];
+	NSUInteger const bufCount = [_unusedBuffers count];
+	[_lock unlock];
+	if(bufCount == 0) {
+		for(i = 0; i < outputBufferList->mNumberBuffers; i++) {
+			memset(outputBufferList->mBuffers[i].mData, 0, outputBufferList->mBuffers[i].mDataByteSize);
+		}
+		static NSUInteger sUnderrunCount = 0;
+		sUnderrunCount++;
+		if(sUnderrunCount <= 10 || (sUnderrunCount % 100 == 0)) {
+			ECVLog(ECVWarning, @"Audio underrun #%lu: _unusedBuffers empty, outputting silence", (unsigned long)sUnderrunCount);
+		}
+		return;
+	}
 	(void)AudioConverterFillComplexBuffer(_converter, (AudioConverterComplexInputDataProc)ECVAudioConverterComplexInputDataProc, (__bridge void *)self, &packetCount, outputBufferList, NULL);
 	[_usedBuffers removeAllObjects];
 }

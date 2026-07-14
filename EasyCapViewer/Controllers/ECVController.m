@@ -27,9 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVCaptureDocument.h"
 
 // Controllers
-#import "ECVConfigController.h"
 #import "ECVErrorLogController.h"
 #import "ECVWelcomeWindowController.h"
+#import "EasyCapViewer-Swift.h"
 
 // Other Sources
 #import "ECVAppKitAdditions.h"
@@ -86,7 +86,7 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 
 - (IBAction)configureDevice:(id)sender
 {
-	[[ECVConfigController sharedConfigController] ECV_toggleWindow:sender];
+	[[ECVSwiftConfigController sharedSwiftConfigController] showConfig:sender];
 }
 - (IBAction)showErrorLog:(id)sender
 {
