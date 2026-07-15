@@ -23,10 +23,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import <IOKit/IOCFPlugIn.h>
 #import <IOKit/IOMessage.h>
 #import <mach/mach_time.h>
-#import "ECVWelcomeWindowController.h"
+#import "ECVCaptureSession.h"
 
 // Models
-#import "ECVCaptureDocument.h"
 #import "ECVUSBTransferList.h"
 #import "ECVVideoSource.h"
 #import "ECVVideoFormat.h"
@@ -290,14 +289,12 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 - (void)invalidate
 {
 	_valid = NO;
-	ECVCaptureDocument *const doc = [self captureDocument];
-	[doc close];
+	ECVCaptureSession *const session = [self captureSession];
+	[session setPaused:YES];
 
-	// If no other capture documents remain, show the welcome window
-	for(NSDocument *const otherDoc in [[NSDocumentController sharedDocumentController] documents]) {
-		if(otherDoc != doc && [otherDoc isKindOfClass:NSClassFromString(@"ECVCaptureDocument")]) return;
-	}
-	[[ECVWelcomeWindowController sharedWelcomeWindowController] ECV_showWelcome];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ECVCaptureDeviceDidInvalidate"
+														object:self
+													  userInfo:nil];
 }
 
 #pragma mark -
@@ -309,10 +306,10 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 - (void)setDeinterlacingMode:(Class const)mode
 {
 	if(mode == _deinterlacingMode) return;
-	[_captureDocument setPaused:YES];
+	[_captureSession setPaused:YES];
 	_deinterlacingMode = mode;
 	[self _updateVideoStorage];
-	[_captureDocument setPaused:NO];
+	[_captureSession setPaused:NO];
 	[[NSUserDefaults standardUserDefaults] setInteger:[mode deinterlacingModeType] forKey:ECVDeinterlacingModeKey];
 }
 - (ECVVideoStorage *)videoStorage { return _videoStorage; }
@@ -409,10 +406,10 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 
 - (void)_updateVideoStorage
 {
-	[_captureDocument setPaused:YES];
+	[_captureSession setPaused:YES];
 	_videoStorage = nil;
 	if([self videoFormat]) _videoStorage = [[[ECVVideoStorage preferredVideoStorageClass] alloc] initWithVideoFormat:[self videoFormat] deinterlacingMode:[self deinterlacingMode] pixelFormat:[self pixelFormat]];
-	[_captureDocument setPaused:NO];
+	[_captureSession setPaused:NO];
 }
 
 #pragma mark -
@@ -549,13 +546,13 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 
 // Ongoing refactoring... This code is new, the above code is not.
 
-- (ECVCaptureDocument *)captureDocument
+- (ECVCaptureSession *)captureSession
 {
-	return _captureDocument;
+	return _captureSession;
 }
-- (void)setCaptureDocument:(ECVCaptureDocument *const)doc
+- (void)setCaptureSession:(ECVCaptureSession *const)session
 {
-	_captureDocument = doc;
+	_captureSession = session;
 }
 
 
@@ -566,9 +563,9 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 - (void)setVideoSource:(ECVVideoSource *const)source
 {
 	if(BTEqualObjects(source, _videoSource)) return;
-	[_captureDocument setPaused:YES];
+	[_captureSession setPaused:YES];
 	_videoSource = source;
-	[_captureDocument setPaused:NO];
+	[_captureSession setPaused:NO];
 	NSString *const key = [NSString stringWithFormat:@"%@.%@", ECVVideoSourceKey, NSStringFromClass([self class])];
 	[[NSUserDefaults standardUserDefaults] setObject:[_videoSource serializedValue] forKey:key];
 }
@@ -586,10 +583,10 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 - (void)setVideoFormat:(ECVVideoFormat *const)format
 {
 	if(BTEqualObjects(format, _videoFormat)) return;
-	[_captureDocument setPaused:YES];
+	[_captureSession setPaused:YES];
 	_videoFormat = format;
 	[self _updateVideoStorage];
-	[_captureDocument setPaused:NO];
+	[_captureSession setPaused:NO];
 	NSString *const key = [NSString stringWithFormat:@"%@.%@", ECVVideoFormatKey, NSStringFromClass([self class])];
 	[[NSUserDefaults standardUserDefaults] setObject:[_videoFormat serializedValue] forKey:key];
 }
@@ -630,7 +627,7 @@ static IOReturn ECVGetPipeWithProperties(IOUSBInterfaceInterface **const interfa
 }
 - (void)pushVideoFrame:(ECVVideoFrame *const)frame
 {
-	[_captureDocument pushVideoFrame:frame];
+	[_captureSession pushVideoFrame:frame];
 }
 - (void)pushAudioBufferListValue:(NSValue *const)bufferListValue {}
 

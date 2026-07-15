@@ -11,22 +11,6 @@ struct WelcomeView: View {
                 .foregroundStyle(.secondary)
             Spacer()
         }
-        .frame(width: 420, height: 200)
-    }
-}
-
-@objc class ECVWelcomeSwiftHelper: NSObject {
-    @objc static func createWelcomeWindow() -> NSWindow {
-        let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 420, height: 200),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
-            backing: .buffered,
-            defer: true
-        )
-        window.title = "EasyCapViewer"
-        window.isReleasedWhenClosed = false
-        window.minSize = NSSize(width: 420, height: 200)
-        window.contentView = NSHostingView(rootView: WelcomeView())
-        return window
+        .frame(minWidth: 420, minHeight: 200)
     }
 }

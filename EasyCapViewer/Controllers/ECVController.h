@@ -19,11 +19,11 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-@class ECVCaptureDocument;
+@class ECVCaptureSession;
 #import "ECVCaptureDevice.h"
 #import <IOKit/pwr_mgt/IOPMLib.h>
 
-@interface ECVController : NSDocumentController
+@interface ECVController : NSObject
 {
 	@private
 	IONotificationPortRef _notificationPort;
@@ -40,8 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 @property(readonly) IONotificationPortRef notificationPort;
 @property(nonatomic, assign) BOOL playing;
 
-- (void)noteCaptureDocumentStartedPlaying:(ECVCaptureDocument *)document;
-- (void)noteCaptureDocumentStoppedPlaying:(ECVCaptureDocument *)document;
+- (void)noteCaptureSessionStartedPlaying:(ECVCaptureSession *)session;
+- (void)noteCaptureSessionStoppedPlaying:(ECVCaptureSession *)session;
 
 - (void)workspaceDidWake:(NSNotification *)aNotif;
 

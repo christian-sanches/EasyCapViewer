@@ -21,12 +21,22 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVAudioDevice.h"
 #import "ECVCaptureDevice.h"
+#import "ECVVideoFrame.h"
 
 @class ECVAudioTarget;
 @class ECVCaptureDevice;
+@class ECVCaptureSession;
 @class ECVReadWriteLock;
 
-@interface ECVCaptureDocument : NSDocument <ECVAVTarget, ECVAudioDeviceDelegate>
+@protocol ECVCaptureSessionDelegate <NSObject>
+@optional
+- (void)captureSessionDidStartPlaying:(ECVCaptureSession *)session;
+- (void)captureSessionDidStopPlaying:(ECVCaptureSession *)session;
+- (void)captureSession:(ECVCaptureSession *)session didReceiveVideoFrame:(ECVVideoFrame *)frame;
+- (void)captureSession:(ECVCaptureSession *)session didReceiveAudioBuffer:(NSValue *)bufferListValue;
+@end
+
+@interface ECVCaptureSession : NSObject <ECVAudioDeviceDelegate>
 {
 	@private
 	ECVCaptureDevice *_videoDevice;
@@ -41,9 +51,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 	NSTimeInterval _lastStopTime;
 }
 
+@property(weak) id<ECVCaptureSessionDelegate> delegate;
+
 - (NSArray *)targets;
-- (void)addTarget:(id<ECVAVTarget> const)target;
-- (void)removeTarget:(id<ECVAVTarget> const)target;
+- (void)addTarget:(id)target;
+- (void)removeTarget:(id)target;
 - (ECVAudioTarget *)audioTarget;
 
 - (ECVCaptureDevice *)videoDevice;
@@ -57,6 +69,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 - (void)setPaused:(BOOL const)flag;
 - (BOOL)isPausedFromUI;
 - (void)setPausedFromUI:(BOOL const)flag;
+
+- (void)pushVideoFrame:(ECVVideoFrame *const)frame;
+- (void)pushAudioBufferListValue:(NSValue *const)bufferListValue;
 
 - (void)workspaceWillSleep:(NSNotification *const)aNotif;
 

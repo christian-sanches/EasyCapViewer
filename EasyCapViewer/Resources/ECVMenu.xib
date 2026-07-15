@@ -24,7 +24,7 @@
                             </menuItem>
                             <menuItem title="Configure Device…" keyEquivalent="," id="502">
                                 <connections>
-                                    <action selector="configureDevice:" target="450" id="536"/>
+                                    <action selector="configureDevice:" target="-1" id="536"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="236">
@@ -67,8 +67,7 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="File" id="465">
                         <items>
-                            <menuItem title="Play" id="570">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Play" keyEquivalent=" " id="570">
                                 <connections>
                                     <action selector="togglePlaying:" target="-1" id="571"/>
                                 </connections>
@@ -305,10 +304,9 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="567"/>
-                            <menuItem title="Error Log" id="566">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Error Log" keyEquivalent="e" id="566">
                                 <connections>
-                                    <action selector="showErrorLog:" target="450" id="568"/>
+                                    <action selector="showErrorLog:" target="-1" id="568"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="92">

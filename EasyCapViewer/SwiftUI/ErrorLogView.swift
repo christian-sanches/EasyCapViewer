@@ -15,6 +15,27 @@ import Observation
 
     var hasContent: Bool { !entries.isEmpty }
 
+    override init() {
+        super.init()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleLogNotification(_:)),
+            name: NSNotification.Name("ECVErrorLogNotification"),
+            object: nil
+        )
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc private func handleLogNotification(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let level = userInfo["ECVErrorLogLevelKey"] as? UInt,
+              let message = userInfo["ECVErrorLogMessageKey"] as? String else { return }
+        append(level: level, message: message)
+    }
+
     @objc(appendLevel:message:) func append(level: UInt, message: String) {
         entries.append(Entry(level: level, message: message, date: Date()))
     }
@@ -79,22 +100,5 @@ struct ErrorLogView: View {
         case 3:     return .red      // ECVCritical
         default:    return .primary  // ECVNotice
         }
-    }
-}
-
-@objc class ECVErrorLogSwiftHelper: NSObject {
-    @objc static func createErrorLogWindow(model: ErrorLogModel) -> NSWindow {
-        let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 500, height: 350),
-            styleMask: [.titled, .closable, .resizable, .miniaturizable],
-            backing: .buffered,
-            defer: true
-        )
-        window.title = "Error Log"
-        window.isReleasedWhenClosed = false
-        window.minSize = NSSize(width: 300, height: 200)
-        window.contentView = NSHostingView(rootView: ErrorLogView(model: model))
-        window.center()
-        return window
     }
 }

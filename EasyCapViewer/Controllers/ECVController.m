@@ -24,11 +24,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import <IOKit/pwr_mgt/IOPMLib.h>
 
 // Models
-#import "ECVCaptureDocument.h"
+#import "ECVCaptureSession.h"
 
 // Controllers
-#import "ECVErrorLogController.h"
-#import "ECVWelcomeWindowController.h"
 #import "EasyCapViewer-Swift.h"
 
 // Other Sources
@@ -86,11 +84,11 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 
 - (IBAction)configureDevice:(id)sender
 {
-	[[ECVSwiftConfigController sharedSwiftConfigController] showConfig:sender];
+	[[[ECVAppDelegate shared] mainWindowController] toggleSettingsSidebar];
 }
 - (IBAction)showErrorLog:(id)sender
 {
-	[[ECVErrorLogController sharedErrorLogController] ECV_toggleWindow:sender];
+	[[[ECVAppDelegate shared] mainWindowController] toggleErrorLogSidebar];
 }
 
 #pragma mark -
@@ -117,11 +115,11 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 
 #pragma mark -
 
-- (void)noteCaptureDocumentStartedPlaying:(ECVCaptureDocument *)document
+- (void)noteCaptureSessionStartedPlaying:(ECVCaptureSession *)session
 {
 	[self setPlaying:YES];
 }
-- (void)noteCaptureDocumentStoppedPlaying:(ECVCaptureDocument *)document
+- (void)noteCaptureSessionStoppedPlaying:(ECVCaptureSession *)session
 {
 	[self setPlaying:NO];
 }
@@ -143,7 +141,8 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 	}
 	ECVLog(ECVNotice, @"USB Devices: %@", ECVUSBDevices());
 	if([devices count]) return [devices makeObjectsPerformSelector:@selector(ECV_display)];
-	[[ECVWelcomeWindowController sharedWelcomeWindowController] ECV_showWelcome];
+	// Show welcome view in main window
+	[[ECVAppDelegate shared] showMainWindow];
 }
 
 #pragma mark -ECVController(Private)
@@ -182,21 +181,14 @@ static void ECVDeviceAdded(Class deviceClass, io_iterator_t iterator)
 
 - (void)ECV_display
 {
-	[[ECVWelcomeWindowController sharedWelcomeWindowController] ECV_closeWelcome];
-	[self performSelector:@selector(ECV_createDocument) withObject:nil afterDelay:1.0 inModes:[NSArray arrayWithObject:(NSString *)kCFRunLoopCommonModes]]; // This is the easiest and most sensible way to ensure that the device is entirely reset before we start using it. In particular, calling SetConfiguration() causes any audio devices associated with the hardware to be lost, and we don't know if there are any or when they will be found.
+	// Delay device setup to allow hardware to reset
+	[self performSelector:@selector(ECV_setupDevice) withObject:nil afterDelay:1.0 inModes:[NSArray arrayWithObject:(NSString *)kCFRunLoopCommonModes]];
 }
-- (void)ECV_createDocument
+- (void)ECV_setupDevice
 {
 	if(![self isValid]) return;
-	ECVCaptureDocument *const doc = [[ECVCaptureDocument alloc] init];
-	[doc setVideoDevice:self];
-	[[NSDocumentController sharedDocumentController] addDocument:doc];
-	[doc makeWindowControllers];
-	[doc showWindows];
-
-	if([[NSUserDefaults standardUserDefaults] boolForKey:@"ECVAutoPlay"]) {
-		[doc setPausedFromUI:NO];
-	}
+	[[ECVAppDelegate shared] showMainWindow];
+	[[[ECVAppDelegate shared] mainWindowController] connectDevice:self];
 }
 
 @end

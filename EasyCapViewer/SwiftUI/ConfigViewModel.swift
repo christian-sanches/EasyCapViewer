@@ -4,7 +4,7 @@ import Combine
 
 @Observable
 final class ConfigViewModel {
-    private var document: ECVCaptureDocument?
+    private var session: ECVCaptureSession?
     private var cancellables = Set<AnyCancellable>()
 
     var selectedSourceIndex: Int = 0
@@ -54,21 +54,21 @@ final class ConfigViewModel {
         self.autoPlay = UserDefaults.standard.bool(forKey: "ECVAutoPlay")
     }
 
-    func setDocument(_ doc: ECVCaptureDocument?) {
+    func setSession(_ session: ECVCaptureSession?) {
         cancellables.removeAll()
-        document = doc
+        self.session = session
 
-        guard let device = doc?.videoDevice() else { return }
+        guard let device = session?.videoDevice() else { return }
 
         refreshSources(device: device)
         refreshFormats(device: device)
         refreshDeinterlace(device: device)
         refreshVideoControls(device: device)
-        refreshAudio(doc: doc)
+        refreshAudio(session: session)
 
         NotificationCenter.default
             .publisher(for: Notification.Name.ECVAudioHardwareDevicesDidChange)
-            .sink { [weak self] _ in self?.refreshAudio(doc: doc) }
+            .sink { [weak self] _ in self?.refreshAudio(session: session) }
             .store(in: &cancellables)
     }
 
@@ -106,9 +106,9 @@ final class ConfigViewModel {
         if tintEnabled { tint = device.hue() }
     }
 
-    private func refreshAudio(doc: ECVCaptureDocument?) {
-        guard let doc else { return }
-        let preferred = doc.videoDevice()?.builtInAudioInput()
+    private func refreshAudio(session: ECVCaptureSession?) {
+        guard let session else { return }
+        let preferred = session.videoDevice()?.builtInAudioInput()
 
         var items: [(String, ECVAudioInput?)] = [("No Input", nil)]
         if let preferred {
@@ -120,14 +120,14 @@ final class ConfigViewModel {
         }
         audioInputs = items
 
-        let currentAudio = doc.audioDevice()
+        let currentAudio = session.audioDevice()
         if let currentAudio, let idx = items.firstIndex(where: { $0.1 == currentAudio }) {
             selectedAudioIndex = idx
         } else {
             selectedAudioIndex = 0
         }
 
-        if let target = doc.audioTarget() {
+        if let target = session.audioTarget() {
             volumeEnabled = true
             volume = target.isMuted() ? 0 : target.volume()
             upconvertEnabled = true
@@ -142,52 +142,52 @@ final class ConfigViewModel {
 
     func changeSource() {
         guard selectedSourceIndex < sources.count else { return }
-        document?.videoDevice()?.setVideoSource(sources[selectedSourceIndex])
+        session?.videoDevice()?.setVideoSource(sources[selectedSourceIndex])
     }
 
     func changeFormat() {
         guard selectedFormatIndex < formatMenuItems.count else { return }
-        document?.videoDevice()?.setVideoFormat(formatMenuItems[selectedFormatIndex].representedObject)
+        session?.videoDevice()?.setVideoFormat(formatMenuItems[selectedFormatIndex].representedObject)
     }
 
     func changeDeinterlace() {
         guard let modeClass = ECVDeinterlacingMode.deinterlacingMode(withType: selectedDeinterlaceTag) else { return }
-        document?.videoDevice()?.setDeinterlacingMode(modeClass)
+        session?.videoDevice()?.setDeinterlacingMode(modeClass)
     }
 
     func changeBrightness() {
         snapSlider(&brightness)
-        document?.videoDevice()?.setBrightness(CGFloat(brightness))
+        session?.videoDevice()?.setBrightness(CGFloat(brightness))
     }
 
     func changeContrast() {
         snapSlider(&contrast)
-        document?.videoDevice()?.setContrast(CGFloat(contrast))
+        session?.videoDevice()?.setContrast(CGFloat(contrast))
     }
 
     func changeSaturation() {
         snapSlider(&saturation)
-        document?.videoDevice()?.setSaturation(CGFloat(saturation))
+        session?.videoDevice()?.setSaturation(CGFloat(saturation))
     }
 
     func changeTint() {
         snapSlider(&tint)
-        document?.videoDevice()?.setHue(CGFloat(tint))
+        session?.videoDevice()?.setHue(CGFloat(tint))
     }
 
     func changeVolume() {
-        let target = document?.audioTarget()
+        let target = session?.audioTarget()
         target?.setVolume(CGFloat(volume))
         target?.setMuted(false)
     }
 
     func changeAudioInput() {
         guard selectedAudioIndex < audioInputs.count else { return }
-        document?.setAudioDevice(audioInputs[selectedAudioIndex].input)
+        session?.setAudioDevice(audioInputs[selectedAudioIndex].input)
     }
 
     func changeUpconvertsFromMono() {
-        document?.audioTarget()?.setUpconvertsFromMono(upconvertsFromMono)
+        session?.audioTarget()?.setUpconvertsFromMono(upconvertsFromMono)
     }
 
     private func snapSlider(_ value: inout Double) {

@@ -21,7 +21,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVSomagicDevice.h"
 #import "ECVDebug.h"
-#import "ECVCaptureDocument.h"
+#import "ECVCaptureSession.h"
 #import <AudioToolbox/AudioToolbox.h>
 
 #define RECV(request, idx, val, ...) \
@@ -141,7 +141,7 @@ enum {
 	bufferList.mBuffers[0].mDataByteSize = (UInt32)outputLength;
 	bufferList.mBuffers[0].mData = outputBuffer;
 
-	[[self captureDocument] pushAudioBufferListValue:[NSValue valueWithPointer:&bufferList]];
+	[[self captureSession] pushAudioBufferListValue:[NSValue valueWithPointer:&bufferList]];
 
 	free(outputBuffer);
 

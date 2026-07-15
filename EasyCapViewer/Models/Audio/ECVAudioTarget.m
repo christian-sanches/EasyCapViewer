@@ -21,7 +21,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVAudioTarget.h"
 #import "ECVAudioPipe.h"
-#import "ECVCaptureDocument.h"
+#import "ECVCaptureSession.h"
 #import "ECVDebug.h"
 
 NSString *const ECVCaptureDeviceVolumeDidChangeNotification = @"ECVCaptureDeviceVolumeDidChange";
@@ -30,7 +30,7 @@ static NSString *const ECVVolumeKey = @"ECVVolume";
 static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 
 @interface ECVAudioTarget () {
-	__weak ECVCaptureDocument *_captureDocument;
+	__weak ECVCaptureSession *_captureSession;
 	ECVAudioOutput *_audioOutput;
 	AudioStreamBasicDescription _inputDescription;
 	BOOL _muted;
@@ -42,13 +42,13 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 
 @implementation ECVAudioTarget
 
-- (ECVCaptureDocument *)captureDocument
+- (ECVCaptureSession *)captureSession
 {
-	return _captureDocument;
+	return _captureSession;
 }
-- (void)setCaptureDocument:(ECVCaptureDocument *const)doc
+- (void)setCaptureSession:(ECVCaptureSession *const)session
 {
-	_captureDocument = doc;
+	_captureSession = session;
 }
 
 #pragma mark -
@@ -61,10 +61,10 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 - (void)setAudioOutput:(ECVAudioOutput *const)output
 {
 	if(BTEqualObjects(output, _audioOutput)) return;
-	[_captureDocument setPaused:YES];
+	[_captureSession setPaused:YES];
 	_audioOutput = output;
 	_audioPipe = nil;
-	[_captureDocument setPaused:NO];
+	[_captureSession setPaused:NO];
 }
 - (void)setInputBasicDescription:(AudioStreamBasicDescription const)desc
 {
@@ -98,9 +98,9 @@ static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
 }
 - (void)setUpconvertsFromMono:(BOOL)flag
 {
-	[_captureDocument setPaused:YES];
+	[_captureSession setPaused:YES];
 	_upconvertsFromMono = flag;
-	[_captureDocument setPaused:NO];
+	[_captureSession setPaused:NO];
 	[[NSUserDefaults standardUserDefaults] setBool:flag forKey:ECVUpconvertsFromMonoKey];
 }
 

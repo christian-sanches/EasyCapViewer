@@ -27,14 +27,16 @@
 		AA0000021E11A00000000004 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000004 /* UniformTypeIdentifiers.framework */; };
 		AA0000021E11A00000000005 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000011E11A00000000005 /* AVFoundation.framework */; };
 		AA0000061E11A00000000004 /* ECVMetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0000041E11A00000000002 /* ECVMetalRenderer.m */; };
-		AA0000081E11A00000000001 /* ECVWelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00000A1E11A00000000003 /* ECVWelcomeWindowController.m */; };
 		AA0000071E11A00000000005 /* ECVMetalShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = AA0000051E11A00000000003 /* ECVMetalShaders.metal */; };
+		AABB00051E11A00000000001 /* ECVCaptureSession.m in Sources */ = {isa = PBXBuildFile; fileRef = AABB00021E11A00000000001 /* ECVCaptureSession.m */; };
+		AABB00061E11A00000000001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00031E11A00000000001 /* AppDelegate.swift */; };
+		AABB00071E11A00000000001 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00041E11A00000000001 /* MainWindowController.swift */; };
 		CC0000021E11A00000000001 /* ConfigViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000011E11A00000000001 /* ConfigViewModel.swift */; };
 		CC0000041E11A00000000001 /* ConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000031E11A00000000001 /* ConfigView.swift */; };
-		CC0000061E11A00000000001 /* ConfigWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000051E11A00000000001 /* ConfigWindowController.swift */; };
 		DD0000021E11A00000000001 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0000011E11A00000000001 /* WelcomeView.swift */; };
 		DD0000041E11A00000000001 /* ErrorLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0000031E11A00000000001 /* ErrorLogView.swift */; };
 		CC0000081E11A00000000001 /* AppMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000071E11A00000000001 /* AppMenu.swift */; };
+		DD0000051E11A00000000001 /* ECVErrorLogBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = DD0000041E11A00000000003 /* ECVErrorLogBridge.m */; };
 
 		0E053FF60FDF1FFD003688BB /* MPLWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E053FF40FDF1FFD003688BB /* MPLWindow.m */; };
 		0E0C489D10B91DC2008731F2 /* ECVMovieRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0C489C10B91DC2008731F2 /* ECVMovieRecorder.m */; };
@@ -45,7 +47,6 @@
 		0E3B7F8B11091253003A8A39 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B3310F679A400935C48 /* InfoPlist.strings */; };
 
 		0E4D778711046F9E00FE3DDC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E4D778611046F9E00FE3DDC /* main.m */; };
-		0E78C93E0FC8F98100E9C148 /* ECVCaptureController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78C93D0FC8F98100E9C148 /* ECVCaptureController.m */; };
 		0E78C9F30FC8FA1000E9C148 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E78C9F20FC8FA1000E9C148 /* IOKit.framework */; };
 		0E78CA4F0FC9128000E9C148 /* ECVController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CA4E0FC9128000E9C148 /* ECVController.m */; };
 		0E78CAAE0FC91B6500E9C148 /* ECVSTK1160Device.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E78CAAD0FC91B6500E9C148 /* ECVSTK1160Device.m */; };
@@ -56,7 +57,6 @@
 		0E7FFD1E1089D60A000C8217 /* ECVCropCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7FFD1D1089D60A000C8217 /* ECVCropCell.m */; };
 		0E89833F10C2D740006BA9C6 /* ECVReadWriteLock.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E89833E10C2D740006BA9C6 /* ECVReadWriteLock.m */; };
 		0E8CE155107BE51C004F05A7 /* ECVAppKitAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8CE154107BE51C004F05A7 /* ECVAppKitAdditions.m */; };
-		0E984D6B108C65D100CB469C /* ECVErrorLogController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E984D6A108C65D100CB469C /* ECVErrorLogController.m */; };
 		0E984E21108C7F3D00CB469C /* Log-Clear.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E984E20108C7F3D00CB469C /* Log-Clear.png */; };
 
 		0E9F9B1D10F6753C00935C48 /* ECVLocalizing.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E9F9B1C10F6753C00935C48 /* ECVLocalizing.m */; };
@@ -68,9 +68,6 @@
 		0E9F9B3B10F679A400935C48 /* ECVMenu.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B3110F679A400935C48 /* ECVMenu.strings */; };
 		0E9F9B3C10F679A400935C48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B3310F679A400935C48 /* InfoPlist.strings */; };
 		0E9F9B3D10F679A400935C48 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B3510F679A400935C48 /* Localizable.strings */; };
-		0E9F9B4210F679B800935C48 /* ECVCapture.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B3E10F679B800935C48 /* ECVCapture.xib */; };
-		0E9F9B4310F679B800935C48 /* ECVConfig.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B3F10F679B800935C48 /* ECVConfig.xib */; };
-
 		0E9F9B4510F679B800935C48 /* ECVMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0E9F9B4110F679B800935C48 /* ECVMenu.xib */; };
 		0E9FAA861107A5A7005C55CE /* ECVDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0E9FAA851107A5A7005C55CE /* ECVDevices.plist */; };
 		0E9FAA871107A662005C55CE /* ECVDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0E9FAA851107A5A7005C55CE /* ECVDevices.plist */; };
@@ -108,7 +105,6 @@
 		B5BC261B166F78EC0036490F /* ECVVideoFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC2619166F78EC0036490F /* ECVVideoFormat.m */; };
 		B5BC2807167E75CF0036490F /* ECVUSBTransferList.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC2806167E75CF0036490F /* ECVUSBTransferList.m */; };
 		B5BC2808167E75CF0036490F /* ECVUSBTransferList.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC2806167E75CF0036490F /* ECVUSBTransferList.m */; };
-		B5BC28E0167E904D0036490F /* ECVCaptureDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC28DE167E904D0036490F /* ECVCaptureDocument.m */; };
 		B5BC29D3167F68970036490F /* ECVVideoSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC29D2167F68970036490F /* ECVVideoSource.m */; };
 		B5BC29D4167F68970036490F /* ECVVideoSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC29D2167F68970036490F /* ECVVideoSource.m */; };
 		B5BC2A10167F6FAB0036490F /* ECVEM2860Device.m in Sources */ = {isa = PBXBuildFile; fileRef = B54758481507B29B006C0E44 /* ECVEM2860Device.m */; };
@@ -164,8 +160,6 @@
 		0E2C232710AF96A6001B40EF /* ECVVideoStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVVideoStorage.m; sourceTree = "<group>"; };
 		0E4D76AF11044B1000FE3DDC /* EasyCapViewer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "EasyCapViewer-Info.plist"; sourceTree = "<group>"; };
 		0E4D778611046F9E00FE3DDC /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		0E78C93C0FC8F98100E9C148 /* ECVCaptureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVCaptureController.h; sourceTree = "<group>"; };
-		0E78C93D0FC8F98100E9C148 /* ECVCaptureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVCaptureController.m; sourceTree = "<group>"; };
 		0E78C9F20FC8FA1000E9C148 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		0E78CA4D0FC9128000E9C148 /* ECVController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVController.h; sourceTree = "<group>"; };
 		0E78CA4E0FC9128000E9C148 /* ECVController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVController.m; sourceTree = "<group>"; };
@@ -183,8 +177,6 @@
 		0E89833E10C2D740006BA9C6 /* ECVReadWriteLock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVReadWriteLock.m; sourceTree = "<group>"; };
 		0E8CE153107BE51C004F05A7 /* ECVAppKitAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVAppKitAdditions.h; sourceTree = "<group>"; };
 		0E8CE154107BE51C004F05A7 /* ECVAppKitAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVAppKitAdditions.m; sourceTree = "<group>"; };
-		0E984D69108C65D100CB469C /* ECVErrorLogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVErrorLogController.h; sourceTree = "<group>"; };
-		0E984D6A108C65D100CB469C /* ECVErrorLogController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVErrorLogController.m; sourceTree = "<group>"; };
 		0E984E20108C7F3D00CB469C /* Log-Clear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Log-Clear.png"; sourceTree = "<group>"; };
 		0E9F9B1B10F6753C00935C48 /* ECVLocalizing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVLocalizing.h; sourceTree = "<group>"; };
 		0E9F9B1C10F6753C00935C48 /* ECVLocalizing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVLocalizing.m; sourceTree = "<group>"; };
@@ -197,8 +189,6 @@
 		0E9F9B3210F679A400935C48 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ECVMenu.strings; sourceTree = "<group>"; };
 		0E9F9B3410F679A400935C48 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0E9F9B3610F679A400935C48 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		0E9F9B3E10F679B800935C48 /* ECVCapture.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ECVCapture.xib; sourceTree = "<group>"; };
-		0E9F9B3F10F679B800935C48 /* ECVConfig.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ECVConfig.xib; sourceTree = "<group>"; };
 		0E9F9B4110F679B800935C48 /* ECVMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ECVMenu.xib; sourceTree = "<group>"; };
 		0E9FAA851107A5A7005C55CE /* ECVDevices.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ECVDevices.plist; sourceTree = "<group>"; };
 		0EAE4FB5112BD420004D93B3 /* VT1612AChip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT1612AChip.h; sourceTree = "<group>"; };
@@ -245,8 +235,6 @@
 		B5BC2619166F78EC0036490F /* ECVVideoFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVVideoFormat.m; sourceTree = "<group>"; };
 		B5BC2805167E75CF0036490F /* ECVUSBTransferList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVUSBTransferList.h; sourceTree = "<group>"; };
 		B5BC2806167E75CF0036490F /* ECVUSBTransferList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVUSBTransferList.m; sourceTree = "<group>"; };
-		B5BC28DD167E904D0036490F /* ECVCaptureDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVCaptureDocument.h; sourceTree = "<group>"; };
-		B5BC28DE167E904D0036490F /* ECVCaptureDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVCaptureDocument.m; sourceTree = "<group>"; };
 		B5BC29D1167F68970036490F /* ECVVideoSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVVideoSource.h; sourceTree = "<group>"; };
 		B5BC29D2167F68970036490F /* ECVVideoSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVVideoSource.m; sourceTree = "<group>"; };
 		B5BC2A67168132100036490F /* ECVAudioTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVAudioTarget.h; sourceTree = "<group>"; };
@@ -263,14 +251,17 @@
 		AA0000031E11A00000000001 /* ECVMetalRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVMetalRenderer.h; sourceTree = "<group>"; };
 		AA0000041E11A00000000002 /* ECVMetalRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVMetalRenderer.m; sourceTree = "<group>"; };
 		AA0000051E11A00000000003 /* ECVMetalShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = ECVMetalShaders.metal; sourceTree = "<group>"; };
-		AA00000A1E11A00000000003 /* ECVWelcomeWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVWelcomeWindowController.m; sourceTree = "<group>"; };
 		CC0000011E11A00000000001 /* ConfigViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigViewModel.swift; sourceTree = "<group>"; };
 		CC0000031E11A00000000001 /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
-		CC0000051E11A00000000001 /* ConfigWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigWindowController.swift; sourceTree = "<group>"; };
 		DD0000011E11A00000000001 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		DD0000031E11A00000000001 /* ErrorLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorLogView.swift; sourceTree = "<group>"; };
 		CC0000071E11A00000000001 /* AppMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMenu.swift; sourceTree = "<group>"; };
-		AA00000C1E11A00000000005 /* ECVWelcomeWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVWelcomeWindowController.h; sourceTree = "<group>"; };
+		AABB00011E11A00000000001 /* ECVCaptureSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVCaptureSession.h; sourceTree = "<group>"; };
+		AABB00021E11A00000000001 /* ECVCaptureSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVCaptureSession.m; sourceTree = "<group>"; };
+		AABB00031E11A00000000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		AABB00041E11A00000000001 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
+		DD0000041E11A00000000002 /* ECVErrorLogBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECVErrorLogBridge.h; sourceTree = "<group>"; };
+		DD0000041E11A00000000003 /* ECVErrorLogBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECVErrorLogBridge.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -301,12 +292,6 @@
 			children = (
 				0E78CA4D0FC9128000E9C148 /* ECVController.h */,
 				0E78CA4E0FC9128000E9C148 /* ECVController.m */,
-				0E78C93C0FC8F98100E9C148 /* ECVCaptureController.h */,
-				0E78C93D0FC8F98100E9C148 /* ECVCaptureController.m */,
-				0E984D69108C65D100CB469C /* ECVErrorLogController.h */,
-				0E984D6A108C65D100CB469C /* ECVErrorLogController.m */,
-				AA00000C1E11A00000000005 /* ECVWelcomeWindowController.h */,
-				AA00000A1E11A00000000003 /* ECVWelcomeWindowController.m */,
 			);
 			name = Controllers;
 			path = Controllers;
@@ -401,9 +386,10 @@
 	CC0000071E11A00000000001 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				AABB00031E11A00000000001 /* AppDelegate.swift */,
+				AABB00041E11A00000000001 /* MainWindowController.swift */,
 				CC0000011E11A00000000001 /* ConfigViewModel.swift */,
 				CC0000031E11A00000000001 /* ConfigView.swift */,
-				CC0000051E11A00000000001 /* ConfigWindowController.swift */,
 				DD0000011E11A00000000001 /* WelcomeView.swift */,
 				DD0000031E11A00000000001 /* ErrorLogView.swift */,
 			);
@@ -434,8 +420,6 @@
 			isa = PBXGroup;
 			children = (
 				0E9F9B4110F679B800935C48 /* ECVMenu.xib */,
-				0E9F9B3E10F679B800935C48 /* ECVCapture.xib */,
-				0E9F9B3F10F679B800935C48 /* ECVConfig.xib */,
 				B5E3760D14928D2F00ED097A /* EasyCapViewer.icns */,
 				0EFEE894109205C300312653 /* Cursor-Resize-45.tiff */,
 				0EFEE895109205C300312653 /* Cursor-Resize-135.tiff */,
@@ -479,8 +463,8 @@
 			isa = PBXGroup;
 			children = (
 				B5BC2ABE16813C740036490F /* ECVAVTarget.h */,
-				B5BC28DD167E904D0036490F /* ECVCaptureDocument.h */,
-				B5BC28DE167E904D0036490F /* ECVCaptureDocument.m */,
+				AABB00011E11A00000000001 /* ECVCaptureSession.h */,
+				AABB00021E11A00000000001 /* ECVCaptureSession.m */,
 				0EB070DB10B0992400B9575B /* ECVCaptureDevice.h */,
 				0EB070DC10B0992400B9575B /* ECVCaptureDevice.m */,
 				B5BC29D1167F68970036490F /* ECVVideoSource.h */,
@@ -581,6 +565,8 @@
 				0E89833E10C2D740006BA9C6 /* ECVReadWriteLock.m */,
 				0EC8BF8E1090A3F400ED9BB0 /* ECVRectEdgeMask.h */,
 				0EC8BF8F1090A3F400ED9BB0 /* ECVRectEdgeMask.m */,
+				DD0000041E11A00000000002 /* ECVErrorLogBridge.h */,
+				DD0000041E11A00000000003 /* ECVErrorLogBridge.m */,
 			);
 			name = Utilities;
 			path = Utilities;
@@ -713,8 +699,6 @@
 				0E9F9B3B10F679A400935C48 /* ECVMenu.strings in Resources */,
 				0E9F9B3C10F679A400935C48 /* InfoPlist.strings in Resources */,
 				0E9F9B3D10F679A400935C48 /* Localizable.strings in Resources */,
-				0E9F9B4210F679B800935C48 /* ECVCapture.xib in Resources */,
-				0E9F9B4310F679B800935C48 /* ECVConfig.xib in Resources */,
 				0E9F9B4510F679B800935C48 /* ECVMenu.xib in Resources */,
 				0E9FAA861107A5A7005C55CE /* ECVDevices.plist in Resources */,
 				B5E3760E14928D2F00ED097A /* EasyCapViewer.icns in Resources */,
@@ -728,7 +712,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E78C93E0FC8F98100E9C148 /* ECVCaptureController.m in Sources */,
 				0E78CA4F0FC9128000E9C148 /* ECVController.m in Sources */,
 				0E78CAAE0FC91B6500E9C148 /* ECVSTK1160Device.m in Sources */,
 				0E78CB980FC92D8300E9C148 /* ECVDebug.m in Sources */,
@@ -742,8 +725,9 @@
 				0E7FFD1E1089D60A000C8217 /* ECVCropCell.m in Sources */,
 				AA0000061E11A00000000004 /* ECVMetalRenderer.m in Sources */,
 				AA0000071E11A00000000005 /* ECVMetalShaders.metal in Sources */,
-				AA0000081E11A00000000001 /* ECVWelcomeWindowController.m in Sources */,
-				0E984D6B108C65D100CB469C /* ECVErrorLogController.m in Sources */,
+				AABB00051E11A00000000001 /* ECVCaptureSession.m in Sources */,
+				AABB00061E11A00000000001 /* AppDelegate.swift in Sources */,
+				AABB00071E11A00000000001 /* MainWindowController.swift in Sources */,
 				0EC8BF901090A3F400ED9BB0 /* ECVRectEdgeMask.m in Sources */,
 				0E16F6AE10AE92C600730A18 /* SAA711XChip.m in Sources */,
 				0E2C230B10AF91C6001B40EF /* ECVVideoFrame.m in Sources */,
@@ -762,16 +746,15 @@
 				B5060072132794E400B2F202 /* ECVPixelBuffer.m in Sources */,
 				B5BC261A166F78EC0036490F /* ECVVideoFormat.m in Sources */,
 				B5BC2808167E75CF0036490F /* ECVUSBTransferList.m in Sources */,
-				B5BC28E0167E904D0036490F /* ECVCaptureDocument.m in Sources */,
 				B5BC29D4167F68970036490F /* ECVVideoSource.m in Sources */,
 				B5BC2A10167F6FAB0036490F /* ECVEM2860Device.m in Sources */,
 				B5BC2A6A168132100036490F /* ECVAudioTarget.m in Sources */,
 				B5C0606D169C6A6700E35266 /* ECVSomagicDevice.m in Sources */,
 				B5B4F5D8169E506200B14376 /* ECVSomagicDevice_Unloaded.m in Sources */,
 				B5A89D1317513C8400995E10 /* ECVFushicaiDevice.m in Sources */,
+				DD0000051E11A00000000001 /* ECVErrorLogBridge.m in Sources */,
 				CC0000021E11A00000000001 /* ConfigViewModel.swift in Sources */,
 				CC0000041E11A00000000001 /* ConfigView.swift in Sources */,
-				CC0000061E11A00000000001 /* ConfigWindowController.swift in Sources */,
 				DD0000021E11A00000000001 /* WelcomeView.swift in Sources */,
 				DD0000041E11A00000000001 /* ErrorLogView.swift in Sources */,
 				CC0000081E11A00000000001 /* AppMenu.swift in Sources */,

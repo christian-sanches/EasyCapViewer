@@ -23,7 +23,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVAudioDevice.h"
 #import "ECVCaptureDevice.h"
 @class ECVAudioPipe;
-@class ECVCaptureDocument;
+@class ECVCaptureSession;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,8 +31,8 @@ extern NSString *const ECVCaptureDeviceVolumeDidChangeNotification;
 
 @interface ECVAudioTarget : NSObject <ECVAVTarget, ECVAudioDeviceDelegate>
 
-- (nullable ECVCaptureDocument *)captureDocument;
-- (void)setCaptureDocument:(nullable ECVCaptureDocument *const)doc;
+- (nullable ECVCaptureSession *)captureSession;
+- (void)setCaptureSession:(nullable ECVCaptureSession *const)session;
 
 - (nullable ECVAudioOutput *)audioOutput;
 - (void)setAudioOutput:(nullable ECVAudioOutput *const)output;

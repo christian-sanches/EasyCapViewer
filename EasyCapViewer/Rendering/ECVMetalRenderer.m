@@ -155,8 +155,10 @@ typedef struct {
 
 - (void)startRendering
 {
-    _isPlaying = YES;
-    _view.paused = NO;
+	NSLog(@"[ECV-TRACE] MetalRenderer.startRendering: view=%@ paused=%d", _view, _view.paused);
+	_isPlaying = YES;
+	_view.paused = NO;
+	NSLog(@"[ECV-TRACE] MetalRenderer.startRendering: view.paused now=%d", _view.paused);
 }
 
 - (void)stopRendering
@@ -168,10 +170,14 @@ typedef struct {
 
 - (void)pushFrame:(ECVVideoFrame *)frame
 {
-    if (!frame) return;
+    if (!frame) {
+        NSLog(@"[ECV-TRACE] MetalRenderer.pushFrame: NIL frame, ignoring");
+        return;
+    }
     
     @synchronized(self) {
         [self.frameQueue insertObject:frame atIndex:0];
+        NSLog(@"[ECV-TRACE] MetalRenderer.pushFrame: queueSize=%lu storage=%@", (unsigned long)self.frameQueue.count, self.videoStorage);
         if ([self.videoStorage dropFramesFromArray:self.frameQueue]) {
             self.frameDropStrength = 1.0f;
         }
@@ -184,10 +190,15 @@ typedef struct {
 
 - (void)updateTextureForFrame:(ECVVideoFrame *)frame
 {
-    if (!frame || ![frame lockIfHasBytes]) return;
+    if (!frame) return;
     
     ECVIntegerSize frameSize = [[self.videoStorage videoFormat] frameSize];
     OSType pixelFormat = [self.videoStorage pixelFormat];
+    
+    if (frameSize.width == 0 || frameSize.height == 0) {
+        NSLog(@"[ECV-TRACE] MetalRenderer.updateTextureForFrame: zero frameSize={%ld,%ld}", (long)frameSize.width, (long)frameSize.height);
+        return;
+    }
     
     // Create Y texture if needed
     if (!_yTexture || _yTexture.width != frameSize.width || _yTexture.height != frameSize.height) {
@@ -227,7 +238,6 @@ typedef struct {
     if (!yData || !cbcrData) {
         free(yData);
         free(cbcrData);
-        [frame unlock];
         return;
     }
     
@@ -267,15 +277,16 @@ typedef struct {
     
     free(yData);
     free(cbcrData);
-    
-    [frame unlock];
 }
 
 #pragma mark - MTKViewDelegate
 
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
-    if (!_pipelineState) return;
+    if (!_pipelineState) {
+        NSLog(@"[ECV-TRACE] MetalRenderer.drawInMTKView: NO pipelineState, aborting");
+        return;
+    }
     
     ECVVideoFrame *frame = nil;
     
@@ -292,12 +303,18 @@ typedef struct {
         }
     }
     
+    NSLog(@"[ECV-TRACE] MetalRenderer.drawInMTKView: frame=%@ pipelineState=%@ viewport={%u,%u}", frame, _pipelineState, self.viewportSize.x, self.viewportSize.y);
+    
     if (frame) {
         [self updateTextureForFrame:frame];
     }
     
     MTLRenderPassDescriptor *renderPassDescriptor = view.currentRenderPassDescriptor;
-    if (!renderPassDescriptor) return;
+    if (!renderPassDescriptor) {
+        NSLog(@"[ECV-TRACE] MetalRenderer.drawInMTKView: NO renderPassDescriptor");
+        if (frame) [frame unlock];
+        return;
+    }
     
     renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
     renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
@@ -306,7 +323,12 @@ typedef struct {
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     
-    MTLViewport viewport = {0, 0, (double)self.viewportSize.x, (double)self.viewportSize.y, -1, 1};
+    vector_uint2 vp = self.viewportSize;
+    if (vp.x == 0 || vp.y == 0) {
+        vp = (vector_uint2){(uint)view.drawableSize.width, (uint)view.drawableSize.height};
+        self.viewportSize = vp;
+    }
+    MTLViewport viewport = {0, 0, (double)vp.x, (double)vp.y, -1, 1};
     [renderEncoder setViewport:viewport];
     [renderEncoder setRenderPipelineState:_pipelineState];
     
@@ -325,7 +347,14 @@ typedef struct {
     [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
     [renderEncoder endEncoding];
     
-    [commandBuffer presentDrawable:view.currentDrawable];
+    id<MTLDrawable> drawable = view.currentDrawable;
+    if (drawable) {
+        NSLog(@"[ECV-TRACE] MetalRenderer.drawInMTKView: presenting drawable=%@", drawable);
+        [commandBuffer presentDrawable:drawable];
+    } else {
+        NSLog(@"[ECV-TRACE] MetalRenderer.drawInMTKView: NIL drawable, discarding");
+        renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
+    }
     [commandBuffer commit];
     
     if (frame) {
@@ -347,9 +376,13 @@ typedef struct {
 {
     ECVUniforms *uniforms = (ECVUniforms *)[_uniformsBuffer contents];
     
-    // Simple orthographic projection
-    float aspectRatio = (float)(_aspectRatio.width / _aspectRatio.height);
-    float viewAspect = (float)(self.viewportSize.x / self.viewportSize.y);
+    uniforms->projectionMatrix = matrix_identity_float4x4;
+    uniforms->modelViewMatrix = matrix_identity_float4x4;
+    
+    if (_aspectRatio.height == 0 || self.viewportSize.y == 0) return;
+    
+    float aspectRatio = (float)_aspectRatio.width / (float)_aspectRatio.height;
+    float viewAspect = (float)self.viewportSize.x / (float)self.viewportSize.y;
     
     float scaleX = 1.0f;
     float scaleY = 1.0f;
@@ -360,10 +393,6 @@ typedef struct {
         scaleX = aspectRatio / viewAspect;
     }
     
-    uniforms->projectionMatrix = matrix_identity_float4x4;
-    uniforms->modelViewMatrix = matrix_identity_float4x4;
-    
-    // Apply scaling for aspect ratio
     uniforms->modelViewMatrix.columns[0][0] = scaleX;
     uniforms->modelViewMatrix.columns[1][1] = scaleY;
 }

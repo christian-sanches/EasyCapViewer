@@ -54,12 +54,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)setVideoStorage:(id)storage
 {
+	NSLog(@"[ECV-TRACE] VideoView.setVideoStorage: storage=%@ renderer=%@", storage, _renderer);
 	NSParameterAssert([storage isKindOfClass:[ECVDependentVideoStorage class]]);
 	
 	if (storage == _videoStorage) return;
 	
 	_videoStorage = storage;
 	_renderer.videoStorage = storage;
+	NSLog(@"[ECV-TRACE] VideoView.setVideoStorage: done, renderer.storage=%@", _renderer.videoStorage);
 }
 
 @synthesize ecvDelegate;
@@ -115,6 +117,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)pushFrame:(ECVVideoFrame *)frame
 {
+	NSLog(@"[ECV-TRACE] VideoView.pushFrame: frame=%@ renderer=%@", frame, _renderer);
 	[_renderer pushFrame:frame];
 }
 
@@ -228,10 +231,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 - (void)awakeFromNib
 {
+	NSLog(@"[ECV-TRACE] VideoView.awakeFromNib");
 	_cropRect = ECVUncroppedRect;
 	
 	// Initialize Metal renderer
 	_renderer = [[ECVMetalRenderer alloc] initWithView:self];
+	NSLog(@"[ECV-TRACE] VideoView.awakeFromNib: renderer=%@", _renderer);
 }
 
 #pragma mark -Window Notifications

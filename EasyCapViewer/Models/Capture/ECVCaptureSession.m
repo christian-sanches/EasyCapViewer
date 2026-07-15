@@ -19,23 +19,23 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-#import "ECVCaptureDocument.h"
+#import "ECVCaptureSession.h"
 
 #import "ECVAudioDevice.h"
 #import "ECVAudioTarget.h"
-#import "ECVCaptureController.h"
 #import "ECVController.h"
 #import "ECVDebug.h"
 #import "ECVReadWriteLock.h"
+#import "ECVVideoFrame.h"
 #import "EasyCapViewer-Swift.h"
 
 static NSString *const ECVAudioInputUIDKey = @"ECVAudioInputUID";
 static NSString *const ECVAudioInputNone = @"ECVAudioInputNone";
 static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 
-@implementation ECVCaptureDocument
+@implementation ECVCaptureSession
 
-#pragma mark -ECVCaptureDocument
+#pragma mark -ECVCaptureSession
 
 - (NSArray *)targets
 {
@@ -44,13 +44,13 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 	[_targetsLock unlock];
 	return targets;
 }
-- (void)addTarget:(id<ECVAVTarget> const)target
+- (void)addTarget:(id const)target
 {
 	[_targetsLock writeLock];
 	[_targets addObject:target];
 	[_targetsLock unlock];
 }
-- (void)removeTarget:(id<ECVAVTarget> const)target
+- (void)removeTarget:(id const)target
 {
 	[_targetsLock writeLock];
 	[_targets removeObjectIdenticalTo:target];
@@ -70,8 +70,9 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 - (void)setVideoDevice:(ECVCaptureDevice *const)source
 {
 	if(source == _videoDevice) return;
+	[_videoDevice setCaptureSession:nil];
 	_videoDevice = source;
-	[_videoDevice setCaptureDocument:self];
+	[_videoDevice setCaptureSession:self];
 
 	// Yes, the audio input really is dependent on the video device.
 	NSString *const UID = [[NSUserDefaults standardUserDefaults] objectForKey:ECVAudioInputUIDKey];
@@ -150,7 +151,7 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 	}
 }
 
-#pragma mark -ECVCaptureDocument<ECVVideoTarget>
+#pragma mark -ECVCaptureSession<ECVAVTarget>
 
 - (void)play
 {
@@ -159,11 +160,13 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 	[_videoDevice play];
 	[_audioDevice start];
 	[_targets makeObjectsPerformSelector:@selector(play)];
-	[[ECVController sharedController] noteCaptureDocumentStartedPlaying:self];
+	[[ECVController sharedController] noteCaptureSessionStartedPlaying:self];
+	[_delegate captureSessionDidStartPlaying:self];
 }
 - (void)stop
 {
-	[[ECVController sharedController] noteCaptureDocumentStoppedPlaying:self];
+	[[ECVController sharedController] noteCaptureSessionStoppedPlaying:self];
+	[_delegate captureSessionDidStopPlaying:self];
 	[_targets makeObjectsPerformSelector:@selector(stop)];
 	[_videoDevice stop];
 	[_audioDevice stop];
@@ -173,6 +176,7 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 - (void)pushVideoFrame:(ECVVideoFrame *const)frame
 {
 	if(!frame) return;
+	[_delegate captureSession:self didReceiveVideoFrame:frame];
 	[_targetsLock readLock];
 	[_targets makeObjectsPerformSelector:@selector(pushVideoFrame:) withObject:frame];
 	[_targetsLock unlock];
@@ -180,48 +184,22 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 - (void)pushAudioBufferListValue:(NSValue *const)bufferListValue
 {
 	if(!bufferListValue) return;
+	[_delegate captureSession:self didReceiveAudioBuffer:bufferListValue];
 	[_targetsLock readLock];
 	[_targets makeObjectsPerformSelector:@selector(pushAudioBufferListValue:) withObject:bufferListValue];
 	[_targetsLock unlock];
 }
 
-#pragma mark -ECVCaptureDocument<ECVAudioDeviceDelegate>
+#pragma mark -ECVCaptureSession<ECVAudioDeviceDelegate>
 
 - (void)audioInput:(ECVAudioInput *const)sender didReceiveBufferList:(AudioBufferList const *const)bufferList atTime:(AudioTimeStamp const *const)t
 {
 	if(sender != _audioDevice) return;
+	NSValue *const value = [NSValue valueWithPointer:bufferList];
+	[_delegate captureSession:self didReceiveAudioBuffer:value];
 	[_targetsLock readLock];
-	[_targets makeObjectsPerformSelector:@selector(pushAudioBufferListValue:) withObject:[NSValue valueWithPointer:bufferList]];
+	[_targets makeObjectsPerformSelector:@selector(pushAudioBufferListValue:) withObject:value];
 	[_targetsLock unlock];
-}
-
-#pragma mark -NSDocument
-
-- (void)addWindowController:(NSWindowController *const)windowController
-{
-	[super addWindowController:windowController];
-	[self addTarget:(id<ECVAVTarget>)windowController];
-}
-- (void)removeWindowController:(NSWindowController *const)windowController
-{
-	[super removeWindowController:windowController];
-	[self removeTarget:(id<ECVAVTarget>)windowController];
-}
-- (void)makeWindowControllers
-{
-	[self addWindowController:[[ECVCaptureController alloc] init]];
-}
-
-#pragma mark -
-
-- (NSString *)displayName
-{
-	return [_videoDevice name] ?: @"";
-}
-- (void)close
-{
-	[self setPausedFromUI:YES];
-	[super close];
 }
 
 #pragma mark -NSObject
@@ -235,7 +213,7 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 		_targetsLock = [[ECVReadWriteLock alloc] init];
 		_targets = [[NSMutableArray alloc] init];
 		_audioTarget = [[ECVAudioTarget alloc] init];
-		[_audioTarget setCaptureDocument:self];
+		[_audioTarget setCaptureSession:nil];
 		[_audioTarget setAudioOutput:[ECVAudioOutput defaultDevice]];
 
 		[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(workspaceWillSleep:) name:NSWorkspaceWillSleepNotification object:[NSWorkspace sharedWorkspace]];
@@ -245,9 +223,6 @@ static NSString *const ECVAudioInputVideoDevice = @"ECVAudioInputVideoDevice";
 - (void)dealloc
 {
 	[[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-
-	ECVSwiftConfigController *const config = [ECVSwiftConfigController sharedSwiftConfigController];
-	if([config captureDocument] == self) [config setCaptureDocument:nil];
 }
 
 @end

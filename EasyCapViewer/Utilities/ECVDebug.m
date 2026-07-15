@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import <string.h>
 
 // Controllers
-#import "ECVErrorLogController.h"
+#import "ECVErrorLogBridge.h"
 
 void ECVLog(ECVErrorLevel level, NSString *format, ...)
 {
@@ -43,7 +43,7 @@ void ECVLog(ECVErrorLevel level, NSString *format, ...)
 #endif
 #if defined(ECV_LOG_TO_WINDOW)
 		va_start(arguments, format);
-		[[ECVErrorLogController sharedErrorLogController] logLevel:level format:format arguments:arguments];
+		[[ECVErrorLogBridge sharedBridge] logLevel:level format:format arguments:arguments];
 		va_end(arguments);
 #endif
 #if defined(ECV_LOG_TO_DESKTOP)

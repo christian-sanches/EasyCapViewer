@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #import "ECVPixelFormat.h"
 
 // Models
-@class ECVCaptureDocument;
+@class ECVCaptureSession;
 @class ECVVideoFrame;
 
 extern NSString *const ECVDeinterlacingModeKey;
@@ -69,7 +69,7 @@ extern NSString *const ECVHueKey;
 
 // New ivars...
 
-	ECVCaptureDocument *_captureDocument;
+	ECVCaptureSession *_captureSession;
 
 	ECVVideoSource *_videoSource;
 	ECVVideoFormat *_videoFormat;
@@ -111,8 +111,8 @@ extern NSString *const ECVHueKey;
 
 // Ongoing refactoring... This code is new, the above code is not.
 
-- (ECVCaptureDocument *)captureDocument;
-- (void)setCaptureDocument:(ECVCaptureDocument *const)doc;
+- (ECVCaptureSession *)captureSession;
+- (void)setCaptureSession:(ECVCaptureSession *const)session;
 
 - (ECVVideoSource *)videoSource;
 - (void)setVideoSource:(ECVVideoSource *const)source;
