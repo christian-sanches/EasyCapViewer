@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIconFile</key>
+	<string>EasyCapViewer</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>${PRODUCT_NAME}</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>LSApplicationArchitectures</key>
+	<array>
+		<string>arm64</string>
+		<string>x86_64</string>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>ECVInfoByVideoCodec</key>
+	<dict>
+		<key>'avc1'</key>
+		<dict>
+			<key>ECVCodecLabel</key>
+			<string>H.264 (Hardware Accelerated)</string>
+			<key>ECVConfigurableQuality</key>
+			<true/>
+		</dict>
+		<key>'hvc1'</key>
+		<dict>
+			<key>ECVCodecLabel</key>
+			<string>HEVC / H.265 (Hardware Accelerated)</string>
+			<key>ECVConfigurableQuality</key>
+			<true/>
+		</dict>
+		<key>'jpeg'</key>
+		<dict>
+			<key>ECVCodecLabel</key>
+			<string>Motion JPEG</string>
+			<key>ECVConfigurableQuality</key>
+			<true/>
+		</dict>
+		<key>'yv42'</key>
+		<dict>
+			<key>ECVCodecLabel</key>
+			<string>Apple ProRes 422 (High Quality)</string>
+			<key>ECVConfigurableQuality</key>
+			<false/>
+		</dict>
+	</dict>
+	<key>ECVMainSuiteName</key>
+	<string>${ECV_BUNDLE_IDENTIFIER}</string>
+	<key>ECVVideoCodecs</key>
+	<array>
+		<string>'avc1'</string>
+		<string>'hvc1'</string>
+		<string>'jpeg'</string>
+		<string>'yv42'</string>
+	</array>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSMainNibFile</key>
+	<string>ECVMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+</dict>
+</plist>

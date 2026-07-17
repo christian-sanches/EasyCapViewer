@@ -1,0 +1,189 @@
+/* Copyright (c) 2012, Ben Trask
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+#import "ECVAudioTarget.h"
+#import "ECVAudioPipe.h"
+#import "ECVCaptureSession.h"
+#import "ECVDebug.h"
+
+NSString *const ECVCaptureDeviceVolumeDidChangeNotification = @"ECVCaptureDeviceVolumeDidChange";
+
+static NSString *const ECVVolumeKey = @"ECVVolume";
+static NSString *const ECVUpconvertsFromMonoKey = @"ECVUpconvertsFromMono";
+
+@interface ECVAudioTarget () {
+	__weak ECVCaptureSession *_captureSession;
+	ECVAudioOutput *_audioOutput;
+	AudioStreamBasicDescription _inputDescription;
+	BOOL _muted;
+	CGFloat _volume;
+	BOOL _upconvertsFromMono;
+	ECVAudioPipe *_audioPipe;
+}
+@end
+
+@implementation ECVAudioTarget
+
+- (ECVCaptureSession *)captureSession
+{
+	return _captureSession;
+}
+- (void)setCaptureSession:(ECVCaptureSession *const)session
+{
+	_captureSession = session;
+}
+
+#pragma mark -
+
+- (ECVAudioOutput *)audioOutput
+{
+	if(!_audioOutput) _audioOutput = [ECVAudioOutput defaultDevice];
+	return _audioOutput;
+}
+- (void)setAudioOutput:(ECVAudioOutput *const)output
+{
+	if(BTEqualObjects(output, _audioOutput)) return;
+	[_captureSession setPaused:YES];
+	_audioOutput = output;
+	_audioPipe = nil;
+	[_captureSession setPaused:NO];
+}
+- (void)setInputBasicDescription:(AudioStreamBasicDescription const)desc
+{
+	_inputDescription = desc;
+}
+- (BOOL)isMuted
+{
+	return _muted;
+}
+- (void)setMuted:(BOOL)flag
+{
+	if(flag == _muted) return;
+	_muted = flag;
+	[_audioPipe setVolume:_muted ? 0.0f : _volume];
+	[[NSNotificationCenter defaultCenter] postNotificationName:ECVCaptureDeviceVolumeDidChangeNotification object:self];
+}
+- (CGFloat)volume
+{
+	return _volume;
+}
+- (void)setVolume:(CGFloat)value
+{
+	_volume = CLAMP(0.0f, value, 1.0f);
+	[_audioPipe setVolume:_muted ? 0.0f : _volume];
+	[[NSUserDefaults standardUserDefaults] setDouble:value forKey:ECVVolumeKey];
+	[[NSNotificationCenter defaultCenter] postNotificationName:ECVCaptureDeviceVolumeDidChangeNotification object:self];
+}
+- (BOOL)upconvertsFromMono
+{
+	return _upconvertsFromMono;
+}
+- (void)setUpconvertsFromMono:(BOOL)flag
+{
+	[_captureSession setPaused:YES];
+	_upconvertsFromMono = flag;
+	[_captureSession setPaused:NO];
+	[[NSUserDefaults standardUserDefaults] setBool:flag forKey:ECVUpconvertsFromMonoKey];
+}
+
+#pragma mark -ECVAudioTarget<ECVAudioDeviceDelegate>
+
+- (void)audioOutput:(ECVAudioOutput *)sender didRequestBufferList:(inout AudioBufferList *)bufferList forTime:(AudioTimeStamp const *)t
+{
+	if(sender != _audioOutput) return;
+	[_audioPipe requestOutputBufferList:bufferList];
+}
+
+#pragma mark -NSObject
+
+- (instancetype)init
+{
+	if((self = [super init])) {
+		NSUserDefaults *const d = [NSUserDefaults standardUserDefaults];
+		[d registerDefaults:@{
+			ECVVolumeKey: @(1.0f),
+			ECVUpconvertsFromMonoKey: @(NO),
+		}];
+		_inputDescription = ECVStandardAudioStreamBasicDescription;
+		_muted = NO;
+		_volume = [[NSUserDefaults standardUserDefaults] doubleForKey:ECVVolumeKey];
+	}
+	return self;
+}
+- (void)dealloc
+{
+	[self stop];
+}
+
+#pragma mark -ECVAudioTarget<ECVAVTarget>
+
+- (void)play
+{
+	NSAssert(!_audioPipe, @"Audio pipe should be cleared before restarting audio.");
+	ECVAudioStream *const outputStream = [_audioOutput stream];
+	AudioStreamBasicDescription const outputDescription = [outputStream basicDescription];
+	_audioPipe = [[ECVAudioPipe alloc] initWithInputDescription:_inputDescription outputDescription:outputDescription upconvertFromMono:_upconvertsFromMono];
+	[_audioPipe setDropsBuffers:NO];
+	[_audioPipe setVolume:_muted ? 0.0 : _volume];
+	[_audioOutput setDelegate:self];
+	if(![_audioOutput start]) {
+		ECVLog(ECVWarning, @"Audio output could not be started (%@, %@)", _audioOutput, outputStream);
+		[self stop];
+	}
+}
+- (void)stop
+{
+	[_audioOutput stop];
+	[_audioOutput setDelegate:nil];
+	_audioPipe = nil;
+}
+- (void)pushVideoFrame:(ECVVideoFrame *const)frame {}
+- (void)pushAudioBufferListValue:(NSValue *const)bufferListValue
+{
+	[_audioPipe receiveInputBufferList:[bufferListValue pointerValue]];
+}
+
+@end
+
+@implementation ECVCaptureDevice(ECVAudio)
+
+- (ECVAudioInput *)builtInAudioInput
+{
+	// First try finding via IORegistry tree
+	ECVAudioInput *input = [ECVAudioInput deviceWithIODevice:[self service]];
+	if(input) {
+		[input setName:[self name]];
+		return input;
+	}
+
+	// Fallback: search all CoreAudio input devices for a name match
+	NSString *const deviceName = [self name];
+	for(ECVAudioInput *candidate in [ECVAudioInput allDevices]) {
+		NSString *const candidateName = [candidate name];
+		if([candidateName containsString:deviceName] || [deviceName containsString:candidateName]) {
+			[candidate setName:deviceName];
+			return candidate;
+		}
+	}
+	return nil;
+}
+
+@end
