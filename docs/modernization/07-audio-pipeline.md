@@ -100,9 +100,9 @@ This is **not required** for the port but is a natural extension point.
 ## 7.5 Verification
 
 After Phase 7, the project should:
-- [ ] All audio files compile with ARC
-- [ ] Audio device enumeration finds all system audio outputs
-- [ ] 48kHz / 2ch / Float32 PCM format is correctly negotiated
+- [x] All audio files compile with ARC
+- [x] Audio device enumeration finds all system audio outputs
+- [x] 48kHz / 2ch / Float32 PCM format is correctly negotiated
 - [ ] Audio playback works through system speakers/headphones
 - [ ] Audio works during video capture simultaneously
 - [ ] Audio device hot-plug (connect/disconnect) is handled gracefully

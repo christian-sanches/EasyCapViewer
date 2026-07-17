@@ -157,9 +157,9 @@ Each device needs **physical hardware testing** on Apple Silicon:
 ## 6.6 Verification
 
 After Phase 6, the project should:
-- [ ] `kIOMasterPortDefault` replaced with `kIOMainPortDefault`
-- [ ] All IOKit USB usage compiles without warnings
-- [ ] ARC-compatible memory management in all USB code
+- [x] `kIOMasterPortDefault` replaced with `kIOMainPortDefault`
+- [x] All IOKit USB usage compiles without warnings
+- [x] ARC-compatible memory management in all USB code
 - [ ] STK1160 device captures video correctly on Apple Silicon
 - [ ] EM2860 device captures video + audio correctly on Apple Silicon
 - [ ] Somagic device firmware uploads correctly on Apple Silicon

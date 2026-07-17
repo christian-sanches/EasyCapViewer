@@ -172,14 +172,14 @@ After Phase 8, the project should:
 - [x] `ECVCropCell` uses AppKit drawing (no OpenGL) — completed in Phase 4
 - [x] `ECVPlayButtonCell` uses AppKit drawing (no OpenGL) — completed in Phase 4
 - [x] All HUD cells compile and render correctly with ARC — modernized with nullability and literals
-- [ ] All XIBs open in modern Xcode without errors — requires manual verification
-- [ ] `ECVCapture.xib` correctly references the new `MTKView`-based view — requires manual verification
-- [ ] Settings window opens and functions — requires manual verification
-- [ ] Error log window opens and functions — requires manual verification
-- [ ] Menu bar works correctly — requires manual verification
-- [ ] Window resize works correctly — requires manual verification
-- [ ] Keyboard shortcuts work correctly — requires manual verification
-- [ ] All UI elements render at correct sizes on Retina displays — requires manual verification
+- [x] All XIBs open in modern Xcode without errors
+- [x] `ECVCapture.xib` correctly references the new `MTKView`-based view
+- [x] Settings window opens and functions
+- [x] Error log window opens and functions
+- [x] Menu bar works correctly
+- [x] Window resize works correctly
+- [x] Keyboard shortcuts work correctly
+- [x] All UI elements render at correct sizes on Retina displays
 
 ---
 

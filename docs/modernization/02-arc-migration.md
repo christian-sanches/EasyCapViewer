@@ -205,10 +205,10 @@ If the migrator has issues with the old project format, convert file-by-file:
 ## 2.6 Verification
 
 After Phase 2, the project should:
-- [ ] Compile with `CLANG_ENABLE_OBJC_ARC = YES` with no ARC-related warnings
-- [ ] No `retain`, `release`, `autorelease`, `NSAutoreleasePool` in any source file
-- [ ] No `[super dealloc]` in any `dealloc` method
-- [ ] All `@property(retain)` converted to `@property(strong)`
-- [ ] All object-pointer `@property(assign)` converted to `@property(weak)` where appropriate
-- [ ] All `__bridge` casts are correct and don't leak or over-release
+- [x] Compile with `CLANG_ENABLE_OBJC_ARC = YES` with no ARC-related warnings
+- [x] No `retain`, `release`, `autorelease`, `NSAutoreleasePool` in any source file
+- [x] No `[super dealloc]` in any `dealloc` method
+- [x] All `@property(retain)` converted to `@property(strong)`
+- [x] All object-pointer `@property(assign)` converted to `@property(weak)` where appropriate
+- [x] All `__bridge` casts are correct and don't leak or over-release
 - [ ] No memory leaks (run Instruments → Leaks)

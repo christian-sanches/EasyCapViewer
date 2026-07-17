@@ -1,5 +1,7 @@
 # Phase: Single-Window UI Architecture
 
+> **Status: ✅ Complete** — Implemented on `modernization-mvp` branch. Old controllers (ECVCaptureController, ECVConfigController, ECVErrorLogController, ECVWelcomeWindowController) deleted. Replaced by `MainWindowController.swift` with `NSSplitViewController`.
+
 ## Goal
 
 Replace the multi-window architecture (separate welcome, config, error log, and capture windows) with a single unified window containing an `NSSplitViewController` with three panes:
