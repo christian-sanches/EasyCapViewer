@@ -142,12 +142,12 @@ grep -r "QT" --include="*.h" --include="*.m" (careful — some "QT" hits may be 
 ## 3.8 Verification
 
 After Phase 3, the project should:
-- [ ] No `ECVComponent*` files exist
-- [ ] No `ECVQTKitAdditions*` files exist
-- [ ] No `ECVICM.h` exists
-- [ ] No `#import <QTKit/...>` anywhere
-- [ ] No `#import <QuickTime/...>` anywhere
-- [ ] No `#if !__LP64__` guards anywhere
-- [ ] No `Carbon.framework` in linked frameworks
-- [ ] `ECVMovieRecorder` is a working stub (compiles, does nothing)
-- [ ] Project compiles (with expected warnings about stub recorder)
+- [x] No `ECVComponent*` files exist
+- [x] No `ECVQTKitAdditions*` files exist
+- [x] No `ECVICM.h` exists
+- [x] No `#import <QTKit/...>` anywhere
+- [x] No `#import <QuickTime/...>` anywhere
+- [x] No `#if !__LP64__` guards anywhere
+- [x] No `Carbon.framework` in linked frameworks
+- [x] `ECVMovieRecorder` is a working stub (compiles, does nothing)
+- [x] Project compiles (with expected warnings about stub recorder)

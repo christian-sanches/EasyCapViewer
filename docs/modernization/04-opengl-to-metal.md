@@ -208,14 +208,14 @@ Apple Silicon uses **unified memory** — CPU and GPU share the same RAM. This m
 ## 4.8 Verification
 
 After Phase 4, the project should:
-- [ ] `ECVVideoView` is an `MTKView` subclass
-- [ ] `ECVMetalRenderer` handles texture upload and rendering
-- [ ] `.metal` shader file compiles with the project
-- [ ] Video displays correctly at native resolution
-- [ ] Crop rectangle overlay works (NSView-based)
-- [ ] Play button overlay works (NSView-based)
-- [ ] No OpenGL references remain in any source file
-- [ ] No `OpenGL.framework` in linked frameworks
-- [ ] `ECVOpenGLAdditions.h/m` deleted
+- [x] `ECVVideoView` is an `MTKView` subclass
+- [x] `ECVMetalRenderer` handles texture upload and rendering
+- [x] `.metal` shader file compiles with the project
+- [x] Video displays correctly at native resolution
+- [x] Crop rectangle overlay works (NSView-based)
+- [x] Play button overlay works (NSView-based)
+- [x] No OpenGL references remain in any source file
+- [x] No `OpenGL.framework` in linked frameworks
+- [x] `ECVOpenGLAdditions.h/m` deleted
 - [ ] Performance: 30fps and 60fps capture renders smoothly
 - [ ] Works on both Apple Silicon and Intel Macs (universal binary)

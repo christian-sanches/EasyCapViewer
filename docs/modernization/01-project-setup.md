@@ -138,4 +138,4 @@ After Phase 1, the project should:
 - [x] Have correct deployment target (13.0+)
 - [x] Link only modern frameworks
 - [x] Have the ECVComponent target removed
-- [ ] Build will fail (expected — API changes come in later phases), but project structure should be valid
+- [x] Build will fail (expected — API changes come in later phases), but project structure should be valid

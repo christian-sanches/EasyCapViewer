@@ -284,8 +284,8 @@ The `ECVCaptureController` already handles the recording UI — this should work
 ## 5.8 Verification
 
 After Phase 5, the project should:
-- [ ] `ECVMovieRecorder` uses `AVAssetWriter` / `AVAssetWriterInput`
-- [ ] No QuickTime, ICM, or QTKit references remain anywhere
+- [x] `ECVMovieRecorder` uses `AVAssetWriter` / `AVAssetWriterInput`
+- [x] No QuickTime, ICM, or QTKit references remain anywhere
 - [ ] Can record video to `.mov` file
 - [ ] Can record audio to `.mov` file
 - [ ] Motion JPEG codec works (via AVFoundation JPEG encoder)

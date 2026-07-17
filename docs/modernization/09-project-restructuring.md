@@ -240,10 +240,10 @@ EasyCapViewer (project)
 ## 9.7 Verification
 
 After Phase 9, the project should:
-- [ ] All source files in logical subdirectories
-- [ ] No source files in the project root (only `EasyCapViewer.xcodeproj/`, `docs/`, `README.md`)
-- [ ] Xcode project navigator matches filesystem structure
-- [ ] All imports resolve correctly
-- [ ] Project builds successfully from new structure
-- [ ] Git history preserved (use `git mv`)
-- [ ] Dead files (ECVComponent, QTKit, OpenGL additions) are gone
+- [x] All source files in logical subdirectories
+- [x] No source files in the project root (only `EasyCapViewer.xcodeproj/`, `docs/`, `README.md`)
+- [x] Xcode project navigator matches filesystem structure
+- [x] All imports resolve correctly
+- [x] Project builds successfully from new structure
+- [x] Git history preserved (use `git mv`)
+- [x] Dead files (ECVComponent, QTKit, OpenGL additions) are gone

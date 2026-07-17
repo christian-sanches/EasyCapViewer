@@ -1,8 +1,8 @@
 # EasyCapViewer — Modernization Plan
 
 **Target:** Native Apple Silicon macOS 14.0+ (Sonoma and later)  
-**Language:** Objective-C with ARC, potential Swift interop  
-**Status:** In Progress  
+**Language:** Objective-C with ARC, Swift/SwiftUI  
+**Status:** Complete (except testing & distribution)
 
 ---
 
@@ -18,42 +18,56 @@
 - [x] Phase 8 — UI & HUD Modernization
 - [x] Phase 9 — Project Folder Restructuring
 - [ ] Phase 10 — Testing, Signing & Distribution
-- [x] Phase 11 — SwiftUI & macOS Modernization (11A, 11B, 11C, 11D, 11E, 11G complete; 11F, 11H, 11I deferred)
+- [x] Phase 11 — SwiftUI & macOS Modernization (11A-E, 11G complete; 11F, 11H, 11I deferred)
+- [x] Single-Window UI Architecture (split view: settings sidebar + video + error log sidebar)
 
 ---
 
 ## Overview
 
-EasyCapViewer is a macOS document-based application for capturing video from USB analog capture dongles (EasyCap family). It was last updated circa 2013 and targeted Mac OS X 10.5+. Through Phases 1–11, the codebase has been migrated to **ARC**, all **dead 32-bit code** (QuickTime Component, QTKit, ECVICM) has been removed, **OpenGL rendering has been replaced with Metal**, **movie recording has been rewritten from QuickTime/ICM to AVFoundation**, **USB drivers have been modernized** with upgraded interface versions and improved error handling, the **audio pipeline has been modernized** with modern Objective-C patterns (properties, weak delegates, nullability), the **UI layer has been modernized** with nullability annotations, modern Objective-C literals, and removal of legacy OpenGL references, the **project has been restructured** into a clean directory hierarchy with logical grouping, and **SwiftUI has been adopted incrementally** for settings, welcome window, error log, and menu definitions (with @Observable, modern onChange, keyboard navigation, and state restoration). The remaining work is testing and distribution.
+EasyCapViewer is a macOS application for capturing video from USB analog capture dongles (EasyCap family). Through Phases 1–11 plus the single-window UI rewrite, the codebase has been fully modernized:
+
+- **ARC** — All manual retain/release replaced with automatic reference counting
+- **Dead 32-bit code removed** — QuickTime Component, QTKit, ECVICM all deleted
+- **Metal rendering** — OpenGL replaced with MTKView + Metal shader pipeline
+- **AVFoundation recording** — QuickTime/ICM replaced with AVAssetWriter
+- **USB drivers modernized** — Upgraded to IOUSBInterfaceInterface with improved error handling
+- **Audio pipeline modernized** — Modern ObjC patterns (properties, weak delegates, nullability)
+- **UI modernized** — Nullability annotations, modern ObjC literals, OpenGL references removed
+- **Project restructured** — Clean directory hierarchy with logical grouping
+- **SwiftUI adopted incrementally** — Settings, welcome window, error log, menu definitions, and state restoration
+- **Single-window architecture** — NSSplitViewController with settings sidebar, video center, and error log sidebar
 
 ### What works today on Apple Silicon
 | API | Status | Notes |
 |-----|--------|-------|
-| IOKit | ✅ Still works | USB device enumeration and isochronous transfers (upgraded to IOUSBInterfaceInterface) |
+| IOKit | ✅ Still works | USB device enumeration and isochronous transfers |
 | CoreAudio / AudioToolbox | ✅ Still works | Audio device I/O, streams, hardware |
 | CoreVideo (CVPixelBuffer) | ✅ Still works | Pixel buffer management |
 | Accelerate | ✅ Still works | vDSP/vImage for deinterlacing |
-| QuartzCore / CoreAnimation | ✅ Still works | Layer composition |
+| Metal | ✅ Active | GPU rendering via MTKView |
+| AVFoundation | ✅ Active | Movie recording via AVAssetWriter |
 | Cocoa (AppKit / Foundation) | ✅ Still works | Document architecture, UI |
+| SwiftUI | ✅ Active | Settings, error log, welcome, menus |
 | Swift / Objective-C runtime | ✅ Still works | ARC, modern ObjC features |
 
-### What is dead and must be replaced
-| API | Status | Replacement | Phase |
-|-----|--------|-------------|-------|
-| OpenGL (`NSOpenGLView`, `NSOpenGLContext`, `glTexImage2D`) | ~~Deprecated 10.14~~ ✅ Removed | **Metal** + `MTKView` | Phase 4 ✓ |
-| QuickTime (`EnterMovies`, `ICMCompressionSession`, `Movie`, `Track`, `Media`) | ~~Removed 10.15~~ ✅ Removed | **AVFoundation** (`AVAssetWriter`, `AVAssetWriterInput`) | Phase 3 ✓ (recording rewrite: Phase 5) |
-| QTKit | ~~Removed 10.15~~ ✅ Removed | **Remove entirely** (component target) | Phase 3 ✓ |
-| ECVICM.h (ICM macros) | ~~32-bit only~~ ✅ Removed | AVFoundation has its own API | Phase 3 ✓ |
-| Carbon (parts used) | ⚠️ Mostly deprecated | Replace with Cocoa equivalents | — |
-| `NSAutoreleasePool` | ~~ARC replacement~~ ✅ Done | `@autoreleasepool {}` | Phase 2 ✓ |
-| Manual retain/release | ~~ARC replacement~~ ✅ Done | Enable ARC compiler flag | Phase 2 ✓ |
-| `CVDisplayLink` | ⚠️ Deprecated 14.0 | `CADisplayLink` (macOS 14+) | Phase 4 ✓ (now using MTKView's built-in display link) |
+### What was removed
+| API | Replacement | Phase |
+|-----|-------------|-------|
+| OpenGL | Metal + MTKView | Phase 4 ✓ |
+| QuickTime/ICM | AVFoundation | Phase 3 + 5 ✓ |
+| QTKit | Removed entirely | Phase 3 ✓ |
+| ECVICM.h | AVFoundation API | Phase 3 ✓ |
+| CVDisplayLink | MTKView built-in display link | Phase 4 ✓ |
+| NSAutoreleasePool | @autoreleasepool {} | Phase 2 ✓ |
+| Manual retain/release | ARC | Phase 2 ✓ |
+| NSDocument multi-window | Single-window NSSplitViewController | Done ✓ |
 
 ---
 
 ## File Inventory
 
-### Device Drivers (IOKit USB) — **Keep & Modernize**
+### Device Drivers (IOKit USB) — Modernized
 | File | Chipset | Notes |
 |------|---------|-------|
 | `ECVSTK1160Device.h/m` | Syntek STK1160 | Uses `stk11xx.h` registry helpers |
@@ -64,104 +78,56 @@ EasyCapViewer is a macOS document-based application for capturing video from USB
 | `ECVFushicaiDevice.h/m` | Fushicai | NTSC/PAL mode switching |
 | `ECVDevices.plist` | — | USB vendor/product ID database |
 
-### Core Architecture — ARC Migrated, Deprecations Fixed
+### Core Architecture — ARC Migrated
 | File | Role | Notes |
 |------|------|-------|
-| `ECVController.h/m` | App controller (NSDocumentController) | IOKit enumeration OK; ARC migrated; deprecation fixes |
-| `ECVCaptureDocument.h/m` | Document model (NSDocument) | ARC migrated; recording stub pending Phase 5 |
-| `ECVCaptureDevice.h/m` | Abstract capture device | ARC migrated; deprecation fixes; USB interface upgraded to IOUSBInterfaceInterface |
-| `ECVUSBTransferList.h/m` | Isochronous USB ring buffer | IOKit OK; ARC migrated; USB interface upgraded to IOUSBInterfaceInterface |
-| `ECVVideoSource.h/m` | Video source abstraction | OK |
-| `ECVVideoFormat.h/m` | Video format (resolution, framerate) | OK |
-| `ECVPixelFormat.h` | Pixel format constants | OpenGL imports removed; Metal helpers added |
-| `ECVDeinterlacingMode.h/m` | 7 deinterlacing modes | OK; Accelerate still works |
-| `ECVRational.h/m` | Rational number math | OK as-is |
-| `ECVFrameRateConverter.h/m` | Frame rate conversion | OK |
+| `ECVController.h/m` | App controller | IOKit enumeration; USB device discovery |
+| `ECVCaptureSession.h/m` | Capture session (was ECVCaptureDocument) | Plain NSObject, no NSDocument inheritance |
+| `ECVCaptureDevice.h/m` | Abstract capture device | ARC migrated; USB interface upgraded |
+| `ECVUSBTransferList.h/m` | Isochronous USB ring buffer | ARC migrated; USB interface upgraded |
 
-### Video Rendering — ~~Full Rewrite Required~~ ✅ Complete (Phase 4)
-| File | Before | After |
-|------|--------|-------|
-| `ECVVideoView.h/m` | `NSOpenGLView` subclass, `glTexImage2D`, PBO textures, `CVDisplayLink` | `MTKView` subclass, delegates rendering to `ECVMetalRenderer` |
-| `ECVMetalRenderer.h/m` | — | **New.** Metal pipeline: YUV→RGB fragment shader, frame queue, texture upload from CVPixelBuffer (UYVY + YVYU) |
-| `ECVMetalShaders.metal` | — | **New.** Vertex shader + BT.601 YCbCr→RGB conversion |
-| `ECVOpenGLAdditions.h/m` | OpenGL helper categories | **Removed** |
-| `ECVAppKitAdditions.h` | `ECVLockContext()` — OpenGL lock helper | Removed; `ECV_textureName` removed |
-| `ECVCropCell.h/m` | `NSOpenGLContext`-based crop drawing | `NSBezierPath`/`NSBitmapImageRep` overlay drawing |
-| `ECVPlayButtonCell.h/m` | `NSOpenGLContext`-based play button | `NSImage`-based overlay drawing |
-
-### Movie Recording — QuickTime/ICM Removed, AVFoundation Rewrite Complete
-| File | Status | Notes |
-|------|--------|-------|
-| `ECVMovieRecorder.h/m` | ✅ Rewritten | Full AVFoundation recording: `AVAssetWriter`, `AVAssetWriterInput`, `AVAssetWriterInputPixelBufferAdaptor` |
-| `ECVICM.h` | **Removed** (Phase 3) | ICM compression session macros — no longer needed |
-| `ECVComponent.h/m` | **Removed** (Phase 3) | QuickTime component (32-bit only) |
-| `ECVComponent.r` | **Removed** (Phase 3) | QuickTime component resource |
-| `ECVComponentDispatch.h` | **Removed** (Phase 3) | QuickTime dispatch table |
-| `ECVComponent-Info.plist` | **Removed** (Phase 3) | QuickTime component plist |
-| `ECVQTKitAdditions.h/m` | **Removed** (Phase 3) | QTKit categories |
-
-### Audio Pipeline — ✅ Complete (Phase 7)
+### Video Rendering — Metal (Phase 4)
 | File | Role | Notes |
 |------|------|-------|
-| `ECVAudioDevice.h/m` | CoreAudio device wrapper | ✅ Modernized: properties, weak delegate, instancetype, nullability |
-| `ECVAudioPipe.h/m` | Audio format conversion pipe | ✅ Modernized: class extension, nullability, instancetype |
-| `ECVAudioTarget.h/m` | Audio target abstraction | ✅ Modernized: weak captureDocument, literals, nullability |
-| `ECVAVTarget.h` | AV target protocol | OK as-is |
+| `ECVVideoView.h/m` | MTKView subclass | Metal rendering, CVDisplayLink replaced |
+| `ECVMetalRenderer.h/m` | Metal rendering engine | YUV→RGB fragment shader, frame queue |
+| `ECVMetalShaders.metal` | Metal shaders | BT.601 YCbCr→RGB conversion |
 
-### UI Components — Modernized (Phase 8) + SwiftUI (Phase 11)
+### Movie Recording — AVFoundation (Phase 5)
 | File | Role | Notes |
 |------|------|-------|
-| `ECVCaptureController.h/m` | Capture UI controller | Updated: removed `magFilter` usage, init calls updated for Metal renderer, modern ObjC literals, removed version-guarded `NSWindowDelegate`; Phase 11: added window identifier, autosave name, key view loop |
-| `ECVErrorLogController.h/m` | Error log window | ✅ Phase 11: Replaced NIB-based UI with SwiftUI `ErrorLogView` via `NSHostingView` |
-| `MPLWindow.h/m` | Custom NSWindow | Deprecation fixes applied |
-| `ECVRectEdgeMask.h/m` | Edge mask constants | OK as-is |
-| `ECVCropCell.h/m` | Crop overlay | Nullability annotations, removed OpenGL dealloc remnants |
-| `ECVPlayButtonCell.h/m` | Play button overlay | Nullability annotations, removed OpenGL dealloc remnants |
-| `ECVAppKitAdditions.h/m` | Drawing helpers | Nullability annotations; gradient helpers removed (Phase 11, only used by deleted HUD cells) |
-| `ECVWelcomeWindowController.h/m` | Welcome window | ✅ Phase 11: Simplified to host SwiftUI `WelcomeView` via `NSHostingView` |
-| `ECVController.h/m` | App controller | Phase 11: Ready for future menu migration |
+| `ECVMovieRecorder.h/m` | AVAssetWriter-based recorder | H.264, HEVC, Motion JPEG, ProRes |
 
-#### Deleted (Phase 11E — Dead Code Removal)
+### Audio Pipeline — Modernized (Phase 7)
+| File | Role | Notes |
+|------|------|-------|
+| `ECVAudioDevice.h/m` | CoreAudio device wrapper | Properties, weak delegate, nullability |
+| `ECVAudioPipe.h/m` | Audio format conversion pipe | Class extension, nullability |
+| `ECVAudioTarget.h/m` | Audio target abstraction | Weak captureDocument, literals |
+
+### SwiftUI Layer — New (Phase 11 + Single-Window)
+| File | Role | Notes |
+|------|------|-------|
+| `SwiftUI/AppDelegate.swift` | App lifecycle | Window ownership, quit-on-close |
+| `SwiftUI/MainWindowController.swift` | Unified window | NSSplitViewController: settings + video + error log |
+| `SwiftUI/ConfigViewModel.swift` | Settings model | @Observable, modern onChange |
+| `SwiftUI/ConfigView.swift` | Settings panel | @Bindable, macOS 14+ onChange |
+| `SwiftUI/WelcomeView.swift` | Welcome window | No-device-found message |
+| `SwiftUI/ErrorLogView.swift` | Error log | Color-coded entries, auto-scroll |
+| `SwiftUI/AppMenu.swift` | Menu definitions | SwiftUI menu structure |
+
+### Deleted (Phase 11E + Single-Window)
 | File | Reason |
 |------|--------|
-| `ECVConfigController.h/m` | Superseded by `ECVSwiftConfigController` (SwiftUI); protocol moved to `ECVCaptureDevice.h` |
-| `ECVHUDButtonCell.h/m` | Legacy, unused by SwiftUI config |
-| `ECVHUDSliderCell.h/m` | Legacy, unused by SwiftUI config |
-| `ECVHUDPopUpButtonCell.h/m` | Legacy, unused by SwiftUI config |
-| `ECVHUDSwitchButtonCell.h/m` | Legacy, unused by SwiftUI config |
-| `ECVDividerView.h/m` | Legacy, unused by SwiftUI config |
-| `ECVTickMarkView.h/m` | Legacy, unused by SwiftUI config |
-
-### Utilities — Deprecations Fixed
-| File | Role | Notes |
-|------|------|-------|
-| `ECVDebug.h/m` | Logging, error formatting | `ECVGLError` macro removed; `ECVOpenGLErrorToString` removed |
-| `ECVLocalizing.h/m` | Localization helpers | OK |
-| `ECVFoundationAdditions.h/m` | Foundation categories | Deprecation fixes: `AbsoluteToNanoseconds` → `mach_absolute_time` |
-| `ECVPixelBuffer.h/m` | CVPixelBuffer wrapper | OK |
-| `ECVReadWriteLock.h/m` | Read-write lock | OK |
-| `EasyCapViewer_Prefix.pch` | Prefix header | OK |
-
-### Resources — Partially Updated
-| File | Notes |
-|------|-------|
-| `ECVCapture.xib` | Still references `openGLView` — needs update to `MTKView` custom class |
-| `ECVConfig.xib` | Superseded by `ConfigView.swift` (can be deleted in future cleanup) |
-| `ECVErrorLog.xib` | **Removed** (Phase 11C) — replaced by `ErrorLogView.swift` |
-| `ECVMenu.xib` | Kept as active menu; `AppMenu.swift` created as foundation for future migration |
-| `EasyCapViewer.icns` | Possibly add @2x icon |
-| `EasyCapViewer-Info.plist` | ✅ Updated: deployment target 14.0, 32-bit keys removed |
-| Localization `.strings` files | Keep as-is |
-
-### SwiftUI Layer — ✅ New (Phase 11)
-| File | Role | Notes |
-|------|------|-------|
-| `SwiftUI/ConfigViewModel.swift` | Settings view model | ✅ Phase 11A: Migrated from `ObservableObject`/`@Published` to `@Observable` macro |
-| `SwiftUI/ConfigView.swift` | Settings panel view | ✅ Phase 11A: Migrated from `@ObservedObject` to `@Bindable`, updated all `onChange` calls to macOS 14+ signature |
-| `SwiftUI/ConfigWindowController.swift` | Settings panel host | `NSWindowController` hosting `ConfigView` via `NSHostingView` |
-| `SwiftUI/WelcomeView.swift` | Welcome window view | ✅ Phase 11B: New SwiftUI view for "no device found" message |
-| `SwiftUI/ErrorLogView.swift` | Error log view | ✅ Phase 11C: New `@Observable` model + SwiftUI view with color-coded entries, auto-scroll, Clear toolbar button |
-| `SwiftUI/AppMenu.swift` | Menu definitions | ✅ Phase 11D: SwiftUI menu structure as foundation for future NSHostingMenu migration |
+| `ECVConfigController.h/m` | Superseded by ConfigView.swift |
+| `ECVHUD*.h/m` (all 4 cells) | Legacy, unused by SwiftUI config |
+| `ECVDividerView.h/m` | Legacy, unused |
+| `ECVTickMarkView.h/m` | Legacy, unused |
+| `ECVCaptureController.h/m` | Replaced by MainWindowController.swift |
+| `ECVWelcomeWindowController.h/m` | Welcome now in split view |
+| `ECVErrorLogController.h/m` | Error log now in split view |
+| `ECVConfigWindowController.swift` | Config now in split view sidebar |
+| `ECVErrorLog.xib` | Replaced by ErrorLogView.swift |
 
 ---
 
@@ -180,6 +146,7 @@ Each phase has its own detailed document:
 9. [Phase 9 — Project Restructuring](docs/modernization/09-project-restructuring.md)
 10. [Phase 10 — Testing & Distribution](docs/modernization/10-testing-distribution.md)
 11. [Phase 11 — SwiftUI & macOS Modernization](docs/modernization/11-swiftui-modernization.md)
+12. [Single-Window UI Architecture](docs/modernization/phase-single-window-ui.md)
 
 ---
 
@@ -189,27 +156,26 @@ Each phase has its own detailed document:
 |------|--------|------------|--------|
 | Metal rendering complexity | High | Start with simple texture blit; iterate | ✅ Resolved (Phase 4) |
 | AVFoundation recording latency | Medium | Use async writing with buffer queues | ✅ Resolved (Phase 5) |
-| USB isochronous transfer changes on Apple Silicon | High | Upgraded to IOUSBInterfaceInterface; added error handling for power management | ✅ Resolved (Phase 6) |
-| Missing hardware for testing | High | Acquire EasyCap devices for each chipset | Pending |
+| USB isochronous transfer changes on Apple Silicon | High | Upgraded to IOUSBInterfaceInterface; error handling | ✅ Resolved (Phase 6) |
+| Missing hardware for testing | High | Acquire EasyCap devices for each chipset | ⏳ Pending |
 | Xcode project format incompatibility | Low | Create new project, migrate sources | ✅ Resolved (Phase 1) |
-| Carbon API removal | Low | Only used for minor helpers; replace with Cocoa | ✅ Resolved (Phase 3) |
 | SwiftUI incremental adoption | Low | Keep AppKit where it excels; adopt SwiftUI where it simplifies | ✅ Resolved (Phase 11) |
 
 ---
 
 ## Estimated Effort
 
-| Phase | Estimated Time | Status |
-|-------|---------------|--------|
-| Phase 1 — Project Setup | 1–2 hours | ✅ Done |
-| Phase 2 — ARC Migration | 4–8 hours | ✅ Done |
-| Phase 3 — Remove 32-bit Code | 1–2 hours | ✅ Done |
-| Phase 4 — OpenGL → Metal | 2–3 days | ✅ Done |
-| Phase 5 — QuickTime → AVFoundation | 2–3 days | ✅ Done |
-| Phase 6 — USB Drivers | 1 day (mostly testing) | ✅ Done |
-| Phase 7 — Audio Pipeline | 0.5 day | ✅ Done |
-| Phase 8 — UI Modernization | 1 day | ✅ Done |
-| Phase 9 — Restructuring | 1 day | ✅ Done |
-| Phase 10 — Testing | 2–3 days | Pending |
-| Phase 11 — SwiftUI & macOS Modernization | 1–2 days (11A-E, 11G done; 11F, 11H, 11I deferred) | ✅ Done |
-| **Remaining** | **2–3 days** | |
+| Phase | Status |
+|-------|--------|
+| Phase 1 — Project Setup | ✅ Done |
+| Phase 2 — ARC Migration | ✅ Done |
+| Phase 3 — Remove 32-bit Code | ✅ Done |
+| Phase 4 — OpenGL → Metal | ✅ Done |
+| Phase 5 — QuickTime → AVFoundation | ✅ Done |
+| Phase 6 — USB Drivers | ✅ Done |
+| Phase 7 — Audio Pipeline | ✅ Done |
+| Phase 8 — UI Modernization | ✅ Done |
+| Phase 9 — Restructuring | ✅ Done |
+| Phase 10 — Testing | ⏳ Remaining |
+| Phase 11 — SwiftUI & macOS | ✅ Done |
+| Single-Window UI | ✅ Done |
